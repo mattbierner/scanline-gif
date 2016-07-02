@@ -1,0 +1,15 @@
+title: "Scanline.gif"
+
+description: "Flattening gifs to images using scanlines."
+
+# Build settings
+markdown: kramdown
+
+exclude: [
+    "documentation",
+    "node_modules",
+    "process_data",
+    "server",
+    "src",
+    "webpack.config.js"
+]
