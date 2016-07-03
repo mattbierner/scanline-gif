@@ -78,17 +78,27 @@
 	    function Main(props) {
 	        _classCallCheck(this, Main);
 
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Main).call(this, props));
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Main).call(this, props));
+
+	        _this.state = {
+	            selectedGif: "./examples/cat.gif"
+	        };
+	        return _this;
 	    }
 
 	    _createClass(Main, [{
+	        key: 'onGifSelected',
+	        value: function onGifSelected(src) {
+	            this.setState({ selectedGif: src });
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'main container' },
-	                _react2.default.createElement(_viewer2.default, { file: './examples/cat.gif' }),
-	                _react2.default.createElement(_search2.default, null)
+	                _react2.default.createElement(_viewer2.default, { file: this.state.selectedGif }),
+	                _react2.default.createElement(_search2.default, { onGifSelected: this.onGifSelected.bind(this) })
 	            );
 	        }
 	    }]);
@@ -21399,41 +21409,104 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var giphy = __webpack_require__(171)('dc6zaTOxFJmzC');
-	giphy.search('pokemon').then(function (res) {
-	    console.log(res);
-	}).catch(function (err) {
-	    return console.error(err);
-	});
 
-	var Search = function (_React$Component) {
-	    _inherits(Search, _React$Component);
+	var SearchResult = function (_React$Component) {
+	    _inherits(SearchResult, _React$Component);
+
+	    function SearchResult() {
+	        _classCallCheck(this, SearchResult);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(SearchResult).apply(this, arguments));
+	    }
+
+	    _createClass(SearchResult, [{
+	        key: 'onSelect',
+	        value: function onSelect() {
+	            this.props.onGifSelected(this.props.data);
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var src = this.props.data.images.downsized_still.url;
+	            return _react2.default.createElement(
+	                'li',
+	                { className: 'search-result', onClick: this.onSelect.bind(this) },
+	                _react2.default.createElement('img', { src: src })
+	            );
+	        }
+	    }]);
+
+	    return SearchResult;
+	}(_react2.default.Component);
+
+	;
+
+	var Search = function (_React$Component2) {
+	    _inherits(Search, _React$Component2);
 
 	    function Search(props) {
 	        _classCallCheck(this, Search);
 
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Search).call(this, props));
+	        var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(Search).call(this, props));
 
-	        _this.state = {
-	            searchText: ''
+	        _this2.state = {
+	            searchText: 'cat',
+	            results: []
 	        };
-	        return _this;
+	        return _this2;
 	    }
 
 	    _createClass(Search, [{
 	        key: 'onSearchTextChange',
 	        value: function onSearchTextChange(e) {
-	            this.setState({ searchText: e.target.value });
+	            var value = e.target.value;
+	            this.setState({ searchText: value });
+	        }
+	    }, {
+	        key: 'search',
+	        value: function search() {
+	            var _this3 = this;
+
+	            giphy.search(this.state.searchText).then(function (res) {
+	                console.log(res);
+	                _this3.setState({ results: res.data });
+	            }).catch(function (err) {
+	                console.error(err);
+	            });
+	        }
+	    }, {
+	        key: 'onGifSelected',
+	        value: function onGifSelected(data) {
+	            var src = data.images.original.url;
+	            this.props.onGifSelected(src);
 	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
+	            var _this4 = this;
+
+	            var results = this.state.results.map(function (x) {
+	                return _react2.default.createElement(SearchResult, { key: x.id, data: x,
+	                    onGifSelected: _this4.onGifSelected.bind(_this4) });
+	            });
+
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'gif-search' },
-	                _react2.default.createElement('input', { type: 'text',
+	                _react2.default.createElement('input', { type: 'search',
 	                    value: this.state.searchText,
-	                    placeholder: 'Find Gif',
-	                    onChange: this.onSearchTextChange.bind(this) })
+	                    placeholder: 'Find gif',
+	                    onChange: this.onSearchTextChange.bind(this) }),
+	                _react2.default.createElement(
+	                    'button',
+	                    { onClick: this.search.bind(this) },
+	                    'Search'
+	                ),
+	                _react2.default.createElement(
+	                    'ul',
+	                    null,
+	                    results
+	                )
 	            );
 	        }
 	    }]);
