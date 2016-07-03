@@ -72,50 +72,104 @@
 	    function Main(props) {
 	        _classCallCheck(this, Main);
 
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Main).call(this, props));
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Main).call(this, props));
+
+	        _this.state = {
+	            imageData: null
+	        };
+	        return _this;
 	    }
 
 	    _createClass(Main, [{
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
+	            var _this2 = this;
+
 	            var element = _reactDom2.default.findDOMNode(this);
 	            var canvas = element.getElementsByClassName('canvas')[0];
+	            var ctx = canvas.getContext('2d');
 
-	            var oReq = new XMLHttpRequest();
-	            oReq.open("GET", "./examples/cat.gif", true);
-	            oReq.responseType = "arraybuffer";
+	            this.loadGif('./examples/cat.gif', ctx).then(function (data) {
+	                _this2.drawGif(data, canvas, ctx);
+	            });
+	        }
 
-	            oReq.onload = function (oEvent) {
-	                var arrayBuffer = oReq.response;
-	                var byteArray = new Uint8Array(arrayBuffer);
+	        /**
+	         * 
+	         */
+
+	    }, {
+	        key: 'loadBinaryData',
+	        value: function loadBinaryData(url) {
+	            var req = new XMLHttpRequest();
+	            req.open("GET", url, true);
+	            req.responseType = "arraybuffer";
+
+	            var p = new Promise(function (resolve, reject) {
+	                req.onload = function (oEvent) {
+	                    var arrayBuffer = req.response;
+	                    var byteArray = new Uint8Array(arrayBuffer);
+	                    resolve(byteArray);
+	                };
+	            });
+	            req.send(null);
+	            return p;
+	        }
+	    }, {
+	        key: 'loadGif',
+	        value: function loadGif(fileName, ctx) {
+	            return this.loadBinaryData(fileName).then(function (byteArray) {
 	                var gr = new omggif.GifReader(byteArray);
-
-	                canvas.width = gr.width * 10;
-	                canvas.height = gr.height * 10;
-
-	                var ctx = canvas.getContext('2d');
+	                var width = gr.width;
+	                var height = gr.height;
 
 	                var len = gr.numFrames();
-	                var dx = gr.width / len;
-	                var imageData = ctx.createImageData(gr.width, gr.height);
 
+	                var frames = [];
+	                var previousData = null;
 	                for (var i = 0; i < len; ++i) {
-	                    var fi0 = gr.frameInfo(i);
-	                    console.log(fi0);
+	                    var info = gr.frameInfo(i);
+	                    var imageData = ctx.createImageData(width, height);
+	                    if (previousData) {
+	                        for (var _i = 0, _len = previousData.length; _i < _len; ++_i) {
+	                            imageData[_i] = previousData[_i];
+	                        }
+	                    }
 
 	                    gr.decodeAndBlitFrameRGBA(i, imageData.data);
-
-	                    ctx.putImageData(imageData, 0, 0, dx * i, 0, dx, gr.height);
-	                    //0, dx * i,
-	                    //gr.width, dx);
+	                    frames.push({
+	                        info: info,
+	                        data: imageData
+	                    });
+	                    previousData = imageData;
 	                }
-	            };
-	            oReq.send(null);
+
+	                return {
+	                    width: width,
+	                    height: height,
+	                    frames: frames
+	                };
+	            });
+	        }
+	    }, {
+	        key: 'drawGif',
+	        value: function drawGif(imageData, canvas, ctx) {
+	            if (!imageData) return;
+
+	            canvas.width = imageData.width;
+	            canvas.height = imageData.height;
+
+	            var len = imageData.frames.length;
+	            var dx = imageData.width / len;
+	            for (var i = 0; i < len; ++i) {
+	                ctx.putImageData(imageData.frames[i].data, 0, 0, dx * i, 0, dx, imageData.height);
+	                //0, dx * i,
+	                //imageData.width, dx);
+	            }
 	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
-
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'main container' },
