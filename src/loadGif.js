@@ -20,6 +20,9 @@ const loadBinaryData = (url) => {
     return p;
 };
 
+/**
+ * Extract metadata and frames from binary gif data.
+ */
 const decodeGif = byteArray => {
     const gr = new omggif.GifReader(byteArray);
     return {
@@ -29,11 +32,14 @@ const decodeGif = byteArray => {
     };
 };
 
+/**
+ * Extract each frame of metadata / frame data (as a canvas) from a gif.
+ */
 const extractGifFrameData = reader => {
     const frames = []
     const {width, height} = reader;
 
-    let previousData = null;
+    const imageData = new ImageData(width, height);
     for (let i = 0, len = reader.numFrames(); i < len; ++i) {
         const info = reader.frameInfo(i);
 
@@ -42,18 +48,10 @@ const extractGifFrameData = reader => {
         canvas.height = height;
 
         const ctx = canvas.getContext('2d');
-        const imageData = ctx.createImageData(width, height);
-
-        // Copy previous image data into buffer
-        if (previousData) {
-            for (let i = 0, len = previousData.data.length; i < len; ++i)
-                imageData.data[i] = previousData.data[i];
-        }
 
         reader.decodeAndBlitFrameRGBA(i, imageData.data);
         ctx.putImageData(imageData, 0, 0);
         frames.push({ info, canvas })
-        previousData = imageData;
     }
     return frames;
 };

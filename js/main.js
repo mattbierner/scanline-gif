@@ -28598,6 +28598,9 @@
 	    return p;
 	};
 
+	/**
+	 * Extract metadata and frames from binary gif data.
+	 */
 	var decodeGif = function decodeGif(byteArray) {
 	    var gr = new omggif.GifReader(byteArray);
 	    return {
@@ -28607,13 +28610,16 @@
 	    };
 	};
 
+	/**
+	 * Extract each frame of metadata / frame data (as a canvas) from a gif.
+	 */
 	var extractGifFrameData = function extractGifFrameData(reader) {
 	    var frames = [];
 	    var width = reader.width;
 	    var height = reader.height;
 
 
-	    var previousData = null;
+	    var imageData = new ImageData(width, height);
 	    for (var i = 0, len = reader.numFrames(); i < len; ++i) {
 	        var info = reader.frameInfo(i);
 
@@ -28622,19 +28628,10 @@
 	        canvas.height = height;
 
 	        var ctx = canvas.getContext('2d');
-	        var imageData = ctx.createImageData(width, height);
-
-	        // Copy previous image data into buffer
-	        if (previousData) {
-	            for (var _i = 0, _len = previousData.data.length; _i < _len; ++_i) {
-	                imageData.data[_i] = previousData.data[_i];
-	            }
-	        }
 
 	        reader.decodeAndBlitFrameRGBA(i, imageData.data);
 	        ctx.putImageData(imageData, 0, 0);
 	        frames.push({ info: info, canvas: canvas });
-	        previousData = imageData;
 	    }
 	    return frames;
 	};
