@@ -27655,57 +27655,39 @@
 	};
 
 	/**
-	 * Displays an interative scanlined gif with controls. 
-	*/
+	 * Renders a scanlined gif. 
+	 */
 
-	var Viewer = function (_React$Component) {
-	    _inherits(Viewer, _React$Component);
+	var GifRenderer = function (_React$Component) {
+	    _inherits(GifRenderer, _React$Component);
 
-	    function Viewer(props) {
-	        _classCallCheck(this, Viewer);
+	    function GifRenderer() {
+	        _classCallCheck(this, GifRenderer);
 
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Viewer).call(this, props));
-
-	        _this.state = {
-	            imageData: null,
-	            mode: Object.keys(modes)[0],
-	            tileWidth: 10,
-	            tileHeight: 10,
-	            initialFrame: 0
-	        };
-	        return _this;
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(GifRenderer).apply(this, arguments));
 	    }
 
-	    _createClass(Viewer, [{
+	    _createClass(GifRenderer, [{
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
-	            var element = _reactDom2.default.findDOMNode(this);
-	            var canvas = element.getElementsByClassName('gif-canvas')[0];
+	            var canvas = _reactDom2.default.findDOMNode(this);
 	            var ctx = canvas.getContext('2d');
 
 	            this._canvas = canvas;
 	            this._ctx = ctx;
-
-	            this.loadGif(this.props.file);
 	        }
 	    }, {
 	        key: 'componentWillReceiveProps',
 	        value: function componentWillReceiveProps(newProps) {
-	            if (newProps.file && newProps.file.length && newProps.file !== this.props.file) {
-	                this.loadGif(newProps.file);
-	            }
-	        }
-	    }, {
-	        key: 'loadGif',
-	        value: function loadGif(file) {
 	            var _this2 = this;
 
-	            (0, _loadGif3.default)(file).then(function (data) {
-	                _this2.setState({ imageData: data });
-	                _this2.drawGifForOptions(data, _this2.state);
-	            }).catch(function (e) {
-	                return console.error(e);
+	            var propsToCheck = ['imageData', 'mode', 'tileWidth', 'tileHeight', 'initialFrame'];
+	            var isDiff = propsToCheck.some(function (prop) {
+	                return _this2.props[prop] !== newProps[prop];
 	            });
+	            if (isDiff) {
+	                this.drawGifForOptions(newProps.imageData, newProps);
+	            }
 	        }
 	    }, {
 	        key: 'drawGifForOptions',
@@ -27762,32 +27744,92 @@
 	            }
 	        }
 	    }, {
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement('canvas', { className: 'gif-canvas', width: '0', height: '0' });
+	        }
+	    }]);
+
+	    return GifRenderer;
+	}(_react2.default.Component);
+
+	;
+
+	/**
+	 * Displays an interative scanlined gif with controls. 
+	 */
+
+	var Viewer = function (_React$Component2) {
+	    _inherits(Viewer, _React$Component2);
+
+	    function Viewer(props) {
+	        _classCallCheck(this, Viewer);
+
+	        var _this3 = _possibleConstructorReturn(this, Object.getPrototypeOf(Viewer).call(this, props));
+
+	        _this3.state = {
+	            imageData: null,
+	            mode: Object.keys(modes)[0],
+	            tileWidth: 10,
+	            tileHeight: 10,
+	            initialFrame: 0
+	        };
+	        return _this3;
+	    }
+
+	    _createClass(Viewer, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            var element = _reactDom2.default.findDOMNode(this);
+	            var canvas = element.getElementsByClassName('gif-canvas')[0];
+	            var ctx = canvas.getContext('2d');
+
+	            this._canvas = canvas;
+	            this._ctx = ctx;
+
+	            this.loadGif(this.props.file);
+	        }
+	    }, {
+	        key: 'componentWillReceiveProps',
+	        value: function componentWillReceiveProps(newProps) {
+	            if (newProps.file && newProps.file.length && newProps.file !== this.props.file) {
+	                this.loadGif(newProps.file);
+	            }
+	        }
+	    }, {
+	        key: 'loadGif',
+	        value: function loadGif(file) {
+	            var _this4 = this;
+
+	            (0, _loadGif3.default)(file).then(function (data) {
+	                _this4.setState({ imageData: data });
+	            }).catch(function (e) {
+	                return console.error(e);
+	            });
+	        }
+	    }, {
 	        key: 'onModeChange',
 	        value: function onModeChange(e) {
 	            var value = e.target.value;
 	            this.setState({ mode: value });
-	            this.drawGifForOptions(this.state.imageData, Object.assign({}, this.state, { mode: value }));
 	        }
 	    }, {
 	        key: 'onTileWidthChange',
 	        value: function onTileWidthChange(e) {
 	            var value = +e.target.value;
 	            this.setState({ tileWidth: value });
-	            this.drawGifForOptions(this.state.imageData, Object.assign({}, this.state, { tileWidth: value }));
 	        }
 	    }, {
 	        key: 'onInitialFrameChange',
 	        value: function onInitialFrameChange(e) {
 	            var value = +e.target.value;
 	            this.setState({ initialFrame: value });
-	            this.drawGifForOptions(this.state.imageData, Object.assign({}, this.state, { initialFrame: value }));
 	        }
 	    }, {
 	        key: 'onTileHeightChange',
 	        value: function onTileHeightChange(e) {
 	            var value = +e.target.value;
 	            this.setState({ tileHeight: value });
-	            this.drawGifForOptions(this.state.imageData, Object.assign({}, this.state, { tileHeight: value }));
 	        }
 	    }, {
 	        key: 'render',
@@ -27806,7 +27848,7 @@
 	                _react2.default.createElement(
 	                    'div',
 	                    { className: 'gif-figure' },
-	                    _react2.default.createElement('canvas', { className: 'gif-canvas', width: '0', height: '0' }),
+	                    _react2.default.createElement(GifRenderer, this.state),
 	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'gif-info' },

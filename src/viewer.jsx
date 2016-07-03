@@ -12,45 +12,25 @@ const modes = {
     'custom': 'custom'
 };
 
-/**
- * Displays an interative scanlined gif with controls. 
-*/
-export default class Viewer extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            imageData: null,
-            mode: Object.keys(modes)[0],
-            tileWidth: 10,
-            tileHeight: 10,
-            initialFrame: 0
-        };
-    }
 
+/**
+ * Renders a scanlined gif. 
+ */
+class GifRenderer extends React.Component {
     componentDidMount() {
-        const element = ReactDOM.findDOMNode(this);
-        const canvas = element.getElementsByClassName('gif-canvas')[0];
+        const canvas = ReactDOM.findDOMNode(this);
         const ctx = canvas.getContext('2d');
 
         this._canvas = canvas;
         this._ctx = ctx;
-
-        this.loadGif(this.props.file);
     }
 
     componentWillReceiveProps(newProps) {
-        if (newProps.file && newProps.file.length && newProps.file !== this.props.file) {
-            this.loadGif(newProps.file);
+        const propsToCheck = ['imageData', 'mode', 'tileWidth', 'tileHeight', 'initialFrame'];
+        const isDiff = propsToCheck.some(prop => this.props[prop] !== newProps[prop]);
+        if (isDiff) {
+            this.drawGifForOptions(newProps.imageData, newProps);
         }
-    }
-
-    loadGif(file) {
-        loadGif(file)
-            .then(data => {
-                this.setState({ imageData: data });
-                this.drawGifForOptions(data, this.state);
-            })
-            .catch(e => console.error(e));
     }
 
     drawGifForOptions(imageData, state) {
@@ -107,28 +87,70 @@ export default class Viewer extends React.Component {
         }
     }
 
+    render() {
+        return (<canvas className="gif-canvas" width="0" height="0" />);
+    }
+};
+
+
+/**
+ * Displays an interative scanlined gif with controls. 
+ */
+export default class Viewer extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            imageData: null,
+            mode: Object.keys(modes)[0],
+            tileWidth: 10,
+            tileHeight: 10,
+            initialFrame: 0
+        };
+    }
+
+    componentDidMount() {
+        const element = ReactDOM.findDOMNode(this);
+        const canvas = element.getElementsByClassName('gif-canvas')[0];
+        const ctx = canvas.getContext('2d');
+
+        this._canvas = canvas;
+        this._ctx = ctx;
+
+        this.loadGif(this.props.file);
+    }
+
+    componentWillReceiveProps(newProps) {
+        if (newProps.file && newProps.file.length && newProps.file !== this.props.file) {
+            this.loadGif(newProps.file);
+        }
+    }
+
+    loadGif(file) {
+        loadGif(file)
+            .then(data => {
+                this.setState({ imageData: data });
+            })
+            .catch(e => console.error(e));
+    }
+
     onModeChange(e) {
         const value = e.target.value;
         this.setState({ mode: value });
-        this.drawGifForOptions(this.state.imageData, Object.assign({}, this.state, {mode: value}));
     }
 
     onTileWidthChange(e) {
         const value = +e.target.value;
         this.setState({ tileWidth: value });
-        this.drawGifForOptions(this.state.imageData, Object.assign({}, this.state, {tileWidth: value}));
     }
 
     onInitialFrameChange(e) {
         const value = +e.target.value;
         this.setState({ initialFrame: value });
-        this.drawGifForOptions(this.state.imageData, Object.assign({}, this.state, {initialFrame: value}));
     }
 
     onTileHeightChange(e) {
         const value = +e.target.value;
         this.setState({ tileHeight: value });
-        this.drawGifForOptions(this.state.imageData, Object.assign({}, this.state, {tileHeight: value}));
     }
 
     render() {
@@ -138,7 +160,7 @@ export default class Viewer extends React.Component {
         return (
             <div className="gif-viewer" id="viewer">
                 <div className="gif-figure">
-                    <canvas className="gif-canvas" width="0" height="0" />
+                    <GifRenderer {...this.state} />
                     <div className="gif-info">
                         <span>Frames: {this.state.imageData ? this.state.imageData.frames.length : ''}</span>
                     </div>
