@@ -116,7 +116,6 @@ export default class Viewer extends React.Component {
         let i = 0;
         for (let x = 0; x < imageData.width; x += tileWidth) {
             for (let y = 0; y < imageData.height; y += tileHeight) {
-
                 const frameNumber = i++ % len;
                 ctx.save();
                 ctx.beginPath();
@@ -138,6 +137,9 @@ export default class Viewer extends React.Component {
         return (
             <div className="gif-viewer">
                 <canvas className="gif-canvas" width="0" height="0" />
+                <div className="view-controls">
+
+                </div>
             </div>);
     }
 };

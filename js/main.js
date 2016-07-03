@@ -20447,13 +20447,25 @@
 	var SearchResult = function (_React$Component) {
 	    _inherits(SearchResult, _React$Component);
 
-	    function SearchResult() {
+	    function SearchResult(props) {
 	        _classCallCheck(this, SearchResult);
 
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(SearchResult).apply(this, arguments));
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SearchResult).call(this, props));
+
+	        _this.state = {
+	            searchText: 'cat',
+	            results: [],
+	            active: false
+	        };
+	        return _this;
 	    }
 
 	    _createClass(SearchResult, [{
+	        key: 'onFocus',
+	        value: function onFocus() {
+	            this.setState({ active: true });
+	        }
+	    }, {
 	        key: 'onSelect',
 	        value: function onSelect() {
 	            this.props.onGifSelected(this.props.data);
@@ -20462,10 +20474,18 @@
 	        key: 'render',
 	        value: function render() {
 	            var src = this.props.data.images.downsized_still.url;
+	            var animatedSource = this.props.data.images.downsized.url;
+
 	            return _react2.default.createElement(
 	                'li',
-	                { className: 'search-result', onClick: this.onSelect.bind(this) },
-	                _react2.default.createElement('img', { src: src })
+	                { className: 'search-result', onClick: this.onFocus.bind(this) },
+	                _react2.default.createElement('img', { style: { display: this.state.active ? 'none' : 'block' }, className: 'still', src: src }),
+	                _react2.default.createElement('img', { style: { display: this.state.active ? 'block' : 'none' }, className: 'animated', src: this.state.active ? animatedSource : '' }),
+	                _react2.default.createElement(
+	                    'button',
+	                    { onClick: this.onSelect.bind(this) },
+	                    'use'
+	                )
 	            );
 	        }
 	    }]);
@@ -20526,7 +20546,7 @@
 
 	            return _react2.default.createElement(
 	                'div',
-	                { className: 'gif-search' },
+	                { className: 'gif-search', id: 'viewer' },
 	                _react2.default.createElement('input', { type: 'search',
 	                    value: this.state.searchText,
 	                    placeholder: 'Find gif',
@@ -27745,7 +27765,6 @@
 	            var i = 0;
 	            for (var x = 0; x < imageData.width; x += tileWidth) {
 	                for (var y = 0; y < imageData.height; y += tileHeight) {
-
 	                    var frameNumber = i++ % len;
 	                    ctx.save();
 	                    ctx.beginPath();
@@ -27768,7 +27787,8 @@
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'gif-viewer' },
-	                _react2.default.createElement('canvas', { className: 'gif-canvas', width: '0', height: '0' })
+	                _react2.default.createElement('canvas', { className: 'gif-canvas', width: '0', height: '0' }),
+	                _react2.default.createElement('div', { className: 'view-controls' })
 	            );
 	        }
 	    }]);
