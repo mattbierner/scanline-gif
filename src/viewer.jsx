@@ -3,6 +3,9 @@ import ReactDOM from 'react-dom';
 
 import loadGif from './loadGif';
 
+/**
+ * Display modes
+ */
 const modes = {
     'columns': 'columns',
     'rows': 'rows',
@@ -10,7 +13,7 @@ const modes = {
 };
 
 /**
- * 
+ * Displays an interative scanlined gif with controls. 
 */
 export default class Viewer extends React.Component {
     constructor(props) {
@@ -19,7 +22,8 @@ export default class Viewer extends React.Component {
             imageData: null,
             mode: Object.keys(modes)[0],
             tileWidth: 10,
-            tileHeight: 10
+            tileHeight: 10,
+            initialFrame: 0
         };
     }
 
@@ -41,10 +45,12 @@ export default class Viewer extends React.Component {
     }
 
     loadGif(file) {
-        loadGif(file).then(data => {
-            this.setState({ imageData: data });
-            this.drawGifForOptions(data, this.state);
-        }).catch(e => console.error(e));
+        loadGif(file)
+            .then(data => {
+                this.setState({ imageData: data });
+                this.drawGifForOptions(data, this.state);
+            })
+            .catch(e => console.error(e));
     }
 
     drawGifForOptions(imageData, state) {
@@ -53,19 +59,19 @@ export default class Viewer extends React.Component {
         
         switch (state.mode) {
         case modes.columns:
-            this.drawGif(imageData, imageData.width / imageData.frames.length, imageData.height);
+            this.drawGif(imageData, imageData.width / imageData.frames.length, imageData.height, 0);
             break;
 
         case modes.rows:
-            this.drawGif(imageData, imageData.width, imageData.height / imageData.frames.length);
+            this.drawGif(imageData, imageData.width, imageData.height / imageData.frames.length, 0);
             break;
         
         default:
-            this.drawGif(imageData, state.tileWidth, state.tileHeight);
+            this.drawGif(imageData, state.tileWidth, state.tileHeight, state.initialFrame);
         }
     }
 
-    drawGif(imageData, tileWidth, tileHeight) {
+    drawGif(imageData, tileWidth, tileHeight, initialFrame) {
         if (!imageData)
             return;
 
@@ -79,19 +85,21 @@ export default class Viewer extends React.Component {
         const len = imageData.frames.length;
         const dy = imageData.height
 
-        let i = 0;
+        let i = initialFrame;
         for (let x = 0; x < imageData.width; x += tileWidth) {
             for (let y = 0; y < imageData.height; y += tileHeight) {
                 const frameNumber = i++ % len;
                 ctx.save();
+                
+                // Create clipping rect.
                 ctx.beginPath();
                 ctx.moveTo(x, y);
                 ctx.lineTo(x + tileWidth, y);
                 ctx.lineTo(x + tileWidth, y + tileHeight);
                 ctx.lineTo(x, y + tileHeight);
-
                 ctx.clip();
 
+                // Draw gif with clipping applied
                 ctx.drawImage(imageData.frames[frameNumber].canvas, 0, 0);
 
                 ctx.restore();
@@ -111,6 +119,12 @@ export default class Viewer extends React.Component {
         this.drawGifForOptions(this.state.imageData, Object.assign({}, this.state, {tileWidth: value}));
     }
 
+    onInitialFrameChange(e) {
+        const value = +e.target.value;
+        this.setState({ initialFrame: value });
+        this.drawGifForOptions(this.state.imageData, Object.assign({}, this.state, {initialFrame: value}));
+    }
+
     onTileHeightChange(e) {
         const value = +e.target.value;
         this.setState({ tileHeight: value });
@@ -123,7 +137,12 @@ export default class Viewer extends React.Component {
 
         return (
             <div className="gif-viewer" id="viewer">
-                <canvas className="gif-canvas" width="0" height="0" />
+                <div className="gif-figure">
+                    <canvas className="gif-canvas" width="0" height="0" />
+                    <div className="gif-info">
+                        <span>Frames: {this.state.imageData ? this.state.imageData.frames.length : ''}</span>
+                    </div>
+                </div>
                 <div className="view-controls">
                     <select value={this.state.mode} onChange={this.onModeChange.bind(this)}>
                         {options}
@@ -135,6 +154,9 @@ export default class Viewer extends React.Component {
 
                         Height: <input type="range" min="1" max="500" value={this.state.tileHeight}
                             onChange={this.onTileHeightChange.bind(this) }/>
+
+                        Initial frame: <input type="range" min="0" max="60" value={this.state.initialFrame}
+                            onChange={this.onInitialFrameChange.bind(this) }/>
                     </div>
                 </div>
             </div>);

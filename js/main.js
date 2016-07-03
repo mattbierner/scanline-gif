@@ -27645,6 +27645,9 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	/**
+	 * Display modes
+	 */
 	var modes = {
 	    'columns': 'columns',
 	    'rows': 'rows',
@@ -27652,7 +27655,7 @@
 	};
 
 	/**
-	 * 
+	 * Displays an interative scanlined gif with controls. 
 	*/
 
 	var Viewer = function (_React$Component) {
@@ -27667,7 +27670,8 @@
 	            imageData: null,
 	            mode: Object.keys(modes)[0],
 	            tileWidth: 10,
-	            tileHeight: 10
+	            tileHeight: 10,
+	            initialFrame: 0
 	        };
 	        return _this;
 	    }
@@ -27710,20 +27714,20 @@
 
 	            switch (state.mode) {
 	                case modes.columns:
-	                    this.drawGif(imageData, imageData.width / imageData.frames.length, imageData.height);
+	                    this.drawGif(imageData, imageData.width / imageData.frames.length, imageData.height, 0);
 	                    break;
 
 	                case modes.rows:
-	                    this.drawGif(imageData, imageData.width, imageData.height / imageData.frames.length);
+	                    this.drawGif(imageData, imageData.width, imageData.height / imageData.frames.length, 0);
 	                    break;
 
 	                default:
-	                    this.drawGif(imageData, state.tileWidth, state.tileHeight);
+	                    this.drawGif(imageData, state.tileWidth, state.tileHeight, state.initialFrame);
 	            }
 	        }
 	    }, {
 	        key: 'drawGif',
-	        value: function drawGif(imageData, tileWidth, tileHeight) {
+	        value: function drawGif(imageData, tileWidth, tileHeight, initialFrame) {
 	            if (!imageData) return;
 
 	            var ctx = this._ctx;
@@ -27736,19 +27740,21 @@
 	            var len = imageData.frames.length;
 	            var dy = imageData.height;
 
-	            var i = 0;
+	            var i = initialFrame;
 	            for (var x = 0; x < imageData.width; x += tileWidth) {
 	                for (var y = 0; y < imageData.height; y += tileHeight) {
 	                    var frameNumber = i++ % len;
 	                    ctx.save();
+
+	                    // Create clipping rect.
 	                    ctx.beginPath();
 	                    ctx.moveTo(x, y);
 	                    ctx.lineTo(x + tileWidth, y);
 	                    ctx.lineTo(x + tileWidth, y + tileHeight);
 	                    ctx.lineTo(x, y + tileHeight);
-
 	                    ctx.clip();
 
+	                    // Draw gif with clipping applied
 	                    ctx.drawImage(imageData.frames[frameNumber].canvas, 0, 0);
 
 	                    ctx.restore();
@@ -27768,6 +27774,13 @@
 	            var value = +e.target.value;
 	            this.setState({ tileWidth: value });
 	            this.drawGifForOptions(this.state.imageData, Object.assign({}, this.state, { tileWidth: value }));
+	        }
+	    }, {
+	        key: 'onInitialFrameChange',
+	        value: function onInitialFrameChange(e) {
+	            var value = +e.target.value;
+	            this.setState({ initialFrame: value });
+	            this.drawGifForOptions(this.state.imageData, Object.assign({}, this.state, { initialFrame: value }));
 	        }
 	    }, {
 	        key: 'onTileHeightChange',
@@ -27790,7 +27803,21 @@
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'gif-viewer', id: 'viewer' },
-	                _react2.default.createElement('canvas', { className: 'gif-canvas', width: '0', height: '0' }),
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'gif-figure' },
+	                    _react2.default.createElement('canvas', { className: 'gif-canvas', width: '0', height: '0' }),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'gif-info' },
+	                        _react2.default.createElement(
+	                            'span',
+	                            null,
+	                            'Frames: ',
+	                            this.state.imageData ? this.state.imageData.frames.length : ''
+	                        )
+	                    )
+	                ),
 	                _react2.default.createElement(
 	                    'div',
 	                    { className: 'view-controls' },
@@ -27807,7 +27834,10 @@
 	                            onChange: this.onTileWidthChange.bind(this) }),
 	                        'Height: ',
 	                        _react2.default.createElement('input', { type: 'range', min: '1', max: '500', value: this.state.tileHeight,
-	                            onChange: this.onTileHeightChange.bind(this) })
+	                            onChange: this.onTileHeightChange.bind(this) }),
+	                        'Initial frame: ',
+	                        _react2.default.createElement('input', { type: 'range', min: '0', max: '60', value: this.state.initialFrame,
+	                            onChange: this.onInitialFrameChange.bind(this) })
 	                    )
 	                )
 	            );
