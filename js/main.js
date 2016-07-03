@@ -56,6 +56,10 @@
 
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 
+	var _viewer = __webpack_require__(169);
+
+	var _viewer2 = _interopRequireDefault(_viewer);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -64,116 +68,22 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var omggif = __webpack_require__(168);
-
 	var Main = function (_React$Component) {
 	    _inherits(Main, _React$Component);
 
 	    function Main(props) {
 	        _classCallCheck(this, Main);
 
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Main).call(this, props));
-
-	        _this.state = {
-	            imageData: null
-	        };
-	        return _this;
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Main).call(this, props));
 	    }
 
 	    _createClass(Main, [{
-	        key: 'componentDidMount',
-	        value: function componentDidMount() {
-	            var _this2 = this;
-
-	            var element = _reactDom2.default.findDOMNode(this);
-	            var canvas = element.getElementsByClassName('canvas')[0];
-	            var ctx = canvas.getContext('2d');
-
-	            this.loadGif('./examples/cat.gif', ctx).then(function (data) {
-	                _this2.drawGif(data, canvas, ctx);
-	            });
-	        }
-
-	        /**
-	         * 
-	         */
-
-	    }, {
-	        key: 'loadBinaryData',
-	        value: function loadBinaryData(url) {
-	            var req = new XMLHttpRequest();
-	            req.open("GET", url, true);
-	            req.responseType = "arraybuffer";
-
-	            var p = new Promise(function (resolve, reject) {
-	                req.onload = function (oEvent) {
-	                    var arrayBuffer = req.response;
-	                    var byteArray = new Uint8Array(arrayBuffer);
-	                    resolve(byteArray);
-	                };
-	            });
-	            req.send(null);
-	            return p;
-	        }
-	    }, {
-	        key: 'loadGif',
-	        value: function loadGif(fileName, ctx) {
-	            return this.loadBinaryData(fileName).then(function (byteArray) {
-	                var gr = new omggif.GifReader(byteArray);
-	                var width = gr.width;
-	                var height = gr.height;
-
-	                var len = gr.numFrames();
-
-	                var frames = [];
-	                var previousData = null;
-	                for (var i = 0; i < len; ++i) {
-	                    var info = gr.frameInfo(i);
-	                    var imageData = ctx.createImageData(width, height);
-	                    if (previousData) {
-	                        for (var _i = 0, _len = previousData.length; _i < _len; ++_i) {
-	                            imageData[_i] = previousData[_i];
-	                        }
-	                    }
-
-	                    gr.decodeAndBlitFrameRGBA(i, imageData.data);
-	                    frames.push({
-	                        info: info,
-	                        data: imageData
-	                    });
-	                    previousData = imageData;
-	                }
-
-	                return {
-	                    width: width,
-	                    height: height,
-	                    frames: frames
-	                };
-	            });
-	        }
-	    }, {
-	        key: 'drawGif',
-	        value: function drawGif(imageData, canvas, ctx) {
-	            if (!imageData) return;
-
-	            canvas.width = imageData.width;
-	            canvas.height = imageData.height;
-
-	            var len = imageData.frames.length;
-	            var dx = imageData.width / len;
-	            for (var i = 0; i < len; ++i) {
-	                ctx.putImageData(imageData.frames[i].data, 0, 0, dx * i, 0, dx, imageData.height);
-	                //0, dx * i,
-	                //imageData.width, dx);
-	            }
-	        }
-	    }, {
 	        key: 'render',
 	        value: function render() {
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'main container' },
-	                _react2.default.createElement('canvas', { className: 'canvas', width: '500', height: '500' })
+	                _react2.default.createElement(_viewer2.default, { file: './examples/cat.gif' })
 	            );
 	        }
 	    }]);
@@ -21285,6 +21195,175 @@
 	try {
 	  exports.GifWriter = GifWriter;exports.GifReader = GifReader;
 	} catch (e) {} // CommonJS.
+
+/***/ },
+/* 169 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(38);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var omggif = __webpack_require__(168);
+
+	var Viewwer = function (_React$Component) {
+	    _inherits(Viewwer, _React$Component);
+
+	    function Viewwer(props) {
+	        _classCallCheck(this, Viewwer);
+
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Viewwer).call(this, props));
+
+	        _this.state = {
+	            imageData: null
+	        };
+	        return _this;
+	    }
+
+	    _createClass(Viewwer, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            var _this2 = this;
+
+	            var element = _reactDom2.default.findDOMNode(this);
+	            var canvas = element.getElementsByClassName('canvas')[0];
+	            var ctx = canvas.getContext('2d');
+
+	            this.loadGif(this.props.file, ctx).then(function (data) {
+	                _this2.drawGif(data, canvas, ctx, 10, 10);
+	            });
+	        }
+
+	        /**
+	         * 
+	         */
+
+	    }, {
+	        key: 'loadBinaryData',
+	        value: function loadBinaryData(url) {
+	            var xhr = new XMLHttpRequest();
+	            xhr.open("GET", url, true);
+	            xhr.responseType = "arraybuffer";
+
+	            var p = new Promise(function (resolve, reject) {
+	                xhr.onload = function () {
+	                    if (xhr.status !== 200) return reject('Could not load: ' + url);
+	                    var arrayBuffer = xhr.response;
+	                    var byteArray = new Uint8Array(arrayBuffer);
+	                    resolve(byteArray);
+	                };
+	            });
+	            xhr.send(null);
+	            return p;
+	        }
+	    }, {
+	        key: 'loadGif',
+	        value: function loadGif(fileName) {
+	            return this.loadBinaryData(fileName).then(function (byteArray) {
+	                var gr = new omggif.GifReader(byteArray);
+	                var width = gr.width;
+	                var height = gr.height;
+
+	                var len = gr.numFrames();
+
+	                var frames = [];
+	                var previousData = null;
+	                for (var i = 0; i < len; ++i) {
+	                    var info = gr.frameInfo(i);
+
+	                    var canvas = document.createElement("canvas");
+	                    canvas.width = width;
+	                    canvas.height = height;
+
+	                    var ctx = canvas.getContext('2d');
+
+	                    var imageData = ctx.createImageData(width, height);
+	                    if (previousData) {
+	                        for (var _i = 0, _len = previousData.data.length; _i < _len; ++_i) {
+	                            imageData.data[_i] = previousData.data[_i];
+	                        }
+	                    }
+
+	                    gr.decodeAndBlitFrameRGBA(i, imageData.data);
+	                    ctx.putImageData(imageData, 0, 0);
+	                    frames.push({
+	                        info: info,
+	                        data: imageData,
+	                        canvas: canvas
+	                    });
+	                    previousData = imageData;
+	                }
+
+	                return { width: width, height: height, frames: frames };
+	            });
+	        }
+	    }, {
+	        key: 'drawGif',
+	        value: function drawGif(imageData, canvas, ctx, tileWidth, tileHeight) {
+	            if (!imageData) return;
+
+	            canvas.width = imageData.width;
+	            canvas.height = imageData.height;
+
+	            var len = imageData.frames.length;
+	            var dy = imageData.height;
+
+	            var i = 0;
+	            for (var x = 0; x < imageData.width; x += tileWidth) {
+	                for (var y = 0; y < imageData.height; y += tileHeight) {
+
+	                    var frameNumber = i++ % len;
+	                    ctx.save();
+	                    ctx.beginPath();
+	                    ctx.moveTo(x, y);
+	                    ctx.lineTo(x + tileWidth, y);
+	                    ctx.lineTo(x + tileWidth, y + tileHeight);
+	                    ctx.lineTo(x, y + tileHeight);
+
+	                    ctx.clip();
+
+	                    ctx.drawImage(imageData.frames[frameNumber].canvas, 0, 0);
+
+	                    ctx.restore();
+	                }
+	            }
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'viewer' },
+	                _react2.default.createElement('canvas', { className: 'canvas', width: '0', height: '0' })
+	            );
+	        }
+	    }]);
+
+	    return Viewwer;
+	}(_react2.default.Component);
+
+	exports.default = Viewwer;
+	;
 
 /***/ }
 /******/ ]);
