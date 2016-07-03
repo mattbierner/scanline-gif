@@ -27633,6 +27633,10 @@
 
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 
+	var _loadGif2 = __webpack_require__(207);
+
+	var _loadGif3 = _interopRequireDefault(_loadGif2);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -27640,75 +27644,6 @@
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var omggif = __webpack_require__(206);
-
-	/**
-	 * Get a file as binary data.
-	 */
-	var loadBinaryData = function loadBinaryData(url) {
-	    var xhr = new XMLHttpRequest();
-	    xhr.open("GET", url, true);
-	    xhr.responseType = "arraybuffer";
-
-	    var p = new Promise(function (resolve, reject) {
-	        xhr.onload = function () {
-	            if (xhr.status !== 200) return reject('Could not load: ' + url);
-	            var arrayBuffer = xhr.response;
-	            resolve(new Uint8Array(arrayBuffer));
-	        };
-	    });
-	    xhr.send(null);
-	    return p;
-	};
-
-	/**
-	 * Load and decode a gif.
-	 */
-	var _loadGif = function _loadGif(url) {
-	    return loadBinaryData(url).then(decodeGif);
-	};
-
-	var decodeGif = function decodeGif(byteArray) {
-	    var gr = new omggif.GifReader(byteArray);
-	    return {
-	        width: gr.width,
-	        height: gr.height,
-	        frames: extractGifFrameData(gr)
-	    };
-	};
-
-	var extractGifFrameData = function extractGifFrameData(reader) {
-	    var frames = [];
-	    var width = reader.width;
-	    var height = reader.height;
-
-
-	    var previousData = null;
-	    for (var i = 0, len = reader.numFrames(); i < len; ++i) {
-	        var info = reader.frameInfo(i);
-
-	        var canvas = document.createElement("canvas");
-	        canvas.width = width;
-	        canvas.height = height;
-
-	        var ctx = canvas.getContext('2d');
-	        var imageData = ctx.createImageData(width, height);
-
-	        // Copy previous image data into buffer
-	        if (previousData) {
-	            for (var _i = 0, _len = previousData.data.length; _i < _len; ++_i) {
-	                imageData.data[_i] = previousData.data[_i];
-	            }
-	        }
-
-	        reader.decodeAndBlitFrameRGBA(i, imageData.data);
-	        ctx.putImageData(imageData, 0, 0);
-	        frames.push({ info: info, canvas: canvas });
-	        previousData = imageData;
-	    }
-	    return frames;
-	};
 
 	/**
 	 * 
@@ -27754,7 +27689,7 @@
 	        value: function loadGif(file) {
 	            var _this2 = this;
 
-	            _loadGif(file).then(function (data) {
+	            (0, _loadGif3.default)(file).then(function (data) {
 	                _this2.setState({ imageData: data });
 	                _this2.drawGif(data, _this2.state.tileWidth, _this2.state.tileHeight);
 	            }).catch(function (e) {
@@ -28632,6 +28567,85 @@
 	try {
 	  exports.GifWriter = GifWriter;exports.GifReader = GifReader;
 	} catch (e) {} // CommonJS.
+
+/***/ },
+/* 207 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var omggif = __webpack_require__(206);
+
+	/**
+	 * Get a file as binary data.
+	 */
+	var loadBinaryData = function loadBinaryData(url) {
+	    var xhr = new XMLHttpRequest();
+	    xhr.open("GET", url, true);
+	    xhr.responseType = "arraybuffer";
+
+	    var p = new Promise(function (resolve, reject) {
+	        xhr.onload = function () {
+	            if (xhr.status !== 200) return reject("Could not load: " + url);
+	            var arrayBuffer = xhr.response;
+	            resolve(new Uint8Array(arrayBuffer));
+	        };
+	    });
+	    xhr.send(null);
+	    return p;
+	};
+
+	var decodeGif = function decodeGif(byteArray) {
+	    var gr = new omggif.GifReader(byteArray);
+	    return {
+	        width: gr.width,
+	        height: gr.height,
+	        frames: extractGifFrameData(gr)
+	    };
+	};
+
+	var extractGifFrameData = function extractGifFrameData(reader) {
+	    var frames = [];
+	    var width = reader.width;
+	    var height = reader.height;
+
+
+	    var previousData = null;
+	    for (var i = 0, len = reader.numFrames(); i < len; ++i) {
+	        var info = reader.frameInfo(i);
+
+	        var canvas = document.createElement("canvas");
+	        canvas.width = width;
+	        canvas.height = height;
+
+	        var ctx = canvas.getContext('2d');
+	        var imageData = ctx.createImageData(width, height);
+
+	        // Copy previous image data into buffer
+	        if (previousData) {
+	            for (var _i = 0, _len = previousData.data.length; _i < _len; ++_i) {
+	                imageData.data[_i] = previousData.data[_i];
+	            }
+	        }
+
+	        reader.decodeAndBlitFrameRGBA(i, imageData.data);
+	        ctx.putImageData(imageData, 0, 0);
+	        frames.push({ info: info, canvas: canvas });
+	        previousData = imageData;
+	    }
+	    return frames;
+	};
+
+	/**
+	 * Load and decode a gif.
+	 */
+
+	exports.default = function (url) {
+	    return loadBinaryData(url).then(decodeGif);
+	};
 
 /***/ }
 /******/ ]);
