@@ -27799,12 +27799,16 @@
 	                        { value: this.state.mode, onChange: this.onModeChange.bind(this) },
 	                        options
 	                    ),
-	                    'Width: ',
-	                    _react2.default.createElement('input', { type: 'range', min: '1', max: '500', value: this.state.tileWidth,
-	                        onChange: this.onTileWidthChange.bind(this) }),
-	                    'Height: ',
-	                    _react2.default.createElement('input', { type: 'range', min: '1', max: '500', value: this.state.tileHeight,
-	                        onChange: this.onTileHeightChange.bind(this) })
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: "custom-controls " + (this.state.mode === modes.custom ? '' : 'hidden') },
+	                        'Width: ',
+	                        _react2.default.createElement('input', { type: 'range', min: '1', max: '500', value: this.state.tileWidth,
+	                            onChange: this.onTileWidthChange.bind(this) }),
+	                        'Height: ',
+	                        _react2.default.createElement('input', { type: 'range', min: '1', max: '500', value: this.state.tileHeight,
+	                            onChange: this.onTileHeightChange.bind(this) })
+	                    )
 	                )
 	            );
 	        }

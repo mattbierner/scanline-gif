@@ -129,11 +129,13 @@ export default class Viewer extends React.Component {
                         {options}
                     </select>
 
-                    Width: <input type="range" min="1" max="500" value={this.state.tileWidth}
-                        onChange={this.onTileWidthChange.bind(this) }/>
+                    <div className={"custom-controls " + (this.state.mode === modes.custom ? '' : 'hidden')}>
+                        Width: <input type="range" min="1" max="500" value={this.state.tileWidth}
+                            onChange={this.onTileWidthChange.bind(this) }/>
 
-                    Height: <input type="range" min="1" max="500" value={this.state.tileHeight}
-                        onChange={this.onTileHeightChange.bind(this) }/>
+                        Height: <input type="range" min="1" max="500" value={this.state.tileHeight}
+                            onChange={this.onTileHeightChange.bind(this) }/>
+                    </div>
                 </div>
             </div>);
     }
