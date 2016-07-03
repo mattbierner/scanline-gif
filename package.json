@@ -29,6 +29,8 @@
   },
   "dependencies": {
     "css-element-queries": "^0.3.2",
+    "giphy": "0.0.4",
+    "giphy-api": "^1.1.16",
     "moment": "^2.13.0",
     "omggif": "^1.0.8",
     "react": "^15.1.0",

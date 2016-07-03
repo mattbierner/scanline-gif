@@ -1,14 +1,37 @@
 
 #site-header {
     text-align: center;
-    padding: 0 2em;
+    display: flex;
+    height: 300px;
+    padding-bottom: 4em;
 
     img {
         max-width: 100%;
         width: 600px;
     }
+
+    .scans {
+        position: relative;
+        flex: 1;
+        & >* {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            border: 1px solid $brand-color;
+        }
+    }
+
+    #site-title {
+        display: block;
+        flex: 0;
+    }
 }
 
 #site-title {
-    font-family: monaco, Consolas, monospace;
+    font-weight: 100;
+    font-size: 48px;
+    letter-spacing: 20px;
+    color: $brand-color;
+    margin: 0 1rem;
+    line-height: 300px;
 }
