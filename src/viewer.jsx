@@ -78,11 +78,20 @@ export default class Viewer extends React.Component {
         super(props);
         this.state = {
             imageData: null,
+            tileWidth: 10,
+            tileHeight: 10
         };
     }
 
     componentDidMount() {
-        this.loadGif(this.props.file)
+        const element = ReactDOM.findDOMNode(this);
+        const canvas = element.getElementsByClassName('gif-canvas')[0];
+        const ctx = canvas.getContext('2d');
+
+        this._canvas = canvas;
+        this._ctx = ctx;
+
+        this.loadGif(this.props.file);
     }
 
     componentWillReceiveProps(newProps) {
@@ -92,19 +101,18 @@ export default class Viewer extends React.Component {
     }
 
     loadGif(file) {
-        const element = ReactDOM.findDOMNode(this);
-        const canvas = element.getElementsByClassName('gif-canvas')[0];
-        const ctx = canvas.getContext('2d');
-
         loadGif(file).then(data => {
-            this.drawGif(data, canvas, ctx, 10, 10);
+            this.setState({ imageData: data });
+            this.drawGif(data, this.state.tileWidth, this.state.tileHeight);
         }).catch(e => console.error(e));
     }
 
-
-    drawGif(imageData, canvas, ctx, tileWidth, tileHeight) {
+    drawGif(imageData, tileWidth, tileHeight) {
         if (!imageData)
             return;
+
+        const ctx = this._ctx;
+        const canvas = this._canvas;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         canvas.width = imageData.width;
@@ -133,12 +141,28 @@ export default class Viewer extends React.Component {
         }
     }
 
+    onTileWidthChange(e) {
+        const value = +e.target.value;
+        this.setState({ tileWidth: value });
+        this.drawGif(this.state.imageData, value, this.state.tileHeight);
+    }
+
+    onTileHeightChange(e) {
+        const value = +e.target.value;
+        this.setState({ tileHeight: value });
+        this.drawGif(this.state.imageData, this.state.tileWidth, value);
+    }
+
     render() {
         return (
             <div className="gif-viewer" id="viewer">
                 <canvas className="gif-canvas" width="0" height="0" />
                 <div className="view-controls">
+                    Width: <input type="range" min="1" max="500" value={this.state.tileWidth}
+                        onChange={this.onTileWidthChange.bind(this) }/>
 
+                    Height: <input type="range" min="1" max="500" value={this.state.tileHeight}
+                        onChange={this.onTileHeightChange.bind(this) }/>
                 </div>
             </div>);
     }

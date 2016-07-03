@@ -27723,7 +27723,9 @@
 	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Viewer).call(this, props));
 
 	        _this.state = {
-	            imageData: null
+	            imageData: null,
+	            tileWidth: 10,
+	            tileHeight: 10
 	        };
 	        return _this;
 	    }
@@ -27731,6 +27733,13 @@
 	    _createClass(Viewer, [{
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
+	            var element = _reactDom2.default.findDOMNode(this);
+	            var canvas = element.getElementsByClassName('gif-canvas')[0];
+	            var ctx = canvas.getContext('2d');
+
+	            this._canvas = canvas;
+	            this._ctx = ctx;
+
 	            this.loadGif(this.props.file);
 	        }
 	    }, {
@@ -27745,20 +27754,20 @@
 	        value: function loadGif(file) {
 	            var _this2 = this;
 
-	            var element = _reactDom2.default.findDOMNode(this);
-	            var canvas = element.getElementsByClassName('gif-canvas')[0];
-	            var ctx = canvas.getContext('2d');
-
 	            _loadGif(file).then(function (data) {
-	                _this2.drawGif(data, canvas, ctx, 10, 10);
+	                _this2.setState({ imageData: data });
+	                _this2.drawGif(data, _this2.state.tileWidth, _this2.state.tileHeight);
 	            }).catch(function (e) {
 	                return console.error(e);
 	            });
 	        }
 	    }, {
 	        key: 'drawGif',
-	        value: function drawGif(imageData, canvas, ctx, tileWidth, tileHeight) {
+	        value: function drawGif(imageData, tileWidth, tileHeight) {
 	            if (!imageData) return;
+
+	            var ctx = this._ctx;
+	            var canvas = this._canvas;
 
 	            ctx.clearRect(0, 0, canvas.width, canvas.height);
 	            canvas.width = imageData.width;
@@ -27787,13 +27796,36 @@
 	            }
 	        }
 	    }, {
+	        key: 'onTileWidthChange',
+	        value: function onTileWidthChange(e) {
+	            var value = +e.target.value;
+	            this.setState({ tileWidth: value });
+	            this.drawGif(this.state.imageData, value, this.state.tileHeight);
+	        }
+	    }, {
+	        key: 'onTileHeightChange',
+	        value: function onTileHeightChange(e) {
+	            var value = +e.target.value;
+	            this.setState({ tileHeight: value });
+	            this.drawGif(this.state.imageData, this.state.tileWidth, value);
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'gif-viewer', id: 'viewer' },
 	                _react2.default.createElement('canvas', { className: 'gif-canvas', width: '0', height: '0' }),
-	                _react2.default.createElement('div', { className: 'view-controls' })
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'view-controls' },
+	                    'Width: ',
+	                    _react2.default.createElement('input', { type: 'range', min: '1', max: '500', value: this.state.tileWidth,
+	                        onChange: this.onTileWidthChange.bind(this) }),
+	                    'Height: ',
+	                    _react2.default.createElement('input', { type: 'range', min: '1', max: '500', value: this.state.tileHeight,
+	                        onChange: this.onTileHeightChange.bind(this) })
+	                )
 	            );
 	        }
 	    }]);
