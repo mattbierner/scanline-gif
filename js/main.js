@@ -27645,6 +27645,12 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	var modes = {
+	    'columns': 'columns',
+	    'rows': 'rows',
+	    'custom': 'custom'
+	};
+
 	/**
 	 * 
 	*/
@@ -27659,6 +27665,7 @@
 
 	        _this.state = {
 	            imageData: null,
+	            mode: Object.keys(modes)[0],
 	            tileWidth: 10,
 	            tileHeight: 10
 	        };
@@ -27691,10 +27698,28 @@
 
 	            (0, _loadGif3.default)(file).then(function (data) {
 	                _this2.setState({ imageData: data });
-	                _this2.drawGif(data, _this2.state.tileWidth, _this2.state.tileHeight);
+	                _this2.drawGifForOptions(data, _this2.state);
 	            }).catch(function (e) {
 	                return console.error(e);
 	            });
+	        }
+	    }, {
+	        key: 'drawGifForOptions',
+	        value: function drawGifForOptions(imageData, state) {
+	            if (!imageData) return;
+
+	            switch (state.mode) {
+	                case modes.columns:
+	                    this.drawGif(imageData, imageData.width / imageData.frames.length, imageData.height);
+	                    break;
+
+	                case modes.rows:
+	                    this.drawGif(imageData, imageData.width, imageData.height / imageData.frames.length);
+	                    break;
+
+	                default:
+	                    this.drawGif(imageData, state.tileWidth, state.tileHeight);
+	            }
 	        }
 	    }, {
 	        key: 'drawGif',
@@ -27731,22 +27756,37 @@
 	            }
 	        }
 	    }, {
+	        key: 'onModeChange',
+	        value: function onModeChange(e) {
+	            var value = e.target.value;
+	            this.setState({ mode: value });
+	            this.drawGifForOptions(this.state.imageData, Object.assign({}, this.state, { mode: value }));
+	        }
+	    }, {
 	        key: 'onTileWidthChange',
 	        value: function onTileWidthChange(e) {
 	            var value = +e.target.value;
 	            this.setState({ tileWidth: value });
-	            this.drawGif(this.state.imageData, value, this.state.tileHeight);
+	            this.drawGifForOptions(this.state.imageData, Object.assign({}, this.state, { tileWidth: value }));
 	        }
 	    }, {
 	        key: 'onTileHeightChange',
 	        value: function onTileHeightChange(e) {
 	            var value = +e.target.value;
 	            this.setState({ tileHeight: value });
-	            this.drawGif(this.state.imageData, this.state.tileWidth, value);
+	            this.drawGifForOptions(this.state.imageData, Object.assign({}, this.state, { tileHeight: value }));
 	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
+	            var options = Object.keys(modes).map(function (x) {
+	                return _react2.default.createElement(
+	                    'option',
+	                    { value: x, key: x },
+	                    modes[x]
+	                );
+	            });
+
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'gif-viewer', id: 'viewer' },
@@ -27754,6 +27794,11 @@
 	                _react2.default.createElement(
 	                    'div',
 	                    { className: 'view-controls' },
+	                    _react2.default.createElement(
+	                        'select',
+	                        { value: this.state.mode, onChange: this.onModeChange.bind(this) },
+	                        options
+	                    ),
 	                    'Width: ',
 	                    _react2.default.createElement('input', { type: 'range', min: '1', max: '500', value: this.state.tileWidth,
 	                        onChange: this.onTileWidthChange.bind(this) }),

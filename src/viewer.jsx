@@ -3,6 +3,12 @@ import ReactDOM from 'react-dom';
 
 import loadGif from './loadGif';
 
+const modes = {
+    'columns': 'columns',
+    'rows': 'rows',
+    'custom': 'custom'
+};
+
 /**
  * 
 */
@@ -11,6 +17,7 @@ export default class Viewer extends React.Component {
         super(props);
         this.state = {
             imageData: null,
+            mode: Object.keys(modes)[0],
             tileWidth: 10,
             tileHeight: 10
         };
@@ -36,8 +43,26 @@ export default class Viewer extends React.Component {
     loadGif(file) {
         loadGif(file).then(data => {
             this.setState({ imageData: data });
-            this.drawGif(data, this.state.tileWidth, this.state.tileHeight);
+            this.drawGifForOptions(data, this.state);
         }).catch(e => console.error(e));
+    }
+
+    drawGifForOptions(imageData, state) {
+        if (!imageData)
+            return;
+        
+        switch (state.mode) {
+        case modes.columns:
+            this.drawGif(imageData, imageData.width / imageData.frames.length, imageData.height);
+            break;
+
+        case modes.rows:
+            this.drawGif(imageData, imageData.width, imageData.height / imageData.frames.length);
+            break;
+        
+        default:
+            this.drawGif(imageData, state.tileWidth, state.tileHeight);
+        }
     }
 
     drawGif(imageData, tileWidth, tileHeight) {
@@ -74,23 +99,36 @@ export default class Viewer extends React.Component {
         }
     }
 
+    onModeChange(e) {
+        const value = e.target.value;
+        this.setState({ mode: value });
+        this.drawGifForOptions(this.state.imageData, Object.assign({}, this.state, {mode: value}));
+    }
+
     onTileWidthChange(e) {
         const value = +e.target.value;
         this.setState({ tileWidth: value });
-        this.drawGif(this.state.imageData, value, this.state.tileHeight);
+        this.drawGifForOptions(this.state.imageData, Object.assign({}, this.state, {tileWidth: value}));
     }
 
     onTileHeightChange(e) {
         const value = +e.target.value;
         this.setState({ tileHeight: value });
-        this.drawGif(this.state.imageData, this.state.tileWidth, value);
+        this.drawGifForOptions(this.state.imageData, Object.assign({}, this.state, {tileHeight: value}));
     }
 
     render() {
+        const options = Object.keys(modes).map(x =>
+            <option value={x} key={x}>{modes[x]}</option>);
+
         return (
             <div className="gif-viewer" id="viewer">
                 <canvas className="gif-canvas" width="0" height="0" />
                 <div className="view-controls">
+                    <select value={this.state.mode} onChange={this.onModeChange.bind(this)}>
+                        {options}
+                    </select>
+
                     Width: <input type="range" min="1" max="500" value={this.state.tileWidth}
                         onChange={this.onTileWidthChange.bind(this) }/>
 
