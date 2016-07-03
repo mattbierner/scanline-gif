@@ -19,16 +19,19 @@ class SearchResult extends React.Component {
 
     onSelect() {
         this.props.onGifSelected(this.props.data);
+        window.location = '#viewer'
     }
 
     render() {
-        const src = this.props.data.images.downsized_still.url;
-        const animatedSource = this.props.data.images.downsized.url;
+        const still = this.props.data.images.downsized_still;
+        const animated = this.props.data.images.downsized;
 
         return (
             <li className="search-result" onClick={this.onFocus.bind(this)}>
-                <img style={{ display: this.state.active ? 'none' : 'block'}} className="still" src={src} />
-                <img style={{ display: this.state.active ? 'block' : 'none'}}  className="animated" src={this.state.active ? animatedSource : ''} />
+                <figure className="preview" style={{width: `${still.width}px`, height: `${still.height}px` }}>
+                    <img className="still" src={still.url} />
+                    <img style={{ display: this.state.active ? 'block' : 'none'}}  className="animated" src={this.state.active ? animated.url : 'about:blank'} />
+                </figure>
                 <button onClick={this.onSelect.bind(this)}>use</button>
             </li>
         );
@@ -72,13 +75,13 @@ export default class Search extends React.Component {
             onGifSelected={this.onGifSelected.bind(this)} />);
 
         return (
-            <div className="gif-search" id="viewer">
+            <div className="gif-search">
                 <input type="search"
                     value={this.state.searchText}
                     placeholder="Find gif"
                     onChange={this.onSearchTextChange.bind(this) } />
                 <button onClick={this.search.bind(this)}>Search</button>
-                <ul>{results}</ul>
+                <ul className="search-results">{results}</ul>
             </div>);
     }
 };

@@ -135,7 +135,7 @@ export default class Viewer extends React.Component {
 
     render() {
         return (
-            <div className="gif-viewer">
+            <div className="gif-viewer" id="viewer">
                 <canvas className="gif-canvas" width="0" height="0" />
                 <div className="view-controls">
 

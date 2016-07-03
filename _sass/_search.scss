@@ -1,0 +1,23 @@
+.gif-search {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.search-results {
+    li {
+        list-style: none;
+    }
+}
+
+.search-result {
+
+    .preview {
+        position: relative;
+
+        img {
+            position: absolute;
+            top: 0;
+            left: 0;
+        } 
+    }
+}

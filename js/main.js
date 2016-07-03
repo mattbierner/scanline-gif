@@ -20469,18 +20469,23 @@
 	        key: 'onSelect',
 	        value: function onSelect() {
 	            this.props.onGifSelected(this.props.data);
+	            window.location = '#viewer';
 	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var src = this.props.data.images.downsized_still.url;
-	            var animatedSource = this.props.data.images.downsized.url;
+	            var still = this.props.data.images.downsized_still;
+	            var animated = this.props.data.images.downsized;
 
 	            return _react2.default.createElement(
 	                'li',
 	                { className: 'search-result', onClick: this.onFocus.bind(this) },
-	                _react2.default.createElement('img', { style: { display: this.state.active ? 'none' : 'block' }, className: 'still', src: src }),
-	                _react2.default.createElement('img', { style: { display: this.state.active ? 'block' : 'none' }, className: 'animated', src: this.state.active ? animatedSource : '' }),
+	                _react2.default.createElement(
+	                    'figure',
+	                    { className: 'preview', style: { width: still.width + 'px', height: still.height + 'px' } },
+	                    _react2.default.createElement('img', { className: 'still', src: still.url }),
+	                    _react2.default.createElement('img', { style: { display: this.state.active ? 'block' : 'none' }, className: 'animated', src: this.state.active ? animated.url : 'about:blank' })
+	                ),
 	                _react2.default.createElement(
 	                    'button',
 	                    { onClick: this.onSelect.bind(this) },
@@ -20546,7 +20551,7 @@
 
 	            return _react2.default.createElement(
 	                'div',
-	                { className: 'gif-search', id: 'viewer' },
+	                { className: 'gif-search' },
 	                _react2.default.createElement('input', { type: 'search',
 	                    value: this.state.searchText,
 	                    placeholder: 'Find gif',
@@ -20558,7 +20563,7 @@
 	                ),
 	                _react2.default.createElement(
 	                    'ul',
-	                    null,
+	                    { className: 'search-results' },
 	                    results
 	                )
 	            );
@@ -27786,7 +27791,7 @@
 	        value: function render() {
 	            return _react2.default.createElement(
 	                'div',
-	                { className: 'gif-viewer' },
+	                { className: 'gif-viewer', id: 'viewer' },
 	                _react2.default.createElement('canvas', { className: 'gif-canvas', width: '0', height: '0' }),
 	                _react2.default.createElement('div', { className: 'view-controls' })
 	            );
