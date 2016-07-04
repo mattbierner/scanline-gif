@@ -39,11 +39,11 @@ class GifRenderer extends React.Component {
 
         switch (state.mode) {
             case modes.columns:
-                this.drawGif(imageData, imageData.width / imageData.frames.length, imageData.height, state.currentFrame);
+                this.drawGif(imageData, imageData.width / imageData.frames.length, imageData.height, state.initialFrame + state.currentFrame);
                 break;
 
             case modes.rows:
-                this.drawGif(imageData, imageData.width, imageData.height / imageData.frames.length, state.currentFrame);
+                this.drawGif(imageData, imageData.width, imageData.height / imageData.frames.length, state.initialFrame + state.currentFrame);
                 break;
 
             default:
@@ -134,15 +134,24 @@ class GifFigure extends React.Component {
 
     onToggle() {
         this.setState({ playing: !this.state.playing });
-        if (this.state.playing) {
-            clearInterval(this._interval);
-        } else {
-            this._interval = setInterval(() => {
-                this.setState({
-                    currentFrame: (this.state.currentFrame + 1) % this.props.imageData.frames.length
-                });
-            }, 50);
+
+        if (!this.state.playing) {
+            this.scheduleNextFrame(this.state.currentFrame, true);
         }
+    }
+
+    scheduleNextFrame(currentFrame, forcePlay) {
+        if (!this.props.imageData || (!forcePlay && !this.state.playing))
+            return;
+        
+        const nextFrame = (currentFrame + 1) % this.props.imageData.frames.length;
+        setTimeout(() => {
+            const nextFrame = (currentFrame + 1) % this.props.imageData.frames.length;
+            this.setState({
+                currentFrame: nextFrame 
+            });
+            this.scheduleNextFrame(nextFrame);
+        }, this.props.imageData.frames[nextFrame].info.delay * 10);
     }
 
     render() {
@@ -229,15 +238,24 @@ export default class Viewer extends React.Component {
                         {options}
                     </select>
 
+                    Initial frame: <input type="range"
+                        min="0"
+                        max={this.state.imageData ? this.state.imageData.frames.length - 1 : 0}
+                        value={this.state.initialFrame}
+                        onChange={this.onInitialFrameChange.bind(this) }/>
+                    
                     <div className={"custom-controls " + (this.state.mode === modes.custom ? '' : 'hidden') }>
-                        Width: <input type="range" min="1" max="500" value={this.state.tileWidth}
+                        Width: <input type="range"
+                            min="1"
+                            max={this.state.imageData ? this.state.imageData.width : 1}
+                            value={this.state.tileWidth}
                             onChange={this.onTileWidthChange.bind(this) }/>
 
-                        Height: <input type="range" min="1" max="500" value={this.state.tileHeight}
+                        Height: <input type="range"
+                            min="1"
+                            max={this.state.imageData ? this.state.imageData.height: 1}
+                            value={this.state.tileHeight}
                             onChange={this.onTileHeightChange.bind(this) }/>
-
-                        Initial frame: <input type="range" min="0" max="60" value={this.state.initialFrame}
-                            onChange={this.onInitialFrameChange.bind(this) }/>
                     </div>
                 </div>
             </div>);
