@@ -27656,6 +27656,16 @@
 	    'custom': 'custom'
 	};
 
+	var playbackSpeeds = {
+	    '1x': 1,
+	    '2x': 2,
+	    '4x': 4,
+	    '8x': 8,
+	    '1/2': 0.5,
+	    '1/4': 0.25,
+	    '1/8': 0.125
+	};
+
 	/**
 	 * Renders a scanlined gif. 
 	 */
@@ -27847,12 +27857,22 @@
 	    }
 
 	    _createClass(GifFigure, [{
+	        key: 'componentWillReceiveProps',
+	        value: function componentWillReceiveProps(newProps) {
+	            if (this.props.imageData !== newProps.imageData) {
+	                this.setState({
+	                    //    playing: false,
+	                    currentFrame: 0
+	                });
+	            }
+	        }
+	    }, {
 	        key: 'onToggle',
 	        value: function onToggle() {
 	            this.setState({ playing: !this.state.playing });
 
 	            if (!this.state.playing) {
-	                this.scheduleNextFrame(this.state.currentFrame, true);
+	                this.scheduleNextFrame(0, true);
 	            }
 	        }
 	    }, {
@@ -27863,19 +27883,23 @@
 	        }
 	    }, {
 	        key: 'scheduleNextFrame',
-	        value: function scheduleNextFrame(currentFrame, forcePlay) {
+	        value: function scheduleNextFrame(delay, forcePlay) {
 	            var _this6 = this;
 
 	            if (!this.props.imageData || !forcePlay && !this.state.playing) return;
 
-	            var nextFrame = (currentFrame + 1) % this.getNumFrames();;
+	            var start = Date.now();
 	            setTimeout(function () {
-	                var nextFrame = (currentFrame + 1) % _this6.getNumFrames();
+	                var nextFrame = (_this6.state.currentFrame + 1) % _this6.getNumFrames();
+
+	                var interval = (_this6.props.imageData.frames[nextFrame].info.delay || 1) * 10 / _this6.props.playbackSpeed;
+	                var elapsed = Date.now() - start;
+	                var next = Math.max(0, interval - (elapsed - delay));
 	                _this6.setState({
 	                    currentFrame: nextFrame
 	                });
-	                _this6.scheduleNextFrame(nextFrame);
-	            }, this.props.imageData.frames[nextFrame].info.delay * 10);
+	                _this6.scheduleNextFrame(next);
+	            }, delay);
 	        }
 	    }, {
 	        key: 'onSliderChange',
@@ -27927,7 +27951,8 @@
 	            mode: Object.keys(modes)[0],
 	            tileWidth: 10,
 	            tileHeight: 10,
-	            initialFrame: 0
+	            initialFrame: 0,
+	            playbackSpeed: 1
 	        };
 	        return _this7;
 	    }
@@ -27957,7 +27982,13 @@
 	            var _this8 = this;
 
 	            (0, _loadGif3.default)(file).then(function (data) {
-	                _this8.setState({ imageData: data });
+	                _this8.setState({
+	                    imageData: data,
+	                    playbackSpeed: 1,
+	                    initialFrame: 0,
+	                    tileWidth: 10,
+	                    tileHeight: 10
+	                });
 	            }).catch(function (e) {
 	                return console.error(e);
 	            });
@@ -27987,6 +28018,12 @@
 	            this.setState({ tileHeight: value });
 	        }
 	    }, {
+	        key: 'onPlaybackSpeedChange',
+	        value: function onPlaybackSpeedChange(e) {
+	            var value = +e.target.value;
+	            this.setState({ playbackSpeed: value });
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
 	            var options = Object.keys(modes).map(function (x) {
@@ -27994,6 +28031,14 @@
 	                    'option',
 	                    { value: x, key: x },
 	                    modes[x]
+	                );
+	            });
+
+	            var playbackSpeedOptions = Object.keys(playbackSpeeds).map(function (x) {
+	                return _react2.default.createElement(
+	                    'option',
+	                    { value: playbackSpeeds[x], key: x },
+	                    x
 	                );
 	            });
 
@@ -28008,6 +28053,11 @@
 	                        'select',
 	                        { value: this.state.mode, onChange: this.onModeChange.bind(this) },
 	                        options
+	                    ),
+	                    _react2.default.createElement(
+	                        'select',
+	                        { value: this.state.playbackSpeed, onChange: this.onPlaybackSpeedChange.bind(this) },
+	                        playbackSpeedOptions
 	                    ),
 	                    'Initial frame: ',
 	                    _react2.default.createElement('input', { type: 'range',

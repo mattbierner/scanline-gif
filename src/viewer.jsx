@@ -12,6 +12,15 @@ const modes = {
     'custom': 'custom'
 };
 
+const playbackSpeeds = {
+    '1x': 1,
+    '2x': 2,
+    '4x': 4,
+    '8x': 8,
+    '1/2': 0.5,
+    '1/4': 0.25,
+    '1/8': 0.125,
+};
 
 /**
  * Renders a scanlined gif. 
@@ -132,11 +141,21 @@ class GifFigure extends React.Component {
         };
     }
 
+    componentWillReceiveProps(newProps) {
+        if (this.props.imageData !== newProps.imageData) {
+            this.setState({
+            //    playing: false,
+                currentFrame: 0
+            })
+        }
+    }
+    
+
     onToggle() {
         this.setState({ playing: !this.state.playing });
 
         if (!this.state.playing) {
-            this.scheduleNextFrame(this.state.currentFrame, true);
+            this.scheduleNextFrame(0, true);
         }
     }
 
@@ -146,23 +165,27 @@ class GifFigure extends React.Component {
         return this.props.imageData.frames.length;
     }
 
-    scheduleNextFrame(currentFrame, forcePlay) {
+    scheduleNextFrame(delay, forcePlay) {
         if (!this.props.imageData || (!forcePlay && !this.state.playing))
             return;
-        
-        const nextFrame = (currentFrame + 1) % this.getNumFrames();;
+
+        const start = Date.now();
         setTimeout(() => {
-            const nextFrame = (currentFrame + 1) % this.getNumFrames();
+            const nextFrame = (this.state.currentFrame + 1) % this.getNumFrames();
+
+            const interval = ((this.props.imageData.frames[nextFrame].info.delay || 1) * 10 ) / this.props.playbackSpeed;
+            const elapsed = (Date.now() - start);
+            const next = Math.max(0, interval - (elapsed - delay));
             this.setState({
-                currentFrame: nextFrame 
+                currentFrame: nextFrame
             });
-            this.scheduleNextFrame(nextFrame);
-        }, this.props.imageData.frames[nextFrame].info.delay * 10);
+            this.scheduleNextFrame(next);
+        }, delay);
     }
 
     onSliderChange(e) {
         const frame = +e.target.value % this.getNumFrames();
-        this.setState({currentFrame: frame });
+        this.setState({ currentFrame: frame });
     }
 
     render() {
@@ -174,8 +197,8 @@ class GifFigure extends React.Component {
                     min="0"
                     max={this.getNumFrames() - 1}
                     value={this.state.currentFrame}
-                    onChange={this.onSliderChange.bind(this)}/>
-                <button onClick={this.onToggle.bind(this)}>Play</button>
+                    onChange={this.onSliderChange.bind(this) }/>
+                <button onClick={this.onToggle.bind(this) }>Play</button>
             </div>
         );
     }
@@ -192,7 +215,8 @@ export default class Viewer extends React.Component {
             mode: Object.keys(modes)[0],
             tileWidth: 10,
             tileHeight: 10,
-            initialFrame: 0
+            initialFrame: 0,
+            playbackSpeed: 1
         };
     }
 
@@ -216,7 +240,13 @@ export default class Viewer extends React.Component {
     loadGif(file) {
         loadGif(file)
             .then(data => {
-                this.setState({ imageData: data });
+                this.setState({
+                    imageData: data,
+                    playbackSpeed: 1,
+                    initialFrame: 0,
+                    tileWidth: 10,
+                    tileHeight: 10
+                });
             })
             .catch(e => console.error(e));
     }
@@ -241,9 +271,18 @@ export default class Viewer extends React.Component {
         this.setState({ tileHeight: value });
     }
 
+    onPlaybackSpeedChange(e) {
+        const value = +e.target.value;
+        this.setState({ playbackSpeed: value });
+    }
+
     render() {
         const options = Object.keys(modes).map(x =>
             <option value={x} key={x}>{modes[x]}</option>);
+
+        const playbackSpeedOptions = Object.keys(playbackSpeeds).map(x =>
+            <option value={playbackSpeeds[x]} key={x}>{x}</option>);
+
 
         return (
             <div className="gif-viewer" id="viewer">
@@ -254,12 +293,16 @@ export default class Viewer extends React.Component {
                         {options}
                     </select>
 
+                    <select value={this.state.playbackSpeed} onChange={this.onPlaybackSpeedChange.bind(this) }>
+                        {playbackSpeedOptions}
+                    </select>
+
                     Initial frame: <input type="range"
                         min="0"
                         max={this.state.imageData ? this.state.imageData.frames.length - 1 : 0}
                         value={this.state.initialFrame}
                         onChange={this.onInitialFrameChange.bind(this) }/>
-                    
+
                     <div className={"custom-controls " + (this.state.mode === modes.custom ? '' : 'hidden') }>
                         Width: <input type="range"
                             min="1"
@@ -269,7 +312,7 @@ export default class Viewer extends React.Component {
 
                         Height: <input type="range"
                             min="1"
-                            max={this.state.imageData ? this.state.imageData.height: 1}
+                            max={this.state.imageData ? this.state.imageData.height : 1}
                             value={this.state.tileHeight}
                             onChange={this.onTileHeightChange.bind(this) }/>
                     </div>
