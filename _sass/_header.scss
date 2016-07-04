@@ -4,6 +4,7 @@
     display: flex;
     height: 300px;
     padding-bottom: 4em;
+    color: $brand-color;
 
     img {
         max-width: 100%;
@@ -17,21 +18,28 @@
             position: absolute;
             top: 0;
             height: 100%;
-            border: 1px solid $brand-color;
+            border-left: 1px solid $brand-color;
         }
     }
 
     #site-title {
         display: block;
         flex: 0;
-    }
-}
+        padding: 0 1rem;
+        margin-top: 22%;
 
-#site-title {
-    font-weight: 100;
-    font-size: 48px;
-    letter-spacing: 20px;
-    color: $brand-color;
-    margin: 0 1rem;
-    line-height: 300px;
+        font-weight: 100;
+        font-size: 48px;
+        letter-spacing: 20px;
+        margin-right: -20px;
+
+    }
+
+    .blurb {
+    }
+
+    .links a {
+        color: #aaa;
+        padding: 0 0.6em;
+    }
 }

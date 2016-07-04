@@ -27623,6 +27623,8 @@
 	    value: true
 	});
 
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _react = __webpack_require__(1);
@@ -27681,7 +27683,7 @@
 	        value: function componentWillReceiveProps(newProps) {
 	            var _this2 = this;
 
-	            var propsToCheck = ['imageData', 'mode', 'tileWidth', 'tileHeight', 'initialFrame'];
+	            var propsToCheck = ['imageData', 'mode', 'tileWidth', 'tileHeight', 'initialFrame', 'currentFrame'];
 	            var isDiff = propsToCheck.some(function (prop) {
 	                return _this2.props[prop] !== newProps[prop];
 	            });
@@ -27696,15 +27698,15 @@
 
 	            switch (state.mode) {
 	                case modes.columns:
-	                    this.drawGif(imageData, imageData.width / imageData.frames.length, imageData.height, 0);
+	                    this.drawGif(imageData, imageData.width / imageData.frames.length, imageData.height, state.currentFrame);
 	                    break;
 
 	                case modes.rows:
-	                    this.drawGif(imageData, imageData.width, imageData.height / imageData.frames.length, 0);
+	                    this.drawGif(imageData, imageData.width, imageData.height / imageData.frames.length, state.currentFrame);
 	                    break;
 
 	                default:
-	                    this.drawGif(imageData, state.tileWidth, state.tileHeight, state.initialFrame);
+	                    this.drawGif(imageData, state.tileWidth, state.tileHeight, state.initialFrame + state.currentFrame);
 	            }
 	        }
 	    }, {
@@ -27832,20 +27834,47 @@
 	var GifFigure = function (_React$Component4) {
 	    _inherits(GifFigure, _React$Component4);
 
-	    function GifFigure() {
+	    function GifFigure(props) {
 	        _classCallCheck(this, GifFigure);
 
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(GifFigure).apply(this, arguments));
+	        var _this5 = _possibleConstructorReturn(this, Object.getPrototypeOf(GifFigure).call(this, props));
+
+	        _this5.state = {
+	            currentFrame: 0,
+	            playing: false
+	        };
+	        return _this5;
 	    }
 
 	    _createClass(GifFigure, [{
+	        key: 'onToggle',
+	        value: function onToggle() {
+	            var _this6 = this;
+
+	            this.setState({ playing: !this.state.playing });
+	            if (this.state.playing) {
+	                clearInterval(this._interval);
+	            } else {
+	                this._interval = setInterval(function () {
+	                    _this6.setState({
+	                        currentFrame: (_this6.state.currentFrame + 1) % _this6.props.imageData.frames.length
+	                    });
+	                }, 50);
+	            }
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'gif-figure' },
-	                _react2.default.createElement(GifRenderer, this.props),
-	                _react2.default.createElement(GifProperties, this.props)
+	                _react2.default.createElement(GifRenderer, _extends({}, this.props, { currentFrame: this.state.currentFrame })),
+	                _react2.default.createElement(GifProperties, this.props),
+	                _react2.default.createElement(
+	                    'button',
+	                    { onClick: this.onToggle.bind(this) },
+	                    'Play'
+	                )
 	            );
 	        }
 	    }]);
@@ -27865,16 +27894,16 @@
 	    function Viewer(props) {
 	        _classCallCheck(this, Viewer);
 
-	        var _this6 = _possibleConstructorReturn(this, Object.getPrototypeOf(Viewer).call(this, props));
+	        var _this7 = _possibleConstructorReturn(this, Object.getPrototypeOf(Viewer).call(this, props));
 
-	        _this6.state = {
+	        _this7.state = {
 	            imageData: null,
 	            mode: Object.keys(modes)[0],
 	            tileWidth: 10,
 	            tileHeight: 10,
 	            initialFrame: 0
 	        };
-	        return _this6;
+	        return _this7;
 	    }
 
 	    _createClass(Viewer, [{
@@ -27899,10 +27928,10 @@
 	    }, {
 	        key: 'loadGif',
 	        value: function loadGif(file) {
-	            var _this7 = this;
+	            var _this8 = this;
 
 	            (0, _loadGif3.default)(file).then(function (data) {
-	                _this7.setState({ imageData: data });
+	                _this8.setState({ imageData: data });
 	            }).catch(function (e) {
 	                return console.error(e);
 	            });

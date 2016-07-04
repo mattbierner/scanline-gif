@@ -26,7 +26,7 @@ class GifRenderer extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const propsToCheck = ['imageData', 'mode', 'tileWidth', 'tileHeight', 'initialFrame'];
+        const propsToCheck = ['imageData', 'mode', 'tileWidth', 'tileHeight', 'initialFrame', 'currentFrame'];
         const isDiff = propsToCheck.some(prop => this.props[prop] !== newProps[prop]);
         if (isDiff) {
             this.drawGifForOptions(newProps.imageData, newProps);
@@ -39,15 +39,15 @@ class GifRenderer extends React.Component {
 
         switch (state.mode) {
             case modes.columns:
-                this.drawGif(imageData, imageData.width / imageData.frames.length, imageData.height, 0);
+                this.drawGif(imageData, imageData.width / imageData.frames.length, imageData.height, state.currentFrame);
                 break;
 
             case modes.rows:
-                this.drawGif(imageData, imageData.width, imageData.height / imageData.frames.length, 0);
+                this.drawGif(imageData, imageData.width, imageData.height / imageData.frames.length, state.currentFrame);
                 break;
 
             default:
-                this.drawGif(imageData, state.tileWidth, state.tileHeight, state.initialFrame);
+                this.drawGif(imageData, state.tileWidth, state.tileHeight, state.initialFrame + state.currentFrame);
         }
     }
 
@@ -124,11 +124,33 @@ class GifProperties extends React.Component {
  * Displays a scannedlined gif plus metadata info about it.
  */
 class GifFigure extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            currentFrame: 0,
+            playing: false
+        };
+    }
+
+    onToggle() {
+        this.setState({ playing: !this.state.playing });
+        if (this.state.playing) {
+            clearInterval(this._interval);
+        } else {
+            this._interval = setInterval(() => {
+                this.setState({
+                    currentFrame: (this.state.currentFrame + 1) % this.props.imageData.frames.length
+                });
+            }, 50);
+        }
+    }
+
     render() {
         return (
             <div className="gif-figure">
-                <GifRenderer {...this.props} />
+                <GifRenderer {...this.props} currentFrame={this.state.currentFrame} />
                 <GifProperties {...this.props} />
+                <button onClick={this.onToggle.bind(this)}>Play</button>
             </div>
         );
     }
