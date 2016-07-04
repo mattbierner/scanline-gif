@@ -14,7 +14,7 @@ export default class GifRenderer extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const propsToCheck = ['imageData', 'mode', 'tileWidth', 'tileHeight', 'diagonalWidth','diagonalAngle', 'initialFrame', 'currentFrame', 'frameIncrement'];
+        const propsToCheck = ['imageData', 'mode', 'tileWidth', 'tileHeight', 'diagonalWidth', 'diagonalAngle', 'initialFrame', 'currentFrame', 'frameIncrement'];
         const isDiff = propsToCheck.some(prop => this.props[prop] !== newProps[prop]);
         if (isDiff) {
             this.drawGifForOptions(newProps.imageData, newProps);
@@ -45,17 +45,15 @@ export default class GifRenderer extends React.Component {
         }
     }
 
-    drawDiag(imageData, width, angle, initialFrame, increment) {
+    drawDiag(imageData, tileWidth, angle, initialFrame, increment) {
         if (!imageData)
             return;
 
         const radAngle = angle * (Math.PI / 180);
-        const dx = width / Math.cos(radAngle);
-        const dy = width / Math.sin(radAngle);
 
         const ctx = this._ctx;
         const canvas = this._canvas;
-
+        const {width, height} = imageData;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         canvas.width = imageData.width;
         canvas.height = imageData.height;
@@ -63,29 +61,63 @@ export default class GifRenderer extends React.Component {
 
         const diag = Math.sqrt(Math.pow(imageData.width, 2) + Math.pow(imageData.height, 2));
 
-        let x = 0;
-        let y = 0;
-             let i = initialFrame;
-        do {
-            const frameNumber = i % len;
-            i += increment;
+        let y = height / 2;
+        let y2 = height / 2
+
+        let count = 0
+        let i = initialFrame;
+        let i2 = initialFrame - increment;
+        
+        while (count <= Math.ceil((diag / tileWidth) / 2)) {
+            // draw first
             ctx.save();
 
-            // Create clipping rect.
-            ctx.beginPath();
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x + dx, 0);
-            ctx.lineTo(0, y + dy);
-            ctx.lineTo(0, y);
-            ctx.clip();
+            ctx.save();
+            ctx.translate(width / 2, height / 2);
+            ctx.rotate(radAngle);
+            ctx.translate(-width / 2, -height / 2);
 
-            // Draw gif with clipping applied
+            ctx.beginPath();
+            ctx.moveTo(-diag, y);
+            ctx.lineTo(diag, y);
+            ctx.lineTo(diag, y + tileWidth);
+            ctx.lineTo(-diag, y + tileWidth);
+            ctx.restore();
+
+            ctx.clip();
+            const frameNumber = i % len;
             ctx.drawImage(imageData.frames[frameNumber].canvas, 0, 0);
 
             ctx.restore();
-            x += dx;
-            y += dy;
-        } while(((0 - x) * (imageData.height - 0) - (y - 0)*(imageData.width - x)) < 0);
+
+            // draw second
+            ctx.save();
+
+            ctx.save();
+            ctx.translate(width / 2, height / 2);
+            ctx.rotate(radAngle);
+            ctx.translate(-width / 2, -height / 2);
+
+            ctx.beginPath();
+            ctx.moveTo(-diag, y2);
+            ctx.lineTo(diag, y2);
+            ctx.lineTo(diag, y2 + tileWidth);
+            ctx.lineTo(-diag, y2 + tileWidth);
+            ctx.restore();
+
+            ctx.clip();
+            const frameNumber2 = Math.abs(i2 < 0 ? len - i2 : i2) % len;
+
+            ctx.drawImage(imageData.frames[frameNumber2].canvas, 0, 0);
+
+            ctx.restore();
+
+            y += tileWidth;
+            y2 -= tileWidth;
+            ++count;
+            i += increment;
+            i2 -= increment;
+        }
     }
 
     drawGrid(imageData, tileWidth, tileHeight, initialFrame, increment) {

@@ -175,8 +175,8 @@ export default class Viewer extends React.Component {
                     <div className={"diagonal-controls " + (this.state.mode === 'diagonal' ? '' : 'hidden') }>
                         <LabeledSlider title="Angle"
                             units="deg"
-                            min="1"
-                            max="89"
+                            min="0"
+                            max="360"
                             value={this.state.diagonalAngle}
                             onChange={this.onDiagonalAngleChange.bind(this) }/>
 

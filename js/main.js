@@ -28315,8 +28315,8 @@
 	                        { className: "diagonal-controls " + (this.state.mode === 'diagonal' ? '' : 'hidden') },
 	                        _react2.default.createElement(_labeled_slider2.default, { title: 'Angle',
 	                            units: 'deg',
-	                            min: '1',
-	                            max: '89',
+	                            min: '0',
+	                            max: '360',
 	                            value: this.state.diagonalAngle,
 	                            onChange: this.onDiagonalAngleChange.bind(this) }),
 	                        _react2.default.createElement(_labeled_slider2.default, { title: 'Width',
@@ -29665,15 +29665,15 @@
 	        }
 	    }, {
 	        key: 'drawDiag',
-	        value: function drawDiag(imageData, width, angle, initialFrame, increment) {
+	        value: function drawDiag(imageData, tileWidth, angle, initialFrame, increment) {
 	            if (!imageData) return;
 
 	            var radAngle = angle * (Math.PI / 180);
-	            var dx = width / Math.cos(radAngle);
-	            var dy = width / Math.sin(radAngle);
 
 	            var ctx = this._ctx;
 	            var canvas = this._canvas;
+	            var width = imageData.width;
+	            var height = imageData.height;
 
 	            ctx.clearRect(0, 0, canvas.width, canvas.height);
 	            canvas.width = imageData.width;
@@ -29682,29 +29682,63 @@
 
 	            var diag = Math.sqrt(Math.pow(imageData.width, 2) + Math.pow(imageData.height, 2));
 
-	            var x = 0;
-	            var y = 0;
+	            var y = height / 2;
+	            var y2 = height / 2;
+
+	            var count = 0;
 	            var i = initialFrame;
-	            do {
-	                var frameNumber = i % len;
-	                i += increment;
+	            var i2 = initialFrame - increment;
+
+	            while (count <= Math.ceil(diag / tileWidth / 2)) {
+	                // draw first
 	                ctx.save();
 
-	                // Create clipping rect.
-	                ctx.beginPath();
-	                ctx.moveTo(x, 0);
-	                ctx.lineTo(x + dx, 0);
-	                ctx.lineTo(0, y + dy);
-	                ctx.lineTo(0, y);
-	                ctx.clip();
+	                ctx.save();
+	                ctx.translate(width / 2, height / 2);
+	                ctx.rotate(radAngle);
+	                ctx.translate(-width / 2, -height / 2);
 
-	                // Draw gif with clipping applied
+	                ctx.beginPath();
+	                ctx.moveTo(-diag, y);
+	                ctx.lineTo(diag, y);
+	                ctx.lineTo(diag, y + tileWidth);
+	                ctx.lineTo(-diag, y + tileWidth);
+	                ctx.restore();
+
+	                ctx.clip();
+	                var frameNumber = i % len;
 	                ctx.drawImage(imageData.frames[frameNumber].canvas, 0, 0);
 
 	                ctx.restore();
-	                x += dx;
-	                y += dy;
-	            } while ((0 - x) * (imageData.height - 0) - (y - 0) * (imageData.width - x) < 0);
+
+	                // draw second
+	                ctx.save();
+
+	                ctx.save();
+	                ctx.translate(width / 2, height / 2);
+	                ctx.rotate(radAngle);
+	                ctx.translate(-width / 2, -height / 2);
+
+	                ctx.beginPath();
+	                ctx.moveTo(-diag, y2);
+	                ctx.lineTo(diag, y2);
+	                ctx.lineTo(diag, y2 + tileWidth);
+	                ctx.lineTo(-diag, y2 + tileWidth);
+	                ctx.restore();
+
+	                ctx.clip();
+	                var frameNumber2 = Math.abs(i2 < 0 ? len - i2 : i2) % len;
+
+	                ctx.drawImage(imageData.frames[frameNumber2].canvas, 0, 0);
+
+	                ctx.restore();
+
+	                y += tileWidth;
+	                y2 -= tileWidth;
+	                ++count;
+	                i += increment;
+	                i2 -= increment;
+	            }
 	        }
 	    }, {
 	        key: 'drawGrid',
