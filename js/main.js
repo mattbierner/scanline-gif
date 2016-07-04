@@ -27643,6 +27643,10 @@
 
 	var _labeled_slider2 = _interopRequireDefault(_labeled_slider);
 
+	var _gif_renderer = __webpack_require__(210);
+
+	var _gif_renderer2 = _interopRequireDefault(_gif_renderer);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -27657,15 +27661,15 @@
 	var modes = {
 	    'columns': {
 	        title: 'Columns',
-	        description: ''
+	        description: 'Equal width columns, one for each frame'
 	    },
 	    'rows': {
 	        title: 'Rows',
-	        description: ''
+	        description: 'Equal height rows, one for each frame'
 	    },
 	    'grid': {
 	        title: 'Grid',
-	        description: ''
+	        description: 'Configurable grid'
 	    }
 	};
 
@@ -27680,113 +27684,11 @@
 	};
 
 	/**
-	 * Renders a scanlined gif. 
-	 */
-
-	var GifRenderer = function (_React$Component) {
-	    _inherits(GifRenderer, _React$Component);
-
-	    function GifRenderer() {
-	        _classCallCheck(this, GifRenderer);
-
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(GifRenderer).apply(this, arguments));
-	    }
-
-	    _createClass(GifRenderer, [{
-	        key: 'componentDidMount',
-	        value: function componentDidMount() {
-	            var canvas = _reactDom2.default.findDOMNode(this);
-	            var ctx = canvas.getContext('2d');
-
-	            this._canvas = canvas;
-	            this._ctx = ctx;
-	        }
-	    }, {
-	        key: 'componentWillReceiveProps',
-	        value: function componentWillReceiveProps(newProps) {
-	            var _this2 = this;
-
-	            var propsToCheck = ['imageData', 'mode', 'tileWidth', 'tileHeight', 'initialFrame', 'currentFrame', 'frameIncrement'];
-	            var isDiff = propsToCheck.some(function (prop) {
-	                return _this2.props[prop] !== newProps[prop];
-	            });
-	            if (isDiff) {
-	                this.drawGifForOptions(newProps.imageData, newProps);
-	            }
-	        }
-	    }, {
-	        key: 'drawGifForOptions',
-	        value: function drawGifForOptions(imageData, state) {
-	            if (!imageData) return;
-
-	            switch (state.mode) {
-	                case 'columns':
-	                    this.drawGif(imageData, imageData.width / imageData.frames.length, imageData.height, state.initialFrame + state.currentFrame, state.frameIncrement);
-	                    break;
-
-	                case 'rows':
-	                    this.drawGif(imageData, imageData.width, imageData.height / imageData.frames.length, state.initialFrame + state.currentFrame, state.frameIncrement);
-	                    break;
-
-	                default:
-	                    this.drawGif(imageData, state.tileWidth, state.tileHeight, state.initialFrame + state.currentFrame, state.frameIncrement);
-	            }
-	        }
-	    }, {
-	        key: 'drawGif',
-	        value: function drawGif(imageData, tileWidth, tileHeight, initialFrame, increment) {
-	            if (!imageData) return;
-
-	            var ctx = this._ctx;
-	            var canvas = this._canvas;
-
-	            ctx.clearRect(0, 0, canvas.width, canvas.height);
-	            canvas.width = imageData.width;
-	            canvas.height = imageData.height;
-
-	            var len = imageData.frames.length;
-	            var dy = imageData.height;
-
-	            var i = initialFrame;
-	            for (var x = 0; x < imageData.width; x += tileWidth) {
-	                for (var y = 0; y < imageData.height; y += tileHeight) {
-	                    var frameNumber = i % len;
-	                    i += increment;
-	                    ctx.save();
-
-	                    // Create clipping rect.
-	                    ctx.beginPath();
-	                    ctx.moveTo(x, y);
-	                    ctx.lineTo(x + tileWidth, y);
-	                    ctx.lineTo(x + tileWidth, y + tileHeight);
-	                    ctx.lineTo(x, y + tileHeight);
-	                    ctx.clip();
-
-	                    // Draw gif with clipping applied
-	                    ctx.drawImage(imageData.frames[frameNumber].canvas, 0, 0);
-
-	                    ctx.restore();
-	                }
-	            }
-	        }
-	    }, {
-	        key: 'render',
-	        value: function render() {
-	            return _react2.default.createElement('canvas', { className: 'gif-canvas', width: '0', height: '0' });
-	        }
-	    }]);
-
-	    return GifRenderer;
-	}(_react2.default.Component);
-
-	;
-
-	/**
 	 * Property of a gif
 	 */
 
-	var GifProperty = function (_React$Component2) {
-	    _inherits(GifProperty, _React$Component2);
+	var GifProperty = function (_React$Component) {
+	    _inherits(GifProperty, _React$Component);
 
 	    function GifProperty() {
 	        _classCallCheck(this, GifProperty);
@@ -27824,8 +27726,8 @@
 	 * Property of a gif
 	 */
 
-	var GifProperties = function (_React$Component3) {
-	    _inherits(GifProperties, _React$Component3);
+	var GifProperties = function (_React$Component2) {
+	    _inherits(GifProperties, _React$Component2);
 
 	    function GifProperties() {
 	        _classCallCheck(this, GifProperties);
@@ -27855,21 +27757,21 @@
 	 * Displays a scannedlined gif plus metadata info about it.
 	 */
 
-	var GifFigure = function (_React$Component4) {
-	    _inherits(GifFigure, _React$Component4);
+	var GifFigure = function (_React$Component3) {
+	    _inherits(GifFigure, _React$Component3);
 
 	    function GifFigure(props) {
 	        _classCallCheck(this, GifFigure);
 
-	        var _this5 = _possibleConstructorReturn(this, Object.getPrototypeOf(GifFigure).call(this, props));
+	        var _this3 = _possibleConstructorReturn(this, Object.getPrototypeOf(GifFigure).call(this, props));
 
-	        _this5.state = {
+	        _this3.state = {
 	            currentFrame: 0,
 	            playing: false,
 	            loop: true,
 	            playbackSpeed: 1
 	        };
-	        return _this5;
+	        return _this3;
 	    }
 
 	    _createClass(GifFigure, [{
@@ -27900,27 +27802,27 @@
 	    }, {
 	        key: 'scheduleNextFrame',
 	        value: function scheduleNextFrame(delay, forcePlay) {
-	            var _this6 = this;
+	            var _this4 = this;
 
 	            if (!this.props.imageData || !forcePlay && !this.state.playing) return;
 
 	            var start = Date.now();
 	            setTimeout(function () {
-	                var nextFrame = _this6.state.currentFrame + 1;
-	                if (nextFrame >= _this6.getNumFrames() && !_this6.state.loop) {
-	                    _this6.setState({ playing: false });
+	                var nextFrame = _this4.state.currentFrame + 1;
+	                if (nextFrame >= _this4.getNumFrames() && !_this4.state.loop) {
+	                    _this4.setState({ playing: false });
 	                    return;
 	                }
 
-	                nextFrame %= _this6.getNumFrames();
+	                nextFrame %= _this4.getNumFrames();
 
-	                var interval = (_this6.props.imageData.frames[nextFrame].info.delay || 1) * 10 / _this6.state.playbackSpeed;
+	                var interval = (_this4.props.imageData.frames[nextFrame].info.delay || 1) * 10 / _this4.state.playbackSpeed;
 	                var elapsed = Date.now() - start;
 	                var next = Math.max(0, interval - (elapsed - delay));
-	                _this6.setState({
+	                _this4.setState({
 	                    currentFrame: nextFrame
 	                });
-	                _this6.scheduleNextFrame(next);
+	                _this4.scheduleNextFrame(next);
 	            }, delay);
 	        }
 	    }, {
@@ -27961,7 +27863,7 @@
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'gif-figure' },
-	                _react2.default.createElement(GifRenderer, _extends({}, this.props, { currentFrame: this.state.currentFrame })),
+	                _react2.default.createElement(_gif_renderer2.default, _extends({}, this.props, { currentFrame: this.state.currentFrame })),
 	                _react2.default.createElement(
 	                    'div',
 	                    { className: 'content-wrapper' },
@@ -28005,8 +27907,8 @@
 
 	;
 
-	var ModeSelector = function (_React$Component5) {
-	    _inherits(ModeSelector, _React$Component5);
+	var ModeSelector = function (_React$Component4) {
+	    _inherits(ModeSelector, _React$Component4);
 
 	    function ModeSelector() {
 	        _classCallCheck(this, ModeSelector);
@@ -28025,9 +27927,18 @@
 	                );
 	            });
 	            return _react2.default.createElement(
-	                'select',
-	                { value: this.props.value, onChange: this.props.onChange },
-	                modeOptions
+	                'div',
+	                { className: 'mode-selector' },
+	                _react2.default.createElement(
+	                    'select',
+	                    { value: this.props.value, onChange: this.props.onChange },
+	                    modeOptions
+	                ),
+	                _react2.default.createElement(
+	                    'p',
+	                    null,
+	                    modes[this.props.value].description
+	                )
 	            );
 	        }
 	    }]);
@@ -28040,15 +27951,15 @@
 	 */
 
 
-	var Viewer = function (_React$Component6) {
-	    _inherits(Viewer, _React$Component6);
+	var Viewer = function (_React$Component5) {
+	    _inherits(Viewer, _React$Component5);
 
 	    function Viewer(props) {
 	        _classCallCheck(this, Viewer);
 
-	        var _this8 = _possibleConstructorReturn(this, Object.getPrototypeOf(Viewer).call(this, props));
+	        var _this6 = _possibleConstructorReturn(this, Object.getPrototypeOf(Viewer).call(this, props));
 
-	        _this8.state = {
+	        _this6.state = {
 	            imageData: null,
 	            mode: Object.keys(modes)[0],
 	            tileWidth: 10,
@@ -28057,7 +27968,7 @@
 	            frameIncrement: 1,
 	            playbackSpeed: 1
 	        };
-	        return _this8;
+	        return _this6;
 	    }
 
 	    _createClass(Viewer, [{
@@ -28082,10 +27993,10 @@
 	    }, {
 	        key: 'loadGif',
 	        value: function loadGif(file) {
-	            var _this9 = this;
+	            var _this7 = this;
 
 	            (0, _loadGif3.default)(file).then(function (data) {
-	                _this9.setState({
+	                _this7.setState({
 	                    imageData: data,
 	                    playbackSpeed: 1,
 	                    initialFrame: 0,
@@ -29129,6 +29040,139 @@
 	}(_react2.default.Component);
 
 	exports.default = LabeledRange;
+	;
+
+/***/ },
+/* 210 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(38);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	/**
+	 * Renders a scanlined gif. 
+	 */
+
+	var GifRenderer = function (_React$Component) {
+	    _inherits(GifRenderer, _React$Component);
+
+	    function GifRenderer() {
+	        _classCallCheck(this, GifRenderer);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(GifRenderer).apply(this, arguments));
+	    }
+
+	    _createClass(GifRenderer, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            var canvas = _reactDom2.default.findDOMNode(this);
+	            var ctx = canvas.getContext('2d');
+
+	            this._canvas = canvas;
+	            this._ctx = ctx;
+	        }
+	    }, {
+	        key: 'componentWillReceiveProps',
+	        value: function componentWillReceiveProps(newProps) {
+	            var _this2 = this;
+
+	            var propsToCheck = ['imageData', 'mode', 'tileWidth', 'tileHeight', 'initialFrame', 'currentFrame', 'frameIncrement'];
+	            var isDiff = propsToCheck.some(function (prop) {
+	                return _this2.props[prop] !== newProps[prop];
+	            });
+	            if (isDiff) {
+	                this.drawGifForOptions(newProps.imageData, newProps);
+	            }
+	        }
+	    }, {
+	        key: 'drawGifForOptions',
+	        value: function drawGifForOptions(imageData, state) {
+	            if (!imageData) return;
+
+	            switch (state.mode) {
+	                case 'columns':
+	                    this.drawGrid(imageData, imageData.width / imageData.frames.length, imageData.height, state.initialFrame + state.currentFrame, state.frameIncrement);
+	                    break;
+
+	                case 'rows':
+	                    this.drawGrid(imageData, imageData.width, imageData.height / imageData.frames.length, state.initialFrame + state.currentFrame, state.frameIncrement);
+	                    break;
+
+	                case 'grid':
+	                default:
+	                    this.drawGrid(imageData, state.tileWidth, state.tileHeight, state.initialFrame + state.currentFrame, state.frameIncrement);
+	                    break;
+	            }
+	        }
+	    }, {
+	        key: 'drawGrid',
+	        value: function drawGrid(imageData, tileWidth, tileHeight, initialFrame, increment) {
+	            if (!imageData) return;
+
+	            var ctx = this._ctx;
+	            var canvas = this._canvas;
+
+	            ctx.clearRect(0, 0, canvas.width, canvas.height);
+	            canvas.width = imageData.width;
+	            canvas.height = imageData.height;
+
+	            var len = imageData.frames.length;
+	            var dy = imageData.height;
+
+	            var i = initialFrame;
+	            for (var x = 0; x < imageData.width; x += tileWidth) {
+	                for (var y = 0; y < imageData.height; y += tileHeight) {
+	                    var frameNumber = i % len;
+	                    i += increment;
+	                    ctx.save();
+
+	                    // Create clipping rect.
+	                    ctx.beginPath();
+	                    ctx.moveTo(x, y);
+	                    ctx.lineTo(x + tileWidth, y);
+	                    ctx.lineTo(x + tileWidth, y + tileHeight);
+	                    ctx.lineTo(x, y + tileHeight);
+	                    ctx.clip();
+
+	                    // Draw gif with clipping applied
+	                    ctx.drawImage(imageData.frames[frameNumber].canvas, 0, 0);
+
+	                    ctx.restore();
+	                }
+	            }
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement('canvas', { className: 'gif-canvas', width: '0', height: '0' });
+	        }
+	    }]);
+
+	    return GifRenderer;
+	}(_react2.default.Component);
+
+	exports.default = GifRenderer;
 	;
 
 /***/ }

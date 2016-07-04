@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 
 import loadGif from './loadGif';
 import LabeledSlider from './labeled_slider';
+import GifRenderer from './gif_renderer';
 
 /**
  * Display modes
@@ -10,15 +11,15 @@ import LabeledSlider from './labeled_slider';
 const modes = {
     'columns': {
         title: 'Columns',
-        description: ''
+        description: 'Equal width columns, one for each frame'
     },
     'rows': {
         title: 'Rows',
-        description: ''
+        description: 'Equal height rows, one for each frame'
     },
     'grid': {
         title: 'Grid',
-        description: ''
+        description: 'Configurable grid'
     }
 };
 
@@ -30,86 +31,6 @@ const playbackSpeeds = {
     '1/2': 0.5,
     '1/4': 0.25,
     '1/8': 0.125,
-};
-
-/**
- * Renders a scanlined gif. 
- */
-class GifRenderer extends React.Component {
-    componentDidMount() {
-        const canvas = ReactDOM.findDOMNode(this);
-        const ctx = canvas.getContext('2d');
-
-        this._canvas = canvas;
-        this._ctx = ctx;
-    }
-
-    componentWillReceiveProps(newProps) {
-        const propsToCheck = ['imageData', 'mode', 'tileWidth', 'tileHeight', 'initialFrame', 'currentFrame', 'frameIncrement'];
-        const isDiff = propsToCheck.some(prop => this.props[prop] !== newProps[prop]);
-        if (isDiff) {
-            this.drawGifForOptions(newProps.imageData, newProps);
-        }
-    }
-
-    drawGifForOptions(imageData, state) {
-        if (!imageData)
-            return;
-
-        switch (state.mode) {
-            case 'columns':
-                this.drawGif(imageData, imageData.width / imageData.frames.length, imageData.height, state.initialFrame + state.currentFrame, state.frameIncrement);
-                break;
-
-            case 'rows':
-                this.drawGif(imageData, imageData.width, imageData.height / imageData.frames.length, state.initialFrame + state.currentFrame, state.frameIncrement);
-                break;
-
-            default:
-                this.drawGif(imageData, state.tileWidth, state.tileHeight, state.initialFrame + state.currentFrame, state.frameIncrement);
-        }
-    }
-
-    drawGif(imageData, tileWidth, tileHeight, initialFrame, increment) {
-        if (!imageData)
-            return;
-
-        const ctx = this._ctx;
-        const canvas = this._canvas;
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        canvas.width = imageData.width;
-        canvas.height = imageData.height;
-
-        const len = imageData.frames.length;
-        const dy = imageData.height
-
-        let i = initialFrame;
-        for (let x = 0; x < imageData.width; x += tileWidth) {
-            for (let y = 0; y < imageData.height; y += tileHeight) {
-                const frameNumber = i % len;
-                i += increment;
-                ctx.save();
-
-                // Create clipping rect.
-                ctx.beginPath();
-                ctx.moveTo(x, y);
-                ctx.lineTo(x + tileWidth, y);
-                ctx.lineTo(x + tileWidth, y + tileHeight);
-                ctx.lineTo(x, y + tileHeight);
-                ctx.clip();
-
-                // Draw gif with clipping applied
-                ctx.drawImage(imageData.frames[frameNumber].canvas, 0, 0);
-
-                ctx.restore();
-            }
-        }
-    }
-
-    render() {
-        return (<canvas className="gif-canvas" width="0" height="0" />);
-    }
 };
 
 /**
@@ -258,10 +179,12 @@ class ModeSelector extends React.Component {
         const modeOptions = Object.keys(modes).map(x =>
             <option value={x} key={x}>{modes[x].title}</option>);
         return (
-            <select value={this.props.value} onChange={this.props.onChange }>
-                {modeOptions}
-            </select>
-        )
+            <div className="mode-selector">
+                <select value={this.props.value} onChange={this.props.onChange }>
+                    {modeOptions}
+                </select>
+                <p>{modes[this.props.value].description}</p>
+            </div>);
     }
 }
 
