@@ -17,7 +17,6 @@ class Main extends React.Component {
         this.setState({ selectedGif: src });
     }
     
-
     render() {
         return (
             <div className="main container">

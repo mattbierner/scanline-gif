@@ -10,14 +10,36 @@
     .min {
         display: block;
         float: left;
+        margin-left: 0.2em;
     }
 
     .max {
         display: block;
         float: right;
+        margin-right: 0.2em;
     }
 
     .value {
         display: block;
     }
+}
+
+button.material-icons {
+    border: none;
+    background: none;
+    color: $text-color;
+
+    &:hover {
+        color: #777;
+    }
+
+    &:active {
+        outline: none;
+    }
+}
+
+
+.input-label {
+    font-size: 12px;
+    color: #aaa;
 }

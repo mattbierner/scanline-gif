@@ -27867,15 +27867,19 @@
 	                _react2.default.createElement(
 	                    'div',
 	                    { className: 'content-wrapper' },
-	                    _react2.default.createElement(GifProperties, this.props),
+	                    _react2.default.createElement(GifProperties, this.props)
+	                ),
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'playback-controls content-wrapper' },
+	                    _react2.default.createElement(_labeled_slider2.default, { className: 'playback-tracker',
+	                        min: '0',
+	                        max: this.getNumFrames() - 1,
+	                        value: this.state.currentFrame,
+	                        onChange: this.onSliderChange.bind(this) }),
 	                    _react2.default.createElement(
 	                        'div',
-	                        { className: 'playback-controls' },
-	                        _react2.default.createElement(_labeled_slider2.default, { className: 'playback-tracker',
-	                            min: '0',
-	                            max: this.getNumFrames() - 1,
-	                            value: this.state.currentFrame,
-	                            onChange: this.onSliderChange.bind(this) }),
+	                        { className: 'buttons' },
 	                        _react2.default.createElement(
 	                            'button',
 	                            {
@@ -27892,9 +27896,14 @@
 	                            this.state.playing ? 'pause' : 'play_arrow'
 	                        ),
 	                        _react2.default.createElement(
-	                            'select',
-	                            { value: this.state.playbackSpeed, onChange: this.onPlaybackSpeedChange.bind(this) },
-	                            playbackSpeedOptions
+	                            'div',
+	                            { className: 'playback-speed-selector' },
+	                            'Speed: ',
+	                            _react2.default.createElement(
+	                                'select',
+	                                { value: this.state.playbackSpeed, onChange: this.onPlaybackSpeedChange.bind(this) },
+	                                playbackSpeedOptions
+	                            )
 	                        )
 	                    )
 	                )
@@ -28049,25 +28058,31 @@
 	                    'div',
 	                    { className: 'view-controls content-wrapper' },
 	                    _react2.default.createElement(ModeSelector, { value: this.state.mode, onChange: this.onModeChange.bind(this) }),
-	                    _react2.default.createElement(_labeled_slider2.default, { title: 'Initial Frame',
-	                        min: '0',
-	                        max: this.state.imageData ? this.state.imageData.frames.length - 1 : 0,
-	                        value: this.state.initialFrame,
-	                        onChange: this.onInitialFrameChange.bind(this) }),
-	                    _react2.default.createElement(_labeled_slider2.default, { title: 'Frame Increment',
-	                        min: '1',
-	                        max: this.state.imageData ? this.state.imageData.frames.length - 1 : 0,
-	                        value: this.state.frameIncrement,
-	                        onChange: this.onFrameIncrementChange.bind(this) }),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'frame-controls' },
+	                        _react2.default.createElement(_labeled_slider2.default, { title: 'Initial Frame',
+	                            min: '0',
+	                            max: this.state.imageData ? this.state.imageData.frames.length - 1 : 0,
+	                            value: this.state.initialFrame,
+	                            onChange: this.onInitialFrameChange.bind(this) }),
+	                        _react2.default.createElement(_labeled_slider2.default, { title: 'Frame Increment',
+	                            min: '1',
+	                            max: this.state.imageData ? this.state.imageData.frames.length - 1 : 0,
+	                            value: this.state.frameIncrement,
+	                            onChange: this.onFrameIncrementChange.bind(this) })
+	                    ),
 	                    _react2.default.createElement(
 	                        'div',
 	                        { className: "grid-controls " + (this.state.mode === 'grid' ? '' : 'hidden') },
 	                        _react2.default.createElement(_labeled_slider2.default, { title: 'Title Width',
+	                            units: 'px',
 	                            min: '1',
 	                            max: this.state.imageData ? this.state.imageData.width : 1,
 	                            value: this.state.tileWidth,
 	                            onChange: this.onTileWidthChange.bind(this) }),
 	                        _react2.default.createElement(_labeled_slider2.default, { title: 'Title Height',
+	                            units: 'px',
 	                            min: '1',
 	                            max: this.state.imageData ? this.state.imageData.height : 1,
 	                            value: this.state.tileHeight,
@@ -29004,7 +29019,7 @@
 	        value: function render() {
 	            var title = this.props.title ? _react2.default.createElement(
 	                'div',
-	                { className: 'label' },
+	                { className: 'input-label' },
 	                this.props.title
 	            ) : '';
 	            return _react2.default.createElement(
@@ -29019,18 +29034,18 @@
 	                    onChange: this.props.onChange }),
 	                _react2.default.createElement(
 	                    'span',
-	                    { className: 'min' },
+	                    { className: 'min input-label' },
 	                    this.props.min
 	                ),
 	                _react2.default.createElement(
 	                    'span',
-	                    { className: 'max' },
+	                    { className: 'max input-label' },
 	                    this.props.max
 	                ),
 	                _react2.default.createElement(
 	                    'span',
-	                    { className: 'value' },
-	                    this.props.value
+	                    { className: 'value input-label' },
+	                    this.props.value + (this.props.units || '')
 	                )
 	            );
 	        }

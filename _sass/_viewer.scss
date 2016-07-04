@@ -24,6 +24,28 @@
 }
 
 .view-controls {
-    max-width: 240px;
     margin: 0 auto;
+
+    .frame-controls {
+        display: flex;
+    }
+    
+    .frame-controls > * {
+        width: 50%;
+        padding: 1.6em;
+    }
+}
+
+.playback-controls {
+    padding-bottom: 1em;
+
+    .buttons {
+        display: flex;
+        justify-content: center;
+    }
+
+    .buttons > * {
+        display: block;
+        padding: 0 0.4em;
+    }
 }

@@ -151,12 +151,14 @@ class GifFigure extends React.Component {
                 <GifRenderer {...this.props} currentFrame={this.state.currentFrame} />
                 <div className="content-wrapper">
                     <GifProperties {...this.props} />
-                    <div className="playback-controls">
-                        <LabeledSlider className="playback-tracker"
-                            min="0"
-                            max={this.getNumFrames() - 1}
-                            value={this.state.currentFrame}
-                            onChange={this.onSliderChange.bind(this) }/>
+                </div>
+                <div className="playback-controls content-wrapper">
+                    <LabeledSlider className="playback-tracker"
+                        min="0"
+                        max={this.getNumFrames() - 1}
+                        value={this.state.currentFrame}
+                        onChange={this.onSliderChange.bind(this) }/>
+                    <div className="buttons">
                         <button
                             title="Restart"
                             className="material-icons"
@@ -164,9 +166,11 @@ class GifFigure extends React.Component {
                         <button
                             className="material-icons"
                             onClick={this.onToggle.bind(this) }>{this.state.playing ? 'pause' : 'play_arrow'}</button>
-                        <select value={this.state.playbackSpeed} onChange={this.onPlaybackSpeedChange.bind(this) }>
-                            {playbackSpeedOptions}
-                        </select>
+                        <div className="playback-speed-selector">
+                            Speed: <select value={this.state.playbackSpeed} onChange={this.onPlaybackSpeedChange.bind(this) }>
+                                {playbackSpeedOptions}
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -271,27 +275,30 @@ export default class Viewer extends React.Component {
                 <div className="view-controls content-wrapper">
                     <ModeSelector value={this.state.mode} onChange={this.onModeChange.bind(this) } />
 
-                    <LabeledSlider title='Initial Frame'
-                        min="0"
-                        max={this.state.imageData ? this.state.imageData.frames.length - 1 : 0}
-                        value={this.state.initialFrame}
-                        onChange={this.onInitialFrameChange.bind(this) }/>
+                    <div className="frame-controls">
+                        <LabeledSlider title='Initial Frame'
+                            min="0"
+                            max={this.state.imageData ? this.state.imageData.frames.length - 1 : 0}
+                            value={this.state.initialFrame}
+                            onChange={this.onInitialFrameChange.bind(this) }/>
 
-                    <LabeledSlider title='Frame Increment'
-                        min="1"
-                        max={this.state.imageData ? this.state.imageData.frames.length - 1 : 0}
-                        value={this.state.frameIncrement}
-                        onChange={this.onFrameIncrementChange.bind(this) }/>
+                        <LabeledSlider title='Frame Increment'
+                            min="1"
+                            max={this.state.imageData ? this.state.imageData.frames.length - 1 : 0}
+                            value={this.state.frameIncrement}
+                            onChange={this.onFrameIncrementChange.bind(this) }/>
+                    </div>
 
                     <div className={"grid-controls " + (this.state.mode === 'grid' ? '' : 'hidden') }>
-
                         <LabeledSlider title="Title Width"
+                            units="px"
                             min="1"
                             max={this.state.imageData ? this.state.imageData.width : 1}
                             value={this.state.tileWidth}
                             onChange={this.onTileWidthChange.bind(this) }/>
 
                         <LabeledSlider title="Title Height"
+                            units="px"
                             min="1"
                             max={this.state.imageData ? this.state.imageData.height : 1}
                             value={this.state.tileHeight}
