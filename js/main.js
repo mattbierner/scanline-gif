@@ -27856,20 +27856,32 @@
 	            }
 	        }
 	    }, {
+	        key: 'getNumFrames',
+	        value: function getNumFrames() {
+	            if (!this.props.imageData) return 0;
+	            return this.props.imageData.frames.length;
+	        }
+	    }, {
 	        key: 'scheduleNextFrame',
 	        value: function scheduleNextFrame(currentFrame, forcePlay) {
 	            var _this6 = this;
 
 	            if (!this.props.imageData || !forcePlay && !this.state.playing) return;
 
-	            var nextFrame = (currentFrame + 1) % this.props.imageData.frames.length;
+	            var nextFrame = (currentFrame + 1) % this.getNumFrames();;
 	            setTimeout(function () {
-	                var nextFrame = (currentFrame + 1) % _this6.props.imageData.frames.length;
+	                var nextFrame = (currentFrame + 1) % _this6.getNumFrames();
 	                _this6.setState({
 	                    currentFrame: nextFrame
 	                });
 	                _this6.scheduleNextFrame(nextFrame);
 	            }, this.props.imageData.frames[nextFrame].info.delay * 10);
+	        }
+	    }, {
+	        key: 'onSliderChange',
+	        value: function onSliderChange(e) {
+	            var frame = +e.target.value % this.getNumFrames();
+	            this.setState({ currentFrame: frame });
 	        }
 	    }, {
 	        key: 'render',
@@ -27879,6 +27891,11 @@
 	                { className: 'gif-figure' },
 	                _react2.default.createElement(GifRenderer, _extends({}, this.props, { currentFrame: this.state.currentFrame })),
 	                _react2.default.createElement(GifProperties, this.props),
+	                _react2.default.createElement('input', { type: 'range',
+	                    min: '0',
+	                    max: this.getNumFrames() - 1,
+	                    value: this.state.currentFrame,
+	                    onChange: this.onSliderChange.bind(this) }),
 	                _react2.default.createElement(
 	                    'button',
 	                    { onClick: this.onToggle.bind(this) },

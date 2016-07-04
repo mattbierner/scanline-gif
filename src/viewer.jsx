@@ -140,13 +140,19 @@ class GifFigure extends React.Component {
         }
     }
 
+    getNumFrames() {
+        if (!this.props.imageData)
+            return 0;
+        return this.props.imageData.frames.length;
+    }
+
     scheduleNextFrame(currentFrame, forcePlay) {
         if (!this.props.imageData || (!forcePlay && !this.state.playing))
             return;
         
-        const nextFrame = (currentFrame + 1) % this.props.imageData.frames.length;
+        const nextFrame = (currentFrame + 1) % this.getNumFrames();;
         setTimeout(() => {
-            const nextFrame = (currentFrame + 1) % this.props.imageData.frames.length;
+            const nextFrame = (currentFrame + 1) % this.getNumFrames();
             this.setState({
                 currentFrame: nextFrame 
             });
@@ -154,11 +160,21 @@ class GifFigure extends React.Component {
         }, this.props.imageData.frames[nextFrame].info.delay * 10);
     }
 
+    onSliderChange(e) {
+        const frame = +e.target.value % this.getNumFrames();
+        this.setState({currentFrame: frame });
+    }
+
     render() {
         return (
             <div className="gif-figure">
                 <GifRenderer {...this.props} currentFrame={this.state.currentFrame} />
                 <GifProperties {...this.props} />
+                <input type="range"
+                    min="0"
+                    max={this.getNumFrames() - 1}
+                    value={this.state.currentFrame}
+                    onChange={this.onSliderChange.bind(this)}/>
                 <button onClick={this.onToggle.bind(this)}>Play</button>
             </div>
         );
