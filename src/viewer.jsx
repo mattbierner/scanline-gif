@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import loadGif from './loadGif';
+import LabeledSlider from './labeled_slider';
 
 /**
  * Display modes
@@ -220,16 +221,11 @@ class GifFigure extends React.Component {
                 <div className="content-wrapper">
                     <GifProperties {...this.props} />
                     <div className="playback-controls">
-                        <div className="playback-tracker">
-                            <input type="range" className="playback-slider"
-                                min="0"
-                                max={this.getNumFrames() - 1}
-                                value={this.state.currentFrame}
-                                onChange={this.onSliderChange.bind(this) }/>
-                            <span className="min">0</span>
-                            <span className="max">{this.getNumFrames() }</span>
-                            <span className="value">{this.state.currentFrame}</span>
-                        </div>
+                        <LabeledSlider className="playback-tracker"
+                            min="0"
+                            max={this.getNumFrames() - 1}
+                            value={this.state.currentFrame}
+                            onChange={this.onSliderChange.bind(this) }/>
                         <button
                             title="Restart"
                             className="material-icons"
@@ -321,25 +317,26 @@ export default class Viewer extends React.Component {
             <div className="gif-viewer" id="viewer">
                 <GifFigure {...this.state} />
 
-                <div className="view-controls">
+                <div className="view-controls content-wrapper">
                     <select value={this.state.mode} onChange={this.onModeChange.bind(this) }>
                         {options}
                     </select>
-
-                    Initial frame: <input type="range"
+                    
+                    <LabeledSlider title='Initial Frame'
                         min="0"
                         max={this.state.imageData ? this.state.imageData.frames.length - 1 : 0}
                         value={this.state.initialFrame}
                         onChange={this.onInitialFrameChange.bind(this) }/>
 
                     <div className={"custom-controls " + (this.state.mode === modes.custom ? '' : 'hidden') }>
-                        Width: <input type="range"
+
+                        <LabeledSlider title="Title Width"
                             min="1"
                             max={this.state.imageData ? this.state.imageData.width : 1}
                             value={this.state.tileWidth}
                             onChange={this.onTileWidthChange.bind(this) }/>
 
-                        Height: <input type="range"
+                        <LabeledSlider title="Title Height"
                             min="1"
                             max={this.state.imageData ? this.state.imageData.height : 1}
                             value={this.state.tileHeight}

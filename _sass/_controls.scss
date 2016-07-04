@@ -1,0 +1,23 @@
+.labeled-slider {
+    font-size: 12px;
+    color: #aaa;
+
+    .slider {
+        display: block;
+        width: 100%;
+    }
+
+    .min {
+        display: block;
+        float: left;
+    }
+
+    .max {
+        display: block;
+        float: right;
+    }
+
+    .value {
+        display: block;
+    }
+}

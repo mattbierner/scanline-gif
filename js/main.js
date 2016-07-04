@@ -27639,6 +27639,10 @@
 
 	var _loadGif3 = _interopRequireDefault(_loadGif2);
 
+	var _labeled_slider = __webpack_require__(209);
+
+	var _labeled_slider2 = _interopRequireDefault(_labeled_slider);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -27955,30 +27959,11 @@
 	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'playback-controls' },
-	                        _react2.default.createElement(
-	                            'div',
-	                            { className: 'playback-tracker' },
-	                            _react2.default.createElement('input', { type: 'range', className: 'playback-slider',
-	                                min: '0',
-	                                max: this.getNumFrames() - 1,
-	                                value: this.state.currentFrame,
-	                                onChange: this.onSliderChange.bind(this) }),
-	                            _react2.default.createElement(
-	                                'span',
-	                                { className: 'min' },
-	                                '0'
-	                            ),
-	                            _react2.default.createElement(
-	                                'span',
-	                                { className: 'max' },
-	                                this.getNumFrames()
-	                            ),
-	                            _react2.default.createElement(
-	                                'span',
-	                                { className: 'value' },
-	                                this.state.currentFrame
-	                            )
-	                        ),
+	                        _react2.default.createElement(_labeled_slider2.default, { className: 'playback-tracker',
+	                            min: '0',
+	                            max: this.getNumFrames() - 1,
+	                            value: this.state.currentFrame,
+	                            onChange: this.onSliderChange.bind(this) }),
 	                        _react2.default.createElement(
 	                            'button',
 	                            {
@@ -28109,14 +28094,13 @@
 	                _react2.default.createElement(GifFigure, this.state),
 	                _react2.default.createElement(
 	                    'div',
-	                    { className: 'view-controls' },
+	                    { className: 'view-controls content-wrapper' },
 	                    _react2.default.createElement(
 	                        'select',
 	                        { value: this.state.mode, onChange: this.onModeChange.bind(this) },
 	                        options
 	                    ),
-	                    'Initial frame: ',
-	                    _react2.default.createElement('input', { type: 'range',
+	                    _react2.default.createElement(_labeled_slider2.default, { title: 'Initial Frame',
 	                        min: '0',
 	                        max: this.state.imageData ? this.state.imageData.frames.length - 1 : 0,
 	                        value: this.state.initialFrame,
@@ -28124,14 +28108,12 @@
 	                    _react2.default.createElement(
 	                        'div',
 	                        { className: "custom-controls " + (this.state.mode === modes.custom ? '' : 'hidden') },
-	                        'Width: ',
-	                        _react2.default.createElement('input', { type: 'range',
+	                        _react2.default.createElement(_labeled_slider2.default, { title: 'Title Width',
 	                            min: '1',
 	                            max: this.state.imageData ? this.state.imageData.width : 1,
 	                            value: this.state.tileWidth,
 	                            onChange: this.onTileWidthChange.bind(this) }),
-	                        'Height: ',
-	                        _react2.default.createElement('input', { type: 'range',
+	                        _react2.default.createElement(_labeled_slider2.default, { title: 'Title Height',
 	                            min: '1',
 	                            max: this.state.imageData ? this.state.imageData.height : 1,
 	                            value: this.state.tileHeight,
@@ -29020,6 +29002,91 @@
 	exports.default = function (url) {
 	    return loadBinaryData(url).then(decodeGif);
 	};
+
+/***/ },
+/* 208 */,
+/* 209 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(38);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	/**
+	 * 
+	 */
+
+	var LabeledRange = function (_React$Component) {
+	    _inherits(LabeledRange, _React$Component);
+
+	    function LabeledRange() {
+	        _classCallCheck(this, LabeledRange);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(LabeledRange).apply(this, arguments));
+	    }
+
+	    _createClass(LabeledRange, [{
+	        key: 'render',
+	        value: function render() {
+	            var title = this.props.title ? _react2.default.createElement(
+	                'div',
+	                { className: 'label' },
+	                this.props.title
+	            ) : '';
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'labeled-slider ' + (this.props.className || '') },
+	                title,
+	                _react2.default.createElement('input', { className: 'slider',
+	                    type: 'range',
+	                    min: this.props.min,
+	                    max: this.props.max,
+	                    value: this.props.value,
+	                    onChange: this.props.onChange }),
+	                _react2.default.createElement(
+	                    'span',
+	                    { className: 'min' },
+	                    '0'
+	                ),
+	                _react2.default.createElement(
+	                    'span',
+	                    { className: 'max' },
+	                    this.props.max
+	                ),
+	                _react2.default.createElement(
+	                    'span',
+	                    { className: 'value' },
+	                    this.props.value
+	                )
+	            );
+	        }
+	    }]);
+
+	    return LabeledRange;
+	}(_react2.default.Component);
+
+	exports.default = LabeledRange;
+	;
 
 /***/ }
 /******/ ]);
