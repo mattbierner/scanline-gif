@@ -1,7 +1,8 @@
-.labeled-slider {
-    font-size: 12px;
-    color: #aaa;
+/**
+    Generic controls
+*/
 
+.labeled-slider {
     .slider {
         display: block;
         width: 100%;
@@ -39,7 +40,16 @@ button.material-icons {
 }
 
 
-.input-label {
+.label {
     font-size: 12px;
     color: #aaa;
+}
+
+.control-title {
+}
+
+.control-description {
+    font-size: 12px;
+    color: #aaa;
+    font-style: italic;
 }

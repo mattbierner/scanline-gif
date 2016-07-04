@@ -1,3 +1,10 @@
+.gif-viewer {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    margin-bottom: 3em;
+}
+
 .gif-canvas {
     max-width: 100%;
     height: auto;
@@ -17,23 +24,8 @@
     }
 }
 
-.playback-controls,
-.view-controls {
+.playback-controls {
     max-width: 400px;
-    margin: 0 auto;
-}
-
-.view-controls {
-    margin: 0 auto;
-
-    .frame-controls {
-        display: flex;
-    }
-    
-    .frame-controls > * {
-        width: 50%;
-        padding: 1.6em;
-    }
 }
 
 .playback-controls {
@@ -47,5 +39,15 @@
     .buttons > * {
         display: block;
         padding: 0 0.4em;
+    }
+}
+
+@media only screen and (max-width: 800px) {
+    .gif-viewer {
+        flex-flow: column;
+    }
+
+    .view-controls {
+        margin: 0 auto;
     }
 }

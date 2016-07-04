@@ -60,7 +60,7 @@
 
 	var _search2 = _interopRequireDefault(_search);
 
-	var _viewer = __webpack_require__(205);
+	var _viewer = __webpack_require__(206);
 
 	var _viewer2 = _interopRequireDefault(_viewer);
 
@@ -20442,7 +20442,13 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var giphy = __webpack_require__(169)('dc6zaTOxFJmzC');
+	var Waypoint = __webpack_require__(169);
+
+	var giphy = __webpack_require__(170)('dc6zaTOxFJmzC');
+
+	/**
+	 * Gif search result
+	 */
 
 	var SearchResult = function (_React$Component) {
 	    _inherits(SearchResult, _React$Component);
@@ -20453,23 +20459,44 @@
 	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SearchResult).call(this, props));
 
 	        _this.state = {
-	            searchText: 'cat',
-	            results: [],
-	            active: false
+	            active: false,
+	            self: null
 	        };
 	        return _this;
 	    }
 
 	    _createClass(SearchResult, [{
-	        key: 'onFocus',
-	        value: function onFocus() {
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            this.setState({ self: _reactDom2.default.findDOMNode(this) });
+	        }
+	    }, {
+	        key: 'onMouseOver',
+	        value: function onMouseOver() {
 	            this.setState({ active: true });
+	        }
+	    }, {
+	        key: 'onMouseOut',
+	        value: function onMouseOut() {
+	            this.setState({ active: false });
 	        }
 	    }, {
 	        key: 'onSelect',
 	        value: function onSelect() {
 	            this.props.onGifSelected(this.props.data);
 	            window.location = '#viewer';
+	        }
+	    }, {
+	        key: 'onTouchDown',
+	        value: function onTouchDown() {
+	            if (this.state.active) {
+	                this.setState({ selected: true });
+	            }
+	        }
+	    }, {
+	        key: 'onScrollLeave',
+	        value: function onScrollLeave() {
+	            this.setState({ active: false });
 	        }
 	    }, {
 	        key: 'render',
@@ -20479,17 +20506,15 @@
 
 	            return _react2.default.createElement(
 	                'li',
-	                { className: 'search-result', onClick: this.onFocus.bind(this) },
+	                { className: "search-result " + (this.state.active ? 'active' : ''),
+	                    onClick: this.onSelect.bind(this),
+	                    onMouseOver: this.onMouseOver.bind(this),
+	                    onMouseOut: this.onMouseOut.bind(this) },
 	                _react2.default.createElement(
 	                    'figure',
-	                    { className: 'preview', style: { width: still.width + 'px', height: still.height + 'px' } },
+	                    { className: 'preview' },
 	                    _react2.default.createElement('img', { className: 'still', src: still.url }),
 	                    _react2.default.createElement('img', { style: { display: this.state.active ? 'block' : 'none' }, className: 'animated', src: this.state.active ? animated.url : 'about:blank' })
-	                ),
-	                _react2.default.createElement(
-	                    'button',
-	                    { onClick: this.onSelect.bind(this) },
-	                    'use'
 	                )
 	            );
 	        }
@@ -20499,6 +20524,10 @@
 	}(_react2.default.Component);
 
 	;
+
+	/**
+	 * Gif search control.
+	 */
 
 	var Search = function (_React$Component2) {
 	    _inherits(Search, _React$Component2);
@@ -20551,7 +20580,7 @@
 
 	            return _react2.default.createElement(
 	                'div',
-	                { className: 'gif-search content-wrapper' },
+	                { className: 'gif-search' },
 	                _react2.default.createElement('input', { type: 'search',
 	                    value: this.state.searchText,
 	                    placeholder: 'Find gif',
@@ -20580,15 +20609,422 @@
 /* 169 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+	var _createClass = function () {
+	  function defineProperties(target, props) {
+	    for (var i = 0; i < props.length; i++) {
+	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+	    }
+	  }return function (Constructor, protoProps, staticProps) {
+	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+	  };
+	}();
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(38);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	function _interopRequireDefault(obj) {
+	  return obj && obj.__esModule ? obj : { default: obj };
+	}
+
+	function _classCallCheck(instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	}
+
+	function _possibleConstructorReturn(self, call) {
+	  if (!self) {
+	    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+	  }return call && ((typeof call === "undefined" ? "undefined" : _typeof(call)) === "object" || typeof call === "function") ? call : self;
+	}
+
+	function _inherits(subClass, superClass) {
+	  if (typeof superClass !== "function" && superClass !== null) {
+	    throw new TypeError("Super expression must either be null or a function, not " + (typeof superClass === "undefined" ? "undefined" : _typeof(superClass)));
+	  }subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+	}
+
+	var POSITIONS = {
+	  above: 'above',
+	  inside: 'inside',
+	  below: 'below',
+	  invisible: 'invisible'
+	};
+
+	var propTypes = {
+	  debug: _react.PropTypes.bool,
+	  onEnter: _react.PropTypes.func,
+	  onLeave: _react.PropTypes.func,
+	  onPositionChange: _react.PropTypes.func,
+	  fireOnRapidScroll: _react.PropTypes.bool,
+	  scrollableAncestor: _react.PropTypes.any,
+	  throttleHandler: _react.PropTypes.func,
+	  // `topOffset` can either be a number, in which case its a distance from the
+	  // top of the container in pixels, or a string value. Valid string values are
+	  // of the form "20px", which is parsed as pixels, or "20%", which is parsed
+	  // as a percentage of the height of the containing element.
+	  // For instance, if you pass "-20%", and the containing element is 100px tall,
+	  // then the waypoint will be triggered when it has been scrolled 20px beyond
+	  // the top of the containing element.
+	  topOffset: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number]),
+	  // `bottomOffset` is like `topOffset`, but for the bottom of the container.
+	  bottomOffset: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number])
+	};
+
+	var defaultProps = {
+	  topOffset: '0px',
+	  bottomOffset: '0px',
+	  onEnter: function onEnter() {},
+	  onLeave: function onLeave() {},
+	  onPositionChange: function onPositionChange() {},
+
+	  fireOnRapidScroll: true,
+	  throttleHandler: function throttleHandler(handler) {
+	    return handler;
+	  }
+	};
+
+	function debugLog() {
+	  console.log(arguments); // eslint-disable-line no-console
+	}
+
+	/**
+	 * Calls a function when you scroll to the element.
+	 */
+
+	var Waypoint = function (_React$Component) {
+	  _inherits(Waypoint, _React$Component);
+
+	  function Waypoint() {
+	    _classCallCheck(this, Waypoint);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Waypoint).apply(this, arguments));
+	  }
+
+	  _createClass(Waypoint, [{
+	    key: 'componentWillMount',
+	    value: function componentWillMount() {
+	      if (this.props.scrollableParent) {
+	        // eslint-disable-line react/prop-types
+	        throw new Error('The `scrollableParent` prop has changed name ' + 'to `scrollableAncestor`.');
+	      }
+	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      if (!Waypoint.getWindow()) {
+	        return;
+	      }
+	      this._handleScroll = this.props.throttleHandler(this._handleScroll.bind(this));
+	      this.scrollableAncestor = this._findScrollableAncestor();
+	      if (this.props.debug) {
+	        debugLog('scrollableAncestor', this.scrollableAncestor);
+	      }
+	      this.scrollableAncestor.addEventListener('scroll', this._handleScroll);
+	      window.addEventListener('resize', this._handleScroll);
+	      this._handleScroll(null);
+	    }
+	  }, {
+	    key: 'componentDidUpdate',
+	    value: function componentDidUpdate() {
+	      if (!Waypoint.getWindow()) {
+	        return;
+	      }
+
+	      // The element may have moved.
+	      this._handleScroll(null);
+	    }
+	  }, {
+	    key: 'componentWillUnmount',
+	    value: function componentWillUnmount() {
+	      if (!Waypoint.getWindow()) {
+	        return;
+	      }
+
+	      if (this.scrollableAncestor) {
+	        // At the time of unmounting, the scrollable ancestor might no longer
+	        // exist. Guarding against this prevents the following error:
+	        //
+	        //   Cannot read property 'removeEventListener' of undefined
+	        this.scrollableAncestor.removeEventListener('scroll', this._handleScroll);
+	      }
+	      window.removeEventListener('resize', this._handleScroll);
+	    }
+
+	    /**
+	     * Traverses up the DOM to find an ancestor container which has an overflow
+	     * style that allows for scrolling.
+	     *
+	     * @return {Object} the closest ancestor element with an overflow style that
+	     *   allows for scrolling. If none is found, the `window` object is returned
+	     *   as a fallback.
+	     */
+
+	  }, {
+	    key: '_findScrollableAncestor',
+	    value: function _findScrollableAncestor() {
+	      if (this.props.scrollableAncestor) {
+	        return this.props.scrollableAncestor;
+	      }
+
+	      var node = _reactDom2.default.findDOMNode(this);
+
+	      while (node.parentNode) {
+	        node = node.parentNode;
+
+	        if (node === document) {
+	          // This particular node does not have a computed style.
+	          continue;
+	        }
+
+	        if (node === document.documentElement) {
+	          // This particular node does not have a scroll bar, it uses the window.
+	          continue;
+	        }
+
+	        var style = window.getComputedStyle(node);
+	        var overflowY = style.getPropertyValue('overflow-y') || style.getPropertyValue('overflow');
+
+	        if (overflowY === 'auto' || overflowY === 'scroll') {
+	          return node;
+	        }
+	      }
+
+	      // A scrollable ancestor element was not found, which means that we need to
+	      // do stuff on window.
+	      return window;
+	    }
+
+	    /**
+	     * @param {Object} event the native scroll event coming from the scrollable
+	     *   ancestor, or resize event coming from the window. Will be undefined if
+	     *   called by a React lifecyle method
+	     */
+
+	  }, {
+	    key: '_handleScroll',
+	    value: function _handleScroll(event) {
+	      var currentPosition = this._currentPosition();
+	      var previousPosition = this._previousPosition || null;
+	      if (this.props.debug) {
+	        debugLog('currentPosition', currentPosition);
+	        debugLog('previousPosition', previousPosition);
+	      }
+
+	      // Save previous position as early as possible to prevent cycles
+	      this._previousPosition = currentPosition;
+
+	      if (previousPosition === currentPosition) {
+	        // No change since last trigger
+	        return;
+	      }
+
+	      var callbackArg = {
+	        currentPosition: currentPosition,
+	        previousPosition: previousPosition,
+	        event: event
+	      };
+	      this.props.onPositionChange.call(this, callbackArg);
+
+	      if (currentPosition === POSITIONS.inside) {
+	        this.props.onEnter.call(this, callbackArg);
+	      } else if (previousPosition === POSITIONS.inside) {
+	        this.props.onLeave.call(this, callbackArg);
+	      }
+
+	      var isRapidScrollDown = previousPosition === POSITIONS.below && currentPosition === POSITIONS.above;
+	      var isRapidScrollUp = previousPosition === POSITIONS.above && currentPosition === POSITIONS.below;
+	      if (this.props.fireOnRapidScroll && (isRapidScrollDown || isRapidScrollUp)) {
+	        // If the scroll event isn't fired often enough to occur while the
+	        // waypoint was visible, we trigger both callbacks anyway.
+	        this.props.onEnter.call(this, {
+	          currentPosition: POSITIONS.inside,
+	          previousPosition: previousPosition,
+	          event: event
+	        });
+	        this.props.onLeave.call(this, {
+	          currentPosition: currentPosition,
+	          previousPosition: POSITIONS.inside,
+	          event: event
+	        });
+	      }
+	    }
+
+	    /**
+	     * @param {string|number} offset
+	     * @param {number} contextHeight
+	     * @return {number} A number representing `offset` converted into pixels.
+	     */
+
+	  }, {
+	    key: '_computeOffsetPixels',
+	    value: function _computeOffsetPixels(offset, contextHeight) {
+	      var pixelOffset = this._parseOffsetAsPixels(offset);
+	      if (typeof pixelOffset === 'number') {
+	        return pixelOffset;
+	      }
+
+	      var percentOffset = this._parseOffsetAsPercentage(offset);
+	      if (typeof percentOffset === 'number') {
+	        return percentOffset * contextHeight;
+	      }
+	    }
+
+	    /**
+	     * Attempts to parse the offset provided as a prop as a pixel value. If
+	     * parsing fails, then `undefined` is returned. Three examples of values that
+	     * will be successfully parsed are:
+	     * `20`
+	     * "20px"
+	     * "20"
+	     *
+	     * @param {string|number} str A string of the form "{number}" or "{number}px",
+	     *   or just a number.
+	     * @return {number|undefined} The numeric version of `str`. Undefined if `str`
+	     *   was neither a number nor string ending in "px".
+	     */
+
+	  }, {
+	    key: '_parseOffsetAsPixels',
+	    value: function _parseOffsetAsPixels(str) {
+	      if (!isNaN(parseFloat(str)) && isFinite(str)) {
+	        return parseFloat(str);
+	      } else if (str.slice(-2) === 'px') {
+	        return parseFloat(str.slice(0, -2));
+	      }
+	    }
+
+	    /**
+	     * Attempts to parse the offset provided as a prop as a percentage. For
+	     * instance, if the component has been provided with the string "20%" as
+	     * a value of one of the offset props. If the value matches, then it returns
+	     * a numeric version of the prop. For instance, "20%" would become `0.2`.
+	     * If `str` isn't a percentage, then `undefined` will be returned.
+	     *
+	     * @param {string} str The value of an offset prop to be converted to a
+	     *   number.
+	     * @return {number|undefined} The numeric version of `str`. Undefined if `str`
+	     *   was not a percentage.
+	     */
+
+	  }, {
+	    key: '_parseOffsetAsPercentage',
+	    value: function _parseOffsetAsPercentage(str) {
+	      if (str.slice(-1) === '%') {
+	        return parseFloat(str.slice(0, -1)) / 100;
+	      }
+	    }
+
+	    /**
+	     * @return {string} The current position of the waypoint in relation to the
+	     *   visible portion of the scrollable parent. One of `POSITIONS.above`,
+	     *   `POSITIONS.below`, or `POSITIONS.inside`.
+	     */
+
+	  }, {
+	    key: '_currentPosition',
+	    value: function _currentPosition() {
+	      var waypointTop = _reactDom2.default.findDOMNode(this).getBoundingClientRect().top;
+	      var contextHeight = undefined;
+	      var contextScrollTop = undefined;
+	      if (this.scrollableAncestor === window) {
+	        contextHeight = window.innerHeight;
+	        contextScrollTop = 0;
+	      } else {
+	        contextHeight = this.scrollableAncestor.offsetHeight;
+	        contextScrollTop = _reactDom2.default.findDOMNode(this.scrollableAncestor).getBoundingClientRect().top;
+	      }
+	      if (this.props.debug) {
+	        debugLog('waypoint top', waypointTop);
+	        debugLog('scrollableAncestor height', contextHeight);
+	        debugLog('scrollableAncestor scrollTop', contextScrollTop);
+	      }
+
+	      var _props = this.props;
+	      var bottomOffset = _props.bottomOffset;
+	      var topOffset = _props.topOffset;
+
+	      var topOffsetPx = this._computeOffsetPixels(topOffset, contextHeight);
+	      var bottomOffsetPx = this._computeOffsetPixels(bottomOffset, contextHeight);
+	      var contextBottom = contextScrollTop + contextHeight;
+
+	      if (contextHeight === 0) {
+	        return Waypoint.invisible;
+	      }
+
+	      if (contextScrollTop <= waypointTop - topOffsetPx && waypointTop + bottomOffsetPx <= contextBottom) {
+	        return Waypoint.inside;
+	      }
+
+	      if (contextBottom < waypointTop + bottomOffsetPx) {
+	        return Waypoint.below;
+	      }
+
+	      if (waypointTop - topOffsetPx < contextScrollTop) {
+	        return Waypoint.above;
+	      }
+
+	      return Waypoint.invisible;
+	    }
+
+	    /**
+	     * @return {Object}
+	     */
+
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      // We need an element that we can locate in the DOM to determine where it is
+	      // rendered relative to the top of its context.
+	      return _react2.default.createElement('span', { style: { fontSize: 0 } });
+	    }
+	  }]);
+
+	  return Waypoint;
+	}(_react2.default.Component);
+
+	exports.default = Waypoint;
+
+	Waypoint.propTypes = propTypes;
+	Waypoint.above = POSITIONS.above;
+	Waypoint.below = POSITIONS.below;
+	Waypoint.inside = POSITIONS.inside;
+	Waypoint.invisible = POSITIONS.invisible;
+	Waypoint.getWindow = function () {
+	  if (typeof window !== 'undefined') {
+	    return window;
+	  }
+	};
+	Waypoint.defaultProps = defaultProps;
+	Waypoint.displayName = 'Waypoint';
+	module.exports = exports['default'];
+
+/***/ },
+/* 170 */
+/***/ function(module, exports, __webpack_require__) {
+
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 	/* global process */
 
-	var http = __webpack_require__(170);
-	var https = __webpack_require__(204);
-	var queryString = __webpack_require__(201);
+	var http = __webpack_require__(171);
+	var https = __webpack_require__(205);
+	var queryString = __webpack_require__(202);
 
 	/**
 	* Hostname of the Giphy API
@@ -20885,15 +21321,15 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 170 */
+/* 171 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var http = module.exports;
-	var EventEmitter = __webpack_require__(171).EventEmitter;
-	var Request = __webpack_require__(172);
-	var url = __webpack_require__(197);
+	var EventEmitter = __webpack_require__(172).EventEmitter;
+	var Request = __webpack_require__(173);
+	var url = __webpack_require__(198);
 
 	http.request = function (params, cb) {
 	    if (typeof params === 'string') {
@@ -21028,7 +21464,7 @@
 	};
 
 /***/ },
-/* 171 */
+/* 172 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -21302,15 +21738,15 @@
 	}
 
 /***/ },
-/* 172 */
+/* 173 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Stream = __webpack_require__(173);
-	var Response = __webpack_require__(193);
-	var Base64 = __webpack_require__(196);
-	var inherits = __webpack_require__(174);
+	var Stream = __webpack_require__(174);
+	var Response = __webpack_require__(194);
+	var Base64 = __webpack_require__(197);
+	var inherits = __webpack_require__(175);
 
 	var Request = module.exports = function (xhr, params) {
 	    var self = this;
@@ -21485,7 +21921,7 @@
 	};
 
 /***/ },
-/* 173 */
+/* 174 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -21513,15 +21949,15 @@
 
 	module.exports = Stream;
 
-	var EE = __webpack_require__(171).EventEmitter;
-	var inherits = __webpack_require__(174);
+	var EE = __webpack_require__(172).EventEmitter;
+	var inherits = __webpack_require__(175);
 
 	inherits(Stream, EE);
-	Stream.Readable = __webpack_require__(175);
-	Stream.Writable = __webpack_require__(189);
-	Stream.Duplex = __webpack_require__(190);
-	Stream.Transform = __webpack_require__(191);
-	Stream.PassThrough = __webpack_require__(192);
+	Stream.Readable = __webpack_require__(176);
+	Stream.Writable = __webpack_require__(190);
+	Stream.Duplex = __webpack_require__(191);
+	Stream.Transform = __webpack_require__(192);
+	Stream.PassThrough = __webpack_require__(193);
 
 	// Backwards-compat with node 0.4.x
 	Stream.Stream = Stream;
@@ -21616,7 +22052,7 @@
 	};
 
 /***/ },
-/* 174 */
+/* 175 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -21646,25 +22082,25 @@
 	}
 
 /***/ },
-/* 175 */
+/* 176 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
-	exports = module.exports = __webpack_require__(176);
-	exports.Stream = __webpack_require__(173);
+	exports = module.exports = __webpack_require__(177);
+	exports.Stream = __webpack_require__(174);
 	exports.Readable = exports;
-	exports.Writable = __webpack_require__(185);
-	exports.Duplex = __webpack_require__(184);
-	exports.Transform = __webpack_require__(187);
-	exports.PassThrough = __webpack_require__(188);
+	exports.Writable = __webpack_require__(186);
+	exports.Duplex = __webpack_require__(185);
+	exports.Transform = __webpack_require__(188);
+	exports.PassThrough = __webpack_require__(189);
 	if (!process.browser && process.env.READABLE_STREAM === 'disable') {
-	  module.exports = __webpack_require__(173);
+	  module.exports = __webpack_require__(174);
 	}
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 176 */
+/* 177 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -21693,16 +22129,16 @@
 	module.exports = Readable;
 
 	/*<replacement>*/
-	var isArray = __webpack_require__(177);
+	var isArray = __webpack_require__(178);
 	/*</replacement>*/
 
 	/*<replacement>*/
-	var Buffer = __webpack_require__(178).Buffer;
+	var Buffer = __webpack_require__(179).Buffer;
 	/*</replacement>*/
 
 	Readable.ReadableState = ReadableState;
 
-	var EE = __webpack_require__(171).EventEmitter;
+	var EE = __webpack_require__(172).EventEmitter;
 
 	/*<replacement>*/
 	if (!EE.listenerCount) EE.listenerCount = function (emitter, type) {
@@ -21710,17 +22146,17 @@
 	};
 	/*</replacement>*/
 
-	var Stream = __webpack_require__(173);
+	var Stream = __webpack_require__(174);
 
 	/*<replacement>*/
-	var util = __webpack_require__(182);
-	util.inherits = __webpack_require__(174);
+	var util = __webpack_require__(183);
+	util.inherits = __webpack_require__(175);
 	/*</replacement>*/
 
 	var StringDecoder;
 
 	/*<replacement>*/
-	var debug = __webpack_require__(183);
+	var debug = __webpack_require__(184);
 	if (debug && debug.debuglog) {
 	  debug = debug.debuglog('stream');
 	} else {
@@ -21731,7 +22167,7 @@
 	util.inherits(Readable, Stream);
 
 	function ReadableState(options, stream) {
-	  var Duplex = __webpack_require__(184);
+	  var Duplex = __webpack_require__(185);
 
 	  options = options || {};
 
@@ -21789,14 +22225,14 @@
 	  this.decoder = null;
 	  this.encoding = null;
 	  if (options.encoding) {
-	    if (!StringDecoder) StringDecoder = __webpack_require__(186).StringDecoder;
+	    if (!StringDecoder) StringDecoder = __webpack_require__(187).StringDecoder;
 	    this.decoder = new StringDecoder(options.encoding);
 	    this.encoding = options.encoding;
 	  }
 	}
 
 	function Readable(options) {
-	  var Duplex = __webpack_require__(184);
+	  var Duplex = __webpack_require__(185);
 
 	  if (!(this instanceof Readable)) return new Readable(options);
 
@@ -21885,7 +22321,7 @@
 
 	// backwards compatibility.
 	Readable.prototype.setEncoding = function (enc) {
-	  if (!StringDecoder) StringDecoder = __webpack_require__(186).StringDecoder;
+	  if (!StringDecoder) StringDecoder = __webpack_require__(187).StringDecoder;
 	  this._readableState.decoder = new StringDecoder(enc);
 	  this._readableState.encoding = enc;
 	  return this;
@@ -22524,7 +22960,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 177 */
+/* 178 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -22534,7 +22970,7 @@
 	};
 
 /***/ },
-/* 178 */
+/* 179 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer, global) {/*!
@@ -22547,9 +22983,9 @@
 
 	'use strict';
 
-	var base64 = __webpack_require__(179);
-	var ieee754 = __webpack_require__(180);
-	var isArray = __webpack_require__(181);
+	var base64 = __webpack_require__(180);
+	var ieee754 = __webpack_require__(181);
+	var isArray = __webpack_require__(182);
 
 	exports.Buffer = Buffer;
 	exports.SlowBuffer = SlowBuffer;
@@ -24050,10 +24486,10 @@
 	  }
 	  return i;
 	}
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(178).Buffer, (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(179).Buffer, (function() { return this; }())))
 
 /***/ },
-/* 179 */
+/* 180 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24176,7 +24612,7 @@
 	})( false ? undefined.base64js = {} : exports);
 
 /***/ },
-/* 180 */
+/* 181 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -24267,7 +24703,7 @@
 	};
 
 /***/ },
-/* 181 */
+/* 182 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -24279,7 +24715,7 @@
 	};
 
 /***/ },
-/* 182 */
+/* 183 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {'use strict';
@@ -24389,16 +24825,16 @@
 	function objectToString(o) {
 	  return Object.prototype.toString.call(o);
 	}
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(178).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(179).Buffer))
 
 /***/ },
-/* 183 */
+/* 184 */
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
-/* 184 */
+/* 185 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -24441,12 +24877,12 @@
 	/*</replacement>*/
 
 	/*<replacement>*/
-	var util = __webpack_require__(182);
-	util.inherits = __webpack_require__(174);
+	var util = __webpack_require__(183);
+	util.inherits = __webpack_require__(175);
 	/*</replacement>*/
 
-	var Readable = __webpack_require__(176);
-	var Writable = __webpack_require__(185);
+	var Readable = __webpack_require__(177);
+	var Writable = __webpack_require__(186);
 
 	util.inherits(Duplex, Readable);
 
@@ -24489,7 +24925,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 185 */
+/* 186 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -24522,17 +24958,17 @@
 	module.exports = Writable;
 
 	/*<replacement>*/
-	var Buffer = __webpack_require__(178).Buffer;
+	var Buffer = __webpack_require__(179).Buffer;
 	/*</replacement>*/
 
 	Writable.WritableState = WritableState;
 
 	/*<replacement>*/
-	var util = __webpack_require__(182);
-	util.inherits = __webpack_require__(174);
+	var util = __webpack_require__(183);
+	util.inherits = __webpack_require__(175);
 	/*</replacement>*/
 
-	var Stream = __webpack_require__(173);
+	var Stream = __webpack_require__(174);
 
 	util.inherits(Writable, Stream);
 
@@ -24543,7 +24979,7 @@
 	}
 
 	function WritableState(options, stream) {
-	  var Duplex = __webpack_require__(184);
+	  var Duplex = __webpack_require__(185);
 
 	  options = options || {};
 
@@ -24630,7 +25066,7 @@
 	}
 
 	function Writable(options) {
-	  var Duplex = __webpack_require__(184);
+	  var Duplex = __webpack_require__(185);
 
 	  // Writable ctor is applied to Duplexes, though they're not
 	  // instanceof Writable, they're instanceof Readable.
@@ -24922,7 +25358,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 186 */
+/* 187 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24948,7 +25384,7 @@
 	// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 	// USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-	var Buffer = __webpack_require__(178).Buffer;
+	var Buffer = __webpack_require__(179).Buffer;
 
 	var isBufferEncoding = Buffer.isEncoding || function (encoding) {
 	  switch (encoding && encoding.toLowerCase()) {
@@ -25146,7 +25582,7 @@
 	}
 
 /***/ },
-/* 187 */
+/* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -25216,11 +25652,11 @@
 
 	module.exports = Transform;
 
-	var Duplex = __webpack_require__(184);
+	var Duplex = __webpack_require__(185);
 
 	/*<replacement>*/
-	var util = __webpack_require__(182);
-	util.inherits = __webpack_require__(174);
+	var util = __webpack_require__(183);
+	util.inherits = __webpack_require__(175);
 	/*</replacement>*/
 
 	util.inherits(Transform, Duplex);
@@ -25345,7 +25781,7 @@
 	}
 
 /***/ },
-/* 188 */
+/* 189 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -25377,11 +25813,11 @@
 
 	module.exports = PassThrough;
 
-	var Transform = __webpack_require__(187);
+	var Transform = __webpack_require__(188);
 
 	/*<replacement>*/
-	var util = __webpack_require__(182);
-	util.inherits = __webpack_require__(174);
+	var util = __webpack_require__(183);
+	util.inherits = __webpack_require__(175);
 	/*</replacement>*/
 
 	util.inherits(PassThrough, Transform);
@@ -25397,20 +25833,12 @@
 	};
 
 /***/ },
-/* 189 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	module.exports = __webpack_require__(185);
-
-/***/ },
 /* 190 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
-	module.exports = __webpack_require__(184);
+	module.exports = __webpack_require__(186);
 
 /***/ },
 /* 191 */
@@ -25418,7 +25846,7 @@
 
 	"use strict";
 
-	module.exports = __webpack_require__(187);
+	module.exports = __webpack_require__(185);
 
 /***/ },
 /* 192 */
@@ -25432,10 +25860,18 @@
 /* 193 */
 /***/ function(module, exports, __webpack_require__) {
 
+	"use strict";
+
+	module.exports = __webpack_require__(189);
+
+/***/ },
+/* 194 */
+/***/ function(module, exports, __webpack_require__) {
+
 	'use strict';
 
-	var Stream = __webpack_require__(173);
-	var util = __webpack_require__(194);
+	var Stream = __webpack_require__(174);
+	var util = __webpack_require__(195);
 
 	var Response = module.exports = function (res) {
 	    this.offset = 0;
@@ -25548,7 +25984,7 @@
 	};
 
 /***/ },
-/* 194 */
+/* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, process) {'use strict';
@@ -26045,7 +26481,7 @@
 	}
 	exports.isPrimitive = isPrimitive;
 
-	exports.isBuffer = __webpack_require__(195);
+	exports.isBuffer = __webpack_require__(196);
 
 	function objectToString(o) {
 	  return Object.prototype.toString.call(o);
@@ -26082,7 +26518,7 @@
 	 *     prototype.
 	 * @param {function} superCtor Constructor function to inherit prototype from.
 	 */
-	exports.inherits = __webpack_require__(174);
+	exports.inherits = __webpack_require__(175);
 
 	exports._extend = function (origin, add) {
 	  // Don't do anything if add isn't an object
@@ -26102,7 +26538,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(3)))
 
 /***/ },
-/* 195 */
+/* 196 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -26114,7 +26550,7 @@
 	};
 
 /***/ },
-/* 196 */
+/* 197 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -26176,7 +26612,7 @@
 	})();
 
 /***/ },
-/* 197 */
+/* 198 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -26204,7 +26640,7 @@
 	// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 	// USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-	var punycode = __webpack_require__(198);
+	var punycode = __webpack_require__(199);
 
 	exports.parse = urlParse;
 	exports.resolve = urlResolve;
@@ -26283,7 +26719,7 @@
 	  'gopher:': true,
 	  'file:': true
 	},
-	    querystring = __webpack_require__(201);
+	    querystring = __webpack_require__(202);
 
 	function urlParse(url, parseQueryString, slashesDenoteHost) {
 	  if (url && isObject(url) && url instanceof Url) return url;
@@ -26867,7 +27303,7 @@
 	}
 
 /***/ },
-/* 198 */
+/* 199 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module, global) {'use strict';
@@ -27380,7 +27816,7 @@
 		/** Expose `punycode` */
 		// Some AMD build optimizers, like r.js, check for specific condition patterns
 		// like the following:
-		if ("function" == 'function' && _typeof(__webpack_require__(200)) == 'object' && __webpack_require__(200)) {
+		if ("function" == 'function' && _typeof(__webpack_require__(201)) == 'object' && __webpack_require__(201)) {
 			!(__WEBPACK_AMD_DEFINE_RESULT__ = function () {
 				return punycode;
 			}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -27399,10 +27835,10 @@
 			root.punycode = punycode;
 		}
 	})(undefined);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(199)(module), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(200)(module), (function() { return this; }())))
 
 /***/ },
-/* 199 */
+/* 200 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -27419,7 +27855,7 @@
 	};
 
 /***/ },
-/* 200 */
+/* 201 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {module.exports = __webpack_amd_options__;
@@ -27427,16 +27863,16 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, {}))
 
 /***/ },
-/* 201 */
+/* 202 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	exports.decode = exports.parse = __webpack_require__(202);
-	exports.encode = exports.stringify = __webpack_require__(203);
+	exports.decode = exports.parse = __webpack_require__(203);
+	exports.encode = exports.stringify = __webpack_require__(204);
 
 /***/ },
-/* 202 */
+/* 203 */
 /***/ function(module, exports) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -27525,7 +27961,7 @@
 	};
 
 /***/ },
-/* 203 */
+/* 204 */
 /***/ function(module, exports) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -27594,12 +28030,12 @@
 	};
 
 /***/ },
-/* 204 */
+/* 205 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var http = __webpack_require__(170);
+	var http = __webpack_require__(171);
 
 	var https = module.exports;
 
@@ -27614,7 +28050,7 @@
 	};
 
 /***/ },
-/* 205 */
+/* 206 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -27641,7 +28077,7 @@
 
 	var _labeled_slider2 = _interopRequireDefault(_labeled_slider);
 
-	var _gif_player = __webpack_require__(211);
+	var _gif_player = __webpack_require__(210);
 
 	var _gif_player2 = _interopRequireDefault(_gif_player);
 
@@ -27668,6 +28104,10 @@
 	    'grid': {
 	        title: 'Grid',
 	        description: 'Configurable grid'
+	    },
+	    'diagonal': {
+	        title: 'Diagonal',
+	        description: 'Configurable diagonal lines'
 	    }
 	};
 
@@ -27692,7 +28132,12 @@
 	            });
 	            return _react2.default.createElement(
 	                'div',
-	                { className: 'mode-selector' },
+	                { className: 'mode-selector control-group' },
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'control-title' },
+	                    'Mode'
+	                ),
 	                _react2.default.createElement(
 	                    'select',
 	                    { value: this.props.value, onChange: this.props.onChange },
@@ -27700,7 +28145,7 @@
 	                ),
 	                _react2.default.createElement(
 	                    'p',
-	                    null,
+	                    { className: 'control-description' },
 	                    modes[this.props.value].description
 	                )
 	            );
@@ -27730,7 +28175,10 @@
 	            tileHeight: 10,
 	            initialFrame: 0,
 	            frameIncrement: 1,
-	            playbackSpeed: 1
+	            playbackSpeed: 1,
+
+	            diagonalWidth: 20,
+	            diagonalAngle: 45
 	        };
 	        return _this2;
 	    }
@@ -27766,7 +28214,10 @@
 	                    initialFrame: 0,
 	                    frameIncrement: 1,
 	                    tileWidth: 10,
-	                    tileHeight: 10
+	                    tileHeight: 10,
+
+	                    diagonalWidth: 20,
+	                    diagonalAngle: 45
 	                });
 	            }).catch(function (e) {
 	                return console.error(e);
@@ -27803,15 +28254,31 @@
 	            this.setState({ tileHeight: value });
 	        }
 	    }, {
+	        key: 'onDiagonalAngleChange',
+	        value: function onDiagonalAngleChange(e) {
+	            var value = +e.target.value;
+	            this.setState({ diagonalAngle: value });
+	        }
+	    }, {
+	        key: 'onDiagonalWidthChange',
+	        value: function onDiagonalWidthChange(e) {
+	            var value = +e.target.value;
+	            this.setState({ diagonalWidth: value });
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'gif-viewer', id: 'viewer' },
-	                _react2.default.createElement(_gif_player2.default, this.state),
 	                _react2.default.createElement(
 	                    'div',
-	                    { className: 'view-controls content-wrapper' },
+	                    { className: 'player-wrapper' },
+	                    _react2.default.createElement(_gif_player2.default, this.state)
+	                ),
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'view-controls' },
 	                    _react2.default.createElement(ModeSelector, { value: this.state.mode, onChange: this.onModeChange.bind(this) }),
 	                    _react2.default.createElement(
 	                        'div',
@@ -27842,6 +28309,22 @@
 	                            max: this.state.imageData ? this.state.imageData.height : 1,
 	                            value: this.state.tileHeight,
 	                            onChange: this.onTileHeightChange.bind(this) })
+	                    ),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: "diagonal-controls " + (this.state.mode === 'diagonal' ? '' : 'hidden') },
+	                        _react2.default.createElement(_labeled_slider2.default, { title: 'Angle',
+	                            units: 'deg',
+	                            min: '1',
+	                            max: '89',
+	                            value: this.state.diagonalAngle,
+	                            onChange: this.onDiagonalAngleChange.bind(this) }),
+	                        _react2.default.createElement(_labeled_slider2.default, { title: 'Width',
+	                            units: 'px',
+	                            min: '1',
+	                            max: this.state.imageData ? this.state.imageData.height : 1,
+	                            value: this.state.diagonalWidth,
+	                            onChange: this.onDiagonalWidthChange.bind(this) })
 	                    )
 	                )
 	            );
@@ -27855,7 +28338,83 @@
 	;
 
 /***/ },
-/* 206 */
+/* 207 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var omggif = __webpack_require__(208);
+
+	/**
+	 * Get a file as binary data.
+	 */
+	var loadBinaryData = function loadBinaryData(url) {
+	    var xhr = new XMLHttpRequest();
+	    xhr.open("GET", url, true);
+	    xhr.responseType = "arraybuffer";
+
+	    var p = new Promise(function (resolve, reject) {
+	        xhr.onload = function () {
+	            if (xhr.status !== 200) return reject("Could not load: " + url);
+	            var arrayBuffer = xhr.response;
+	            resolve(new Uint8Array(arrayBuffer));
+	        };
+	    });
+	    xhr.send(null);
+	    return p;
+	};
+
+	/**
+	 * Extract metadata and frames from binary gif data.
+	 */
+	var decodeGif = function decodeGif(byteArray) {
+	    var gr = new omggif.GifReader(byteArray);
+	    return {
+	        width: gr.width,
+	        height: gr.height,
+	        frames: extractGifFrameData(gr)
+	    };
+	};
+
+	/**
+	 * Extract each frame of metadata / frame data (as a canvas) from a gif.
+	 */
+	var extractGifFrameData = function extractGifFrameData(reader) {
+	    var frames = [];
+	    var width = reader.width;
+	    var height = reader.height;
+
+
+	    var imageData = new ImageData(width, height);
+	    for (var i = 0, len = reader.numFrames(); i < len; ++i) {
+	        var info = reader.frameInfo(i);
+
+	        var canvas = document.createElement("canvas");
+	        canvas.width = width;
+	        canvas.height = height;
+
+	        var ctx = canvas.getContext('2d');
+
+	        reader.decodeAndBlitFrameRGBA(i, imageData.data);
+	        ctx.putImageData(imageData, 0, 0);
+	        frames.push({ info: info, canvas: canvas });
+	    }
+	    return frames;
+	};
+
+	/**
+	 * Load and decode a gif.
+	 */
+
+	exports.default = function (url) {
+	    return loadBinaryData(url).then(decodeGif);
+	};
+
+/***/ },
+/* 208 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -28652,83 +29211,6 @@
 	} catch (e) {} // CommonJS.
 
 /***/ },
-/* 207 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var omggif = __webpack_require__(206);
-
-	/**
-	 * Get a file as binary data.
-	 */
-	var loadBinaryData = function loadBinaryData(url) {
-	    var xhr = new XMLHttpRequest();
-	    xhr.open("GET", url, true);
-	    xhr.responseType = "arraybuffer";
-
-	    var p = new Promise(function (resolve, reject) {
-	        xhr.onload = function () {
-	            if (xhr.status !== 200) return reject("Could not load: " + url);
-	            var arrayBuffer = xhr.response;
-	            resolve(new Uint8Array(arrayBuffer));
-	        };
-	    });
-	    xhr.send(null);
-	    return p;
-	};
-
-	/**
-	 * Extract metadata and frames from binary gif data.
-	 */
-	var decodeGif = function decodeGif(byteArray) {
-	    var gr = new omggif.GifReader(byteArray);
-	    return {
-	        width: gr.width,
-	        height: gr.height,
-	        frames: extractGifFrameData(gr)
-	    };
-	};
-
-	/**
-	 * Extract each frame of metadata / frame data (as a canvas) from a gif.
-	 */
-	var extractGifFrameData = function extractGifFrameData(reader) {
-	    var frames = [];
-	    var width = reader.width;
-	    var height = reader.height;
-
-
-	    var imageData = new ImageData(width, height);
-	    for (var i = 0, len = reader.numFrames(); i < len; ++i) {
-	        var info = reader.frameInfo(i);
-
-	        var canvas = document.createElement("canvas");
-	        canvas.width = width;
-	        canvas.height = height;
-
-	        var ctx = canvas.getContext('2d');
-
-	        reader.decodeAndBlitFrameRGBA(i, imageData.data);
-	        ctx.putImageData(imageData, 0, 0);
-	        frames.push({ info: info, canvas: canvas });
-	    }
-	    return frames;
-	};
-
-	/**
-	 * Load and decode a gif.
-	 */
-
-	exports.default = function (url) {
-	    return loadBinaryData(url).then(decodeGif);
-	};
-
-/***/ },
-/* 208 */,
 /* 209 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -28774,7 +29256,7 @@
 	        value: function render() {
 	            var title = this.props.title ? _react2.default.createElement(
 	                'div',
-	                { className: 'input-label' },
+	                { className: 'control-title' },
 	                this.props.title
 	            ) : '';
 	            return _react2.default.createElement(
@@ -28789,17 +29271,17 @@
 	                    onChange: this.props.onChange }),
 	                _react2.default.createElement(
 	                    'span',
-	                    { className: 'min input-label' },
+	                    { className: 'min label' },
 	                    this.props.min
 	                ),
 	                _react2.default.createElement(
 	                    'span',
-	                    { className: 'max input-label' },
+	                    { className: 'max label' },
 	                    this.props.max
 	                ),
 	                _react2.default.createElement(
 	                    'span',
-	                    { className: 'value input-label' },
+	                    { className: 'value label' },
 	                    this.props.value + (this.props.units || '')
 	                )
 	            );
@@ -28814,139 +29296,6 @@
 
 /***/ },
 /* 210 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactDom = __webpack_require__(38);
-
-	var _reactDom2 = _interopRequireDefault(_reactDom);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	/**
-	 * Renders a scanlined gif. 
-	 */
-
-	var GifRenderer = function (_React$Component) {
-	    _inherits(GifRenderer, _React$Component);
-
-	    function GifRenderer() {
-	        _classCallCheck(this, GifRenderer);
-
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(GifRenderer).apply(this, arguments));
-	    }
-
-	    _createClass(GifRenderer, [{
-	        key: 'componentDidMount',
-	        value: function componentDidMount() {
-	            var canvas = _reactDom2.default.findDOMNode(this);
-	            var ctx = canvas.getContext('2d');
-
-	            this._canvas = canvas;
-	            this._ctx = ctx;
-	        }
-	    }, {
-	        key: 'componentWillReceiveProps',
-	        value: function componentWillReceiveProps(newProps) {
-	            var _this2 = this;
-
-	            var propsToCheck = ['imageData', 'mode', 'tileWidth', 'tileHeight', 'initialFrame', 'currentFrame', 'frameIncrement'];
-	            var isDiff = propsToCheck.some(function (prop) {
-	                return _this2.props[prop] !== newProps[prop];
-	            });
-	            if (isDiff) {
-	                this.drawGifForOptions(newProps.imageData, newProps);
-	            }
-	        }
-	    }, {
-	        key: 'drawGifForOptions',
-	        value: function drawGifForOptions(imageData, state) {
-	            if (!imageData) return;
-
-	            switch (state.mode) {
-	                case 'columns':
-	                    this.drawGrid(imageData, imageData.width / imageData.frames.length, imageData.height, state.initialFrame + state.currentFrame, state.frameIncrement);
-	                    break;
-
-	                case 'rows':
-	                    this.drawGrid(imageData, imageData.width, imageData.height / imageData.frames.length, state.initialFrame + state.currentFrame, state.frameIncrement);
-	                    break;
-
-	                case 'grid':
-	                default:
-	                    this.drawGrid(imageData, state.tileWidth, state.tileHeight, state.initialFrame + state.currentFrame, state.frameIncrement);
-	                    break;
-	            }
-	        }
-	    }, {
-	        key: 'drawGrid',
-	        value: function drawGrid(imageData, tileWidth, tileHeight, initialFrame, increment) {
-	            if (!imageData) return;
-
-	            var ctx = this._ctx;
-	            var canvas = this._canvas;
-
-	            ctx.clearRect(0, 0, canvas.width, canvas.height);
-	            canvas.width = imageData.width;
-	            canvas.height = imageData.height;
-
-	            var len = imageData.frames.length;
-	            var dy = imageData.height;
-
-	            var i = initialFrame;
-	            for (var x = 0; x < imageData.width; x += tileWidth) {
-	                for (var y = 0; y < imageData.height; y += tileHeight) {
-	                    var frameNumber = i % len;
-	                    i += increment;
-	                    ctx.save();
-
-	                    // Create clipping rect.
-	                    ctx.beginPath();
-	                    ctx.moveTo(x, y);
-	                    ctx.lineTo(x + tileWidth, y);
-	                    ctx.lineTo(x + tileWidth, y + tileHeight);
-	                    ctx.lineTo(x, y + tileHeight);
-	                    ctx.clip();
-
-	                    // Draw gif with clipping applied
-	                    ctx.drawImage(imageData.frames[frameNumber].canvas, 0, 0);
-
-	                    ctx.restore();
-	                }
-	            }
-	        }
-	    }, {
-	        key: 'render',
-	        value: function render() {
-	            return _react2.default.createElement('canvas', { className: 'gif-canvas', width: '0', height: '0' });
-	        }
-	    }]);
-
-	    return GifRenderer;
-	}(_react2.default.Component);
-
-	exports.default = GifRenderer;
-	;
-
-/***/ },
-/* 211 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -28971,7 +29320,7 @@
 
 	var _labeled_slider2 = _interopRequireDefault(_labeled_slider);
 
-	var _gif_renderer = __webpack_require__(210);
+	var _gif_renderer = __webpack_require__(211);
 
 	var _gif_renderer2 = _interopRequireDefault(_gif_renderer);
 
@@ -28994,7 +29343,7 @@
 	};
 
 	/**
-	 * Property of a gif
+	 * Property of a gif.
 	 */
 
 	var GifProperty = function (_React$Component) {
@@ -29033,7 +29382,7 @@
 	;
 
 	/**
-	 * Property of a gif
+	 * Set of metadata displayed about a gif.
 	 */
 
 	var GifProperties = function (_React$Component2) {
@@ -29225,6 +29574,186 @@
 	}(_react2.default.Component);
 
 	exports.default = GifPlayer;
+	;
+
+/***/ },
+/* 211 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(38);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	/**
+	 * Renders a scanlined gif. 
+	 */
+
+	var GifRenderer = function (_React$Component) {
+	    _inherits(GifRenderer, _React$Component);
+
+	    function GifRenderer() {
+	        _classCallCheck(this, GifRenderer);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(GifRenderer).apply(this, arguments));
+	    }
+
+	    _createClass(GifRenderer, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            var canvas = _reactDom2.default.findDOMNode(this);
+	            var ctx = canvas.getContext('2d');
+
+	            this._canvas = canvas;
+	            this._ctx = ctx;
+	        }
+	    }, {
+	        key: 'componentWillReceiveProps',
+	        value: function componentWillReceiveProps(newProps) {
+	            var _this2 = this;
+
+	            var propsToCheck = ['imageData', 'mode', 'tileWidth', 'tileHeight', 'diagonalWidth', 'diagonalAngle', 'initialFrame', 'currentFrame', 'frameIncrement'];
+	            var isDiff = propsToCheck.some(function (prop) {
+	                return _this2.props[prop] !== newProps[prop];
+	            });
+	            if (isDiff) {
+	                this.drawGifForOptions(newProps.imageData, newProps);
+	            }
+	        }
+	    }, {
+	        key: 'drawGifForOptions',
+	        value: function drawGifForOptions(imageData, state) {
+	            if (!imageData) return;
+
+	            switch (state.mode) {
+	                case 'columns':
+	                    this.drawGrid(imageData, imageData.width / imageData.frames.length, imageData.height, state.initialFrame + state.currentFrame, state.frameIncrement);
+	                    break;
+
+	                case 'rows':
+	                    this.drawGrid(imageData, imageData.width, imageData.height / imageData.frames.length, state.initialFrame + state.currentFrame, state.frameIncrement);
+	                    break;
+
+	                case 'grid':
+	                default:
+	                    this.drawGrid(imageData, state.tileWidth, state.tileHeight, state.initialFrame + state.currentFrame, state.frameIncrement);
+	                    break;
+
+	                case 'diagonal':
+	                    this.drawDiag(imageData, state.diagonalWidth, state.diagonalAngle, state.initialFrame + state.currentFrame, state.frameIncrement);
+	                    break;
+	            }
+	        }
+	    }, {
+	        key: 'drawDiag',
+	        value: function drawDiag(imageData, width, angle, initialFrame, increment) {
+	            if (!imageData) return;
+
+	            var radAngle = angle * (Math.PI / 180);
+	            var dx = width / Math.cos(radAngle);
+	            var dy = width / Math.sin(radAngle);
+
+	            var ctx = this._ctx;
+	            var canvas = this._canvas;
+
+	            ctx.clearRect(0, 0, canvas.width, canvas.height);
+	            canvas.width = imageData.width;
+	            canvas.height = imageData.height;
+	            var len = imageData.frames.length;
+
+	            var diag = Math.sqrt(Math.pow(imageData.width, 2) + Math.pow(imageData.height, 2));
+
+	            var x = 0;
+	            var y = 0;
+	            var i = initialFrame;
+	            do {
+	                var frameNumber = i % len;
+	                i += increment;
+	                ctx.save();
+
+	                // Create clipping rect.
+	                ctx.beginPath();
+	                ctx.moveTo(x, 0);
+	                ctx.lineTo(x + dx, 0);
+	                ctx.lineTo(0, y + dy);
+	                ctx.lineTo(0, y);
+	                ctx.clip();
+
+	                // Draw gif with clipping applied
+	                ctx.drawImage(imageData.frames[frameNumber].canvas, 0, 0);
+
+	                ctx.restore();
+	                x += dx;
+	                y += dy;
+	            } while ((0 - x) * (imageData.height - 0) - (y - 0) * (imageData.width - x) < 0);
+	        }
+	    }, {
+	        key: 'drawGrid',
+	        value: function drawGrid(imageData, tileWidth, tileHeight, initialFrame, increment) {
+	            if (!imageData) return;
+
+	            var ctx = this._ctx;
+	            var canvas = this._canvas;
+
+	            ctx.clearRect(0, 0, canvas.width, canvas.height);
+	            canvas.width = imageData.width;
+	            canvas.height = imageData.height;
+
+	            var len = imageData.frames.length;
+	            var dy = imageData.height;
+
+	            var i = initialFrame;
+	            for (var x = 0; x < imageData.width; x += tileWidth) {
+	                for (var y = 0; y < imageData.height; y += tileHeight) {
+	                    var frameNumber = i % len;
+	                    i += increment;
+	                    ctx.save();
+
+	                    // Create clipping rect.
+	                    ctx.beginPath();
+	                    ctx.moveTo(x, y);
+	                    ctx.lineTo(x + tileWidth, y);
+	                    ctx.lineTo(x + tileWidth, y + tileHeight);
+	                    ctx.lineTo(x, y + tileHeight);
+	                    ctx.clip();
+
+	                    // Draw gif with clipping applied
+	                    ctx.drawImage(imageData.frames[frameNumber].canvas, 0, 0);
+
+	                    ctx.restore();
+	                }
+	            }
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement('canvas', { className: 'gif-canvas', width: '0', height: '0' });
+	        }
+	    }]);
+
+	    return GifRenderer;
+	}(_react2.default.Component);
+
+	exports.default = GifRenderer;
 	;
 
 /***/ }

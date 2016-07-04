@@ -20,6 +20,10 @@ const modes = {
     'grid': {
         title: 'Grid',
         description: 'Configurable grid'
+    },
+    'diagonal': {
+        title: 'Diagonal',
+        description: 'Configurable diagonal lines'
     }
 };
 
@@ -29,11 +33,12 @@ class ModeSelector extends React.Component {
         const modeOptions = Object.keys(modes).map(x =>
             <option value={x} key={x}>{modes[x].title}</option>);
         return (
-            <div className="mode-selector">
+            <div className="mode-selector control-group">
+                <div className="control-title">Mode</div>
                 <select value={this.props.value} onChange={this.props.onChange }>
                     {modeOptions}
                 </select>
-                <p>{modes[this.props.value].description}</p>
+                <p className="control-description">{modes[this.props.value].description}</p>
             </div>);
     }
 }
@@ -51,7 +56,10 @@ export default class Viewer extends React.Component {
             tileHeight: 10,
             initialFrame: 0,
             frameIncrement: 1,
-            playbackSpeed: 1
+            playbackSpeed: 1,
+
+            diagonalWidth: 20,
+            diagonalAngle: 45
         };
     }
 
@@ -81,7 +89,10 @@ export default class Viewer extends React.Component {
                     initialFrame: 0,
                     frameIncrement: 1,
                     tileWidth: 10,
-                    tileHeight: 10
+                    tileHeight: 10,
+
+                    diagonalWidth: 20,
+                    diagonalAngle: 45
                 });
             })
             .catch(e => console.error(e));
@@ -112,12 +123,23 @@ export default class Viewer extends React.Component {
         this.setState({ tileHeight: value });
     }
 
+    onDiagonalAngleChange(e) {
+        const value = +e.target.value;
+        this.setState({ diagonalAngle: value });
+    }
+
+    onDiagonalWidthChange(e) {
+        const value = +e.target.value;
+        this.setState({ diagonalWidth: value });
+    }
+
     render() {
         return (
             <div className="gif-viewer" id="viewer">
-                <GifPlayer {...this.state} />
-
-                <div className="view-controls content-wrapper">
+                <div className="player-wrapper">
+                    <GifPlayer {...this.state} />
+                </div>
+                <div className="view-controls">
                     <ModeSelector value={this.state.mode} onChange={this.onModeChange.bind(this) } />
 
                     <div className="frame-controls">
@@ -148,6 +170,22 @@ export default class Viewer extends React.Component {
                             max={this.state.imageData ? this.state.imageData.height : 1}
                             value={this.state.tileHeight}
                             onChange={this.onTileHeightChange.bind(this) }/>
+                    </div>
+
+                    <div className={"diagonal-controls " + (this.state.mode === 'diagonal' ? '' : 'hidden') }>
+                        <LabeledSlider title="Angle"
+                            units="deg"
+                            min="1"
+                            max="89"
+                            value={this.state.diagonalAngle}
+                            onChange={this.onDiagonalAngleChange.bind(this) }/>
+
+                        <LabeledSlider title="Width"
+                            units="px"
+                            min="1"
+                            max={this.state.imageData ? this.state.imageData.height : 1}
+                            value={this.state.diagonalWidth}
+                            onChange={this.onDiagonalWidthChange.bind(this) }/>
                     </div>
                 </div>
             </div>);

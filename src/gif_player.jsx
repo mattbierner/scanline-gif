@@ -15,7 +15,7 @@ const playbackSpeeds = {
 };
 
 /**
- * Property of a gif
+ * Property of a gif.
  */
 class GifProperty extends React.Component {
     render() {
@@ -28,7 +28,7 @@ class GifProperty extends React.Component {
 };
 
 /**
- * Property of a gif
+ * Set of metadata displayed about a gif.
  */
 class GifProperties extends React.Component {
     render() {
@@ -139,6 +139,7 @@ export default class GifPlayer extends React.Component {
                         max={this.getNumFrames() - 1}
                         value={this.state.currentFrame}
                         onChange={this.onSliderChange.bind(this) }/>
+                    
                     <div className="buttons">
                         <button
                             title="Restart"

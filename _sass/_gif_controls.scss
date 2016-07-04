@@ -1,0 +1,15 @@
+.view-controls {
+    max-width: 400px;
+    padding: 0 1em;
+}
+
+.view-controls {
+    .frame-controls {
+        display: flex;
+    }
+    
+    .frame-controls > * {
+        width: 50%;
+        padding: 1.6em;
+    }
+}
