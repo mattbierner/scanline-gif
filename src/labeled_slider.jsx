@@ -16,7 +16,7 @@ export default class LabeledRange extends React.Component {
                     max={this.props.max}
                     value={this.props.value}
                     onChange={this.props.onChange} />
-                <span className="min">0</span>
+                <span className="min">{this.props.min}</span>
                 <span className="max">{this.props.max}</span>
                 <span className="value">{this.props.value}</span>
             </div>

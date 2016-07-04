@@ -8,9 +8,18 @@ import LabeledSlider from './labeled_slider';
  * Display modes
  */
 const modes = {
-    'columns': 'columns',
-    'rows': 'rows',
-    'custom': 'custom'
+    'columns': {
+        title: 'Columns',
+        description: ''
+    },
+    'rows': {
+        title: 'Rows',
+        description: ''
+    },
+    'grid': {
+        title: 'Grid',
+        description: ''
+    }
 };
 
 const playbackSpeeds = {
@@ -36,7 +45,7 @@ class GifRenderer extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const propsToCheck = ['imageData', 'mode', 'tileWidth', 'tileHeight', 'initialFrame', 'currentFrame'];
+        const propsToCheck = ['imageData', 'mode', 'tileWidth', 'tileHeight', 'initialFrame', 'currentFrame', 'frameIncrement'];
         const isDiff = propsToCheck.some(prop => this.props[prop] !== newProps[prop]);
         if (isDiff) {
             this.drawGifForOptions(newProps.imageData, newProps);
@@ -48,20 +57,20 @@ class GifRenderer extends React.Component {
             return;
 
         switch (state.mode) {
-            case modes.columns:
-                this.drawGif(imageData, imageData.width / imageData.frames.length, imageData.height, state.initialFrame + state.currentFrame);
+            case 'columns':
+                this.drawGif(imageData, imageData.width / imageData.frames.length, imageData.height, state.initialFrame + state.currentFrame, state.frameIncrement);
                 break;
 
-            case modes.rows:
-                this.drawGif(imageData, imageData.width, imageData.height / imageData.frames.length, state.initialFrame + state.currentFrame);
+            case 'rows':
+                this.drawGif(imageData, imageData.width, imageData.height / imageData.frames.length, state.initialFrame + state.currentFrame, state.frameIncrement);
                 break;
 
             default:
-                this.drawGif(imageData, state.tileWidth, state.tileHeight, state.initialFrame + state.currentFrame);
+                this.drawGif(imageData, state.tileWidth, state.tileHeight, state.initialFrame + state.currentFrame, state.frameIncrement);
         }
     }
 
-    drawGif(imageData, tileWidth, tileHeight, initialFrame) {
+    drawGif(imageData, tileWidth, tileHeight, initialFrame, increment) {
         if (!imageData)
             return;
 
@@ -78,7 +87,8 @@ class GifRenderer extends React.Component {
         let i = initialFrame;
         for (let x = 0; x < imageData.width; x += tileWidth) {
             for (let y = 0; y < imageData.height; y += tileHeight) {
-                const frameNumber = i++ % len;
+                const frameNumber = i % len;
+                i += increment;
                 ctx.save();
 
                 // Create clipping rect.
@@ -243,6 +253,18 @@ class GifFigure extends React.Component {
     }
 };
 
+class ModeSelector extends React.Component {
+    render() {
+        const modeOptions = Object.keys(modes).map(x =>
+            <option value={x} key={x}>{modes[x].title}</option>);
+        return (
+            <select value={this.props.value} onChange={this.props.onChange }>
+                {modeOptions}
+            </select>
+        )
+    }
+}
+
 /**
  * Displays an interative scanlined gif with controls. 
  */
@@ -255,6 +277,7 @@ export default class Viewer extends React.Component {
             tileWidth: 10,
             tileHeight: 10,
             initialFrame: 0,
+            frameIncrement: 1,
             playbackSpeed: 1
         };
     }
@@ -283,6 +306,7 @@ export default class Viewer extends React.Component {
                     imageData: data,
                     playbackSpeed: 1,
                     initialFrame: 0,
+                    frameIncrement: 1,
                     tileWidth: 10,
                     tileHeight: 10
                 });
@@ -305,30 +329,38 @@ export default class Viewer extends React.Component {
         this.setState({ initialFrame: value });
     }
 
+    onFrameIncrementChange(e) {
+        const value = +e.target.value;
+        this.setState({ frameIncrement: value });
+    }
+
+
     onTileHeightChange(e) {
         const value = +e.target.value;
         this.setState({ tileHeight: value });
     }
 
     render() {
-        const options = Object.keys(modes).map(x =>
-            <option value={x} key={x}>{modes[x]}</option>);
         return (
             <div className="gif-viewer" id="viewer">
                 <GifFigure {...this.state} />
 
                 <div className="view-controls content-wrapper">
-                    <select value={this.state.mode} onChange={this.onModeChange.bind(this) }>
-                        {options}
-                    </select>
-                    
+                    <ModeSelector value={this.state.mode} onChange={this.onModeChange.bind(this) } />
+
                     <LabeledSlider title='Initial Frame'
                         min="0"
                         max={this.state.imageData ? this.state.imageData.frames.length - 1 : 0}
                         value={this.state.initialFrame}
                         onChange={this.onInitialFrameChange.bind(this) }/>
 
-                    <div className={"custom-controls " + (this.state.mode === modes.custom ? '' : 'hidden') }>
+                    <LabeledSlider title='Frame Increment'
+                        min="1"
+                        max={this.state.imageData ? this.state.imageData.frames.length - 1 : 0}
+                        value={this.state.frameIncrement}
+                        onChange={this.onFrameIncrementChange.bind(this) }/>
+
+                    <div className={"grid-controls " + (this.state.mode === 'grid' ? '' : 'hidden') }>
 
                         <LabeledSlider title="Title Width"
                             min="1"

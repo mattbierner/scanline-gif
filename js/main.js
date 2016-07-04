@@ -27655,9 +27655,18 @@
 	 * Display modes
 	 */
 	var modes = {
-	    'columns': 'columns',
-	    'rows': 'rows',
-	    'custom': 'custom'
+	    'columns': {
+	        title: 'Columns',
+	        description: ''
+	    },
+	    'rows': {
+	        title: 'Rows',
+	        description: ''
+	    },
+	    'grid': {
+	        title: 'Grid',
+	        description: ''
+	    }
 	};
 
 	var playbackSpeeds = {
@@ -27697,7 +27706,7 @@
 	        value: function componentWillReceiveProps(newProps) {
 	            var _this2 = this;
 
-	            var propsToCheck = ['imageData', 'mode', 'tileWidth', 'tileHeight', 'initialFrame', 'currentFrame'];
+	            var propsToCheck = ['imageData', 'mode', 'tileWidth', 'tileHeight', 'initialFrame', 'currentFrame', 'frameIncrement'];
 	            var isDiff = propsToCheck.some(function (prop) {
 	                return _this2.props[prop] !== newProps[prop];
 	            });
@@ -27711,21 +27720,21 @@
 	            if (!imageData) return;
 
 	            switch (state.mode) {
-	                case modes.columns:
-	                    this.drawGif(imageData, imageData.width / imageData.frames.length, imageData.height, state.initialFrame + state.currentFrame);
+	                case 'columns':
+	                    this.drawGif(imageData, imageData.width / imageData.frames.length, imageData.height, state.initialFrame + state.currentFrame, state.frameIncrement);
 	                    break;
 
-	                case modes.rows:
-	                    this.drawGif(imageData, imageData.width, imageData.height / imageData.frames.length, state.initialFrame + state.currentFrame);
+	                case 'rows':
+	                    this.drawGif(imageData, imageData.width, imageData.height / imageData.frames.length, state.initialFrame + state.currentFrame, state.frameIncrement);
 	                    break;
 
 	                default:
-	                    this.drawGif(imageData, state.tileWidth, state.tileHeight, state.initialFrame + state.currentFrame);
+	                    this.drawGif(imageData, state.tileWidth, state.tileHeight, state.initialFrame + state.currentFrame, state.frameIncrement);
 	            }
 	        }
 	    }, {
 	        key: 'drawGif',
-	        value: function drawGif(imageData, tileWidth, tileHeight, initialFrame) {
+	        value: function drawGif(imageData, tileWidth, tileHeight, initialFrame, increment) {
 	            if (!imageData) return;
 
 	            var ctx = this._ctx;
@@ -27741,7 +27750,8 @@
 	            var i = initialFrame;
 	            for (var x = 0; x < imageData.width; x += tileWidth) {
 	                for (var y = 0; y < imageData.height; y += tileHeight) {
-	                    var frameNumber = i++ % len;
+	                    var frameNumber = i % len;
+	                    i += increment;
 	                    ctx.save();
 
 	                    // Create clipping rect.
@@ -27995,27 +28005,59 @@
 
 	;
 
+	var ModeSelector = function (_React$Component5) {
+	    _inherits(ModeSelector, _React$Component5);
+
+	    function ModeSelector() {
+	        _classCallCheck(this, ModeSelector);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(ModeSelector).apply(this, arguments));
+	    }
+
+	    _createClass(ModeSelector, [{
+	        key: 'render',
+	        value: function render() {
+	            var modeOptions = Object.keys(modes).map(function (x) {
+	                return _react2.default.createElement(
+	                    'option',
+	                    { value: x, key: x },
+	                    modes[x].title
+	                );
+	            });
+	            return _react2.default.createElement(
+	                'select',
+	                { value: this.props.value, onChange: this.props.onChange },
+	                modeOptions
+	            );
+	        }
+	    }]);
+
+	    return ModeSelector;
+	}(_react2.default.Component);
+
 	/**
 	 * Displays an interative scanlined gif with controls. 
 	 */
 
-	var Viewer = function (_React$Component5) {
-	    _inherits(Viewer, _React$Component5);
+
+	var Viewer = function (_React$Component6) {
+	    _inherits(Viewer, _React$Component6);
 
 	    function Viewer(props) {
 	        _classCallCheck(this, Viewer);
 
-	        var _this7 = _possibleConstructorReturn(this, Object.getPrototypeOf(Viewer).call(this, props));
+	        var _this8 = _possibleConstructorReturn(this, Object.getPrototypeOf(Viewer).call(this, props));
 
-	        _this7.state = {
+	        _this8.state = {
 	            imageData: null,
 	            mode: Object.keys(modes)[0],
 	            tileWidth: 10,
 	            tileHeight: 10,
 	            initialFrame: 0,
+	            frameIncrement: 1,
 	            playbackSpeed: 1
 	        };
-	        return _this7;
+	        return _this8;
 	    }
 
 	    _createClass(Viewer, [{
@@ -28040,13 +28082,14 @@
 	    }, {
 	        key: 'loadGif',
 	        value: function loadGif(file) {
-	            var _this8 = this;
+	            var _this9 = this;
 
 	            (0, _loadGif3.default)(file).then(function (data) {
-	                _this8.setState({
+	                _this9.setState({
 	                    imageData: data,
 	                    playbackSpeed: 1,
 	                    initialFrame: 0,
+	                    frameIncrement: 1,
 	                    tileWidth: 10,
 	                    tileHeight: 10
 	                });
@@ -28073,6 +28116,12 @@
 	            this.setState({ initialFrame: value });
 	        }
 	    }, {
+	        key: 'onFrameIncrementChange',
+	        value: function onFrameIncrementChange(e) {
+	            var value = +e.target.value;
+	            this.setState({ frameIncrement: value });
+	        }
+	    }, {
 	        key: 'onTileHeightChange',
 	        value: function onTileHeightChange(e) {
 	            var value = +e.target.value;
@@ -28081,13 +28130,6 @@
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var options = Object.keys(modes).map(function (x) {
-	                return _react2.default.createElement(
-	                    'option',
-	                    { value: x, key: x },
-	                    modes[x]
-	                );
-	            });
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'gif-viewer', id: 'viewer' },
@@ -28095,19 +28137,20 @@
 	                _react2.default.createElement(
 	                    'div',
 	                    { className: 'view-controls content-wrapper' },
-	                    _react2.default.createElement(
-	                        'select',
-	                        { value: this.state.mode, onChange: this.onModeChange.bind(this) },
-	                        options
-	                    ),
+	                    _react2.default.createElement(ModeSelector, { value: this.state.mode, onChange: this.onModeChange.bind(this) }),
 	                    _react2.default.createElement(_labeled_slider2.default, { title: 'Initial Frame',
 	                        min: '0',
 	                        max: this.state.imageData ? this.state.imageData.frames.length - 1 : 0,
 	                        value: this.state.initialFrame,
 	                        onChange: this.onInitialFrameChange.bind(this) }),
+	                    _react2.default.createElement(_labeled_slider2.default, { title: 'Frame Increment',
+	                        min: '1',
+	                        max: this.state.imageData ? this.state.imageData.frames.length - 1 : 0,
+	                        value: this.state.frameIncrement,
+	                        onChange: this.onFrameIncrementChange.bind(this) }),
 	                    _react2.default.createElement(
 	                        'div',
-	                        { className: "custom-controls " + (this.state.mode === modes.custom ? '' : 'hidden') },
+	                        { className: "grid-controls " + (this.state.mode === 'grid' ? '' : 'hidden') },
 	                        _react2.default.createElement(_labeled_slider2.default, { title: 'Title Width',
 	                            min: '1',
 	                            max: this.state.imageData ? this.state.imageData.width : 1,
@@ -29066,7 +29109,7 @@
 	                _react2.default.createElement(
 	                    'span',
 	                    { className: 'min' },
-	                    '0'
+	                    this.props.min
 	                ),
 	                _react2.default.createElement(
 	                    'span',
