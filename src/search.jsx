@@ -75,7 +75,7 @@ export default class Search extends React.Component {
             onGifSelected={this.onGifSelected.bind(this)} />);
 
         return (
-            <div className="gif-search">
+            <div className="gif-search content-wrapper">
                 <input type="search"
                     value={this.state.searchText}
                     placeholder="Find gif"

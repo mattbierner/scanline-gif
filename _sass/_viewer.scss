@@ -16,3 +16,32 @@
         font-style: italic;
     }
 }
+
+.playback-controls {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+
+.playback-slider {
+    display: block;
+    width: 100%;
+
+}
+.playback-tracker {
+    font-size: 12px;
+    color: #aaa;
+    .min {
+        display: block;
+        float: left;
+    }
+
+    .max {
+        display: block;
+        float: right;
+    }
+
+    .value {
+        display: block;
+    }
+}

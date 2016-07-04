@@ -137,19 +137,20 @@ class GifFigure extends React.Component {
         super(props)
         this.state = {
             currentFrame: 0,
-            playing: false
+            playing: false,
+            loop: true,
+            playbackSpeed: 1
         };
     }
 
     componentWillReceiveProps(newProps) {
         if (this.props.imageData !== newProps.imageData) {
             this.setState({
-            //    playing: false,
+                //    playing: false,
                 currentFrame: 0
             })
         }
     }
-    
 
     onToggle() {
         this.setState({ playing: !this.state.playing });
@@ -171,9 +172,15 @@ class GifFigure extends React.Component {
 
         const start = Date.now();
         setTimeout(() => {
-            const nextFrame = (this.state.currentFrame + 1) % this.getNumFrames();
+            let nextFrame = (this.state.currentFrame + 1);
+            if (nextFrame >= this.getNumFrames() && !this.state.loop) {
+                this.setState({ playing: false });
+                return;
+            }
 
-            const interval = ((this.props.imageData.frames[nextFrame].info.delay || 1) * 10 ) / this.props.playbackSpeed;
+            nextFrame %= this.getNumFrames();
+
+            const interval = ((this.props.imageData.frames[nextFrame].info.delay || 1) * 10) / this.state.playbackSpeed;
             const elapsed = (Date.now() - start);
             const next = Math.max(0, interval - (elapsed - delay));
             this.setState({
@@ -188,17 +195,53 @@ class GifFigure extends React.Component {
         this.setState({ currentFrame: frame });
     }
 
+    onReplay() {
+        this.setState({
+            currentFrame: 0
+        });
+    }
+
+    onLoopToggle() {
+        this.setState({ loop: !this.state.loop });
+    }
+
+    onPlaybackSpeedChange(e) {
+        const value = +e.target.value;
+        this.setState({ playbackSpeed: value });
+    }
+
     render() {
+        const playbackSpeedOptions = Object.keys(playbackSpeeds).map(x =>
+            <option value={playbackSpeeds[x]} key={x}>{x}</option>);
+
         return (
             <div className="gif-figure">
                 <GifRenderer {...this.props} currentFrame={this.state.currentFrame} />
-                <GifProperties {...this.props} />
-                <input type="range"
-                    min="0"
-                    max={this.getNumFrames() - 1}
-                    value={this.state.currentFrame}
-                    onChange={this.onSliderChange.bind(this) }/>
-                <button onClick={this.onToggle.bind(this) }>Play</button>
+                <div className="content-wrapper">
+                    <GifProperties {...this.props} />
+                    <div className="playback-controls">
+                        <div className="playback-tracker">
+                            <input type="range" className="playback-slider"
+                                min="0"
+                                max={this.getNumFrames() - 1}
+                                value={this.state.currentFrame}
+                                onChange={this.onSliderChange.bind(this) }/>
+                            <span className="min">0</span>
+                            <span className="max">{this.getNumFrames() }</span>
+                            <span className="value">{this.state.currentFrame}</span>
+                        </div>
+                        <button
+                            title="Restart"
+                            className="material-icons"
+                            onClick={this.onReplay.bind(this) }>replay</button>
+                        <button
+                            className="material-icons"
+                            onClick={this.onToggle.bind(this) }>{this.state.playing ? 'pause' : 'play_arrow'}</button>
+                        <select value={this.state.playbackSpeed} onChange={this.onPlaybackSpeedChange.bind(this) }>
+                            {playbackSpeedOptions}
+                        </select>
+                    </div>
+                </div>
             </div>
         );
     }
@@ -271,19 +314,9 @@ export default class Viewer extends React.Component {
         this.setState({ tileHeight: value });
     }
 
-    onPlaybackSpeedChange(e) {
-        const value = +e.target.value;
-        this.setState({ playbackSpeed: value });
-    }
-
     render() {
         const options = Object.keys(modes).map(x =>
             <option value={x} key={x}>{modes[x]}</option>);
-
-        const playbackSpeedOptions = Object.keys(playbackSpeeds).map(x =>
-            <option value={playbackSpeeds[x]} key={x}>{x}</option>);
-
-
         return (
             <div className="gif-viewer" id="viewer">
                 <GifFigure {...this.state} />
@@ -291,10 +324,6 @@ export default class Viewer extends React.Component {
                 <div className="view-controls">
                     <select value={this.state.mode} onChange={this.onModeChange.bind(this) }>
                         {options}
-                    </select>
-
-                    <select value={this.state.playbackSpeed} onChange={this.onPlaybackSpeedChange.bind(this) }>
-                        {playbackSpeedOptions}
                     </select>
 
                     Initial frame: <input type="range"

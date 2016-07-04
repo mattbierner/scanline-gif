@@ -20551,7 +20551,7 @@
 
 	            return _react2.default.createElement(
 	                'div',
-	                { className: 'gif-search' },
+	                { className: 'gif-search content-wrapper' },
 	                _react2.default.createElement('input', { type: 'search',
 	                    value: this.state.searchText,
 	                    placeholder: 'Find gif',
@@ -27851,7 +27851,9 @@
 
 	        _this5.state = {
 	            currentFrame: 0,
-	            playing: false
+	            playing: false,
+	            loop: true,
+	            playbackSpeed: 1
 	        };
 	        return _this5;
 	    }
@@ -27890,9 +27892,15 @@
 
 	            var start = Date.now();
 	            setTimeout(function () {
-	                var nextFrame = (_this6.state.currentFrame + 1) % _this6.getNumFrames();
+	                var nextFrame = _this6.state.currentFrame + 1;
+	                if (nextFrame >= _this6.getNumFrames() && !_this6.state.loop) {
+	                    _this6.setState({ playing: false });
+	                    return;
+	                }
 
-	                var interval = (_this6.props.imageData.frames[nextFrame].info.delay || 1) * 10 / _this6.props.playbackSpeed;
+	                nextFrame %= _this6.getNumFrames();
+
+	                var interval = (_this6.props.imageData.frames[nextFrame].info.delay || 1) * 10 / _this6.state.playbackSpeed;
 	                var elapsed = Date.now() - start;
 	                var next = Math.max(0, interval - (elapsed - delay));
 	                _this6.setState({
@@ -27908,22 +27916,90 @@
 	            this.setState({ currentFrame: frame });
 	        }
 	    }, {
+	        key: 'onReplay',
+	        value: function onReplay() {
+	            this.setState({
+	                currentFrame: 0
+	            });
+	        }
+	    }, {
+	        key: 'onLoopToggle',
+	        value: function onLoopToggle() {
+	            this.setState({ loop: !this.state.loop });
+	        }
+	    }, {
+	        key: 'onPlaybackSpeedChange',
+	        value: function onPlaybackSpeedChange(e) {
+	            var value = +e.target.value;
+	            this.setState({ playbackSpeed: value });
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
+	            var playbackSpeedOptions = Object.keys(playbackSpeeds).map(function (x) {
+	                return _react2.default.createElement(
+	                    'option',
+	                    { value: playbackSpeeds[x], key: x },
+	                    x
+	                );
+	            });
+
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'gif-figure' },
 	                _react2.default.createElement(GifRenderer, _extends({}, this.props, { currentFrame: this.state.currentFrame })),
-	                _react2.default.createElement(GifProperties, this.props),
-	                _react2.default.createElement('input', { type: 'range',
-	                    min: '0',
-	                    max: this.getNumFrames() - 1,
-	                    value: this.state.currentFrame,
-	                    onChange: this.onSliderChange.bind(this) }),
 	                _react2.default.createElement(
-	                    'button',
-	                    { onClick: this.onToggle.bind(this) },
-	                    'Play'
+	                    'div',
+	                    { className: 'content-wrapper' },
+	                    _react2.default.createElement(GifProperties, this.props),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'playback-controls' },
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'playback-tracker' },
+	                            _react2.default.createElement('input', { type: 'range', className: 'playback-slider',
+	                                min: '0',
+	                                max: this.getNumFrames() - 1,
+	                                value: this.state.currentFrame,
+	                                onChange: this.onSliderChange.bind(this) }),
+	                            _react2.default.createElement(
+	                                'span',
+	                                { className: 'min' },
+	                                '0'
+	                            ),
+	                            _react2.default.createElement(
+	                                'span',
+	                                { className: 'max' },
+	                                this.getNumFrames()
+	                            ),
+	                            _react2.default.createElement(
+	                                'span',
+	                                { className: 'value' },
+	                                this.state.currentFrame
+	                            )
+	                        ),
+	                        _react2.default.createElement(
+	                            'button',
+	                            {
+	                                title: 'Restart',
+	                                className: 'material-icons',
+	                                onClick: this.onReplay.bind(this) },
+	                            'replay'
+	                        ),
+	                        _react2.default.createElement(
+	                            'button',
+	                            {
+	                                className: 'material-icons',
+	                                onClick: this.onToggle.bind(this) },
+	                            this.state.playing ? 'pause' : 'play_arrow'
+	                        ),
+	                        _react2.default.createElement(
+	                            'select',
+	                            { value: this.state.playbackSpeed, onChange: this.onPlaybackSpeedChange.bind(this) },
+	                            playbackSpeedOptions
+	                        )
+	                    )
 	                )
 	            );
 	        }
@@ -28018,12 +28094,6 @@
 	            this.setState({ tileHeight: value });
 	        }
 	    }, {
-	        key: 'onPlaybackSpeedChange',
-	        value: function onPlaybackSpeedChange(e) {
-	            var value = +e.target.value;
-	            this.setState({ playbackSpeed: value });
-	        }
-	    }, {
 	        key: 'render',
 	        value: function render() {
 	            var options = Object.keys(modes).map(function (x) {
@@ -28033,15 +28103,6 @@
 	                    modes[x]
 	                );
 	            });
-
-	            var playbackSpeedOptions = Object.keys(playbackSpeeds).map(function (x) {
-	                return _react2.default.createElement(
-	                    'option',
-	                    { value: playbackSpeeds[x], key: x },
-	                    x
-	                );
-	            });
-
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'gif-viewer', id: 'viewer' },
@@ -28053,11 +28114,6 @@
 	                        'select',
 	                        { value: this.state.mode, onChange: this.onModeChange.bind(this) },
 	                        options
-	                    ),
-	                    _react2.default.createElement(
-	                        'select',
-	                        { value: this.state.playbackSpeed, onChange: this.onPlaybackSpeedChange.bind(this) },
-	                        playbackSpeedOptions
 	                    ),
 	                    'Initial frame: ',
 	                    _react2.default.createElement('input', { type: 'range',
