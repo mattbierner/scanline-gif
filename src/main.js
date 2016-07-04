@@ -16,12 +16,12 @@ class Main extends React.Component {
     onGifSelected(src) {
         this.setState({ selectedGif: src });
     }
-    
+
     render() {
         return (
             <div className="main container">
                 <Viewer file={this.state.selectedGif} />
-                <Search onGifSelected={this.onGifSelected.bind(this)} />
+                <Search onGifSelected={this.onGifSelected.bind(this) } />
             </div>);
     }
 };

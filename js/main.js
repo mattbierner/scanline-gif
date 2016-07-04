@@ -27623,8 +27623,6 @@
 	    value: true
 	});
 
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _react = __webpack_require__(1);
@@ -27643,9 +27641,9 @@
 
 	var _labeled_slider2 = _interopRequireDefault(_labeled_slider);
 
-	var _gif_renderer = __webpack_require__(210);
+	var _gif_player = __webpack_require__(211);
 
-	var _gif_renderer2 = _interopRequireDefault(_gif_renderer);
+	var _gif_player2 = _interopRequireDefault(_gif_player);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -27673,251 +27671,8 @@
 	    }
 	};
 
-	var playbackSpeeds = {
-	    '1x': 1,
-	    '2x': 2,
-	    '4x': 4,
-	    '8x': 8,
-	    '1/2': 0.5,
-	    '1/4': 0.25,
-	    '1/8': 0.125
-	};
-
-	/**
-	 * Property of a gif
-	 */
-
-	var GifProperty = function (_React$Component) {
-	    _inherits(GifProperty, _React$Component);
-
-	    function GifProperty() {
-	        _classCallCheck(this, GifProperty);
-
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(GifProperty).apply(this, arguments));
-	    }
-
-	    _createClass(GifProperty, [{
-	        key: 'render',
-	        value: function render() {
-	            return _react2.default.createElement(
-	                'div',
-	                { className: 'property' },
-	                _react2.default.createElement(
-	                    'span',
-	                    { className: 'key' },
-	                    this.props.label
-	                ),
-	                ': ',
-	                _react2.default.createElement(
-	                    'span',
-	                    { className: 'value' },
-	                    this.props.value
-	                )
-	            );
-	        }
-	    }]);
-
-	    return GifProperty;
-	}(_react2.default.Component);
-
-	;
-
-	/**
-	 * Property of a gif
-	 */
-
-	var GifProperties = function (_React$Component2) {
-	    _inherits(GifProperties, _React$Component2);
-
-	    function GifProperties() {
-	        _classCallCheck(this, GifProperties);
-
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(GifProperties).apply(this, arguments));
-	    }
-
-	    _createClass(GifProperties, [{
-	        key: 'render',
-	        value: function render() {
-	            return _react2.default.createElement(
-	                'div',
-	                { className: 'gif-properties' },
-	                _react2.default.createElement(GifProperty, { label: 'Frames', value: this.props.imageData ? this.props.imageData.frames.length : '' }),
-	                _react2.default.createElement(GifProperty, { label: 'Width', value: this.props.imageData ? this.props.imageData.width : '' }),
-	                _react2.default.createElement(GifProperty, { label: 'Height', value: this.props.imageData ? this.props.imageData.height : '' })
-	            );
-	        }
-	    }]);
-
-	    return GifProperties;
-	}(_react2.default.Component);
-
-	;
-
-	/**
-	 * Displays a scannedlined gif plus metadata info about it.
-	 */
-
-	var GifFigure = function (_React$Component3) {
-	    _inherits(GifFigure, _React$Component3);
-
-	    function GifFigure(props) {
-	        _classCallCheck(this, GifFigure);
-
-	        var _this3 = _possibleConstructorReturn(this, Object.getPrototypeOf(GifFigure).call(this, props));
-
-	        _this3.state = {
-	            currentFrame: 0,
-	            playing: false,
-	            loop: true,
-	            playbackSpeed: 1
-	        };
-	        return _this3;
-	    }
-
-	    _createClass(GifFigure, [{
-	        key: 'componentWillReceiveProps',
-	        value: function componentWillReceiveProps(newProps) {
-	            if (this.props.imageData !== newProps.imageData) {
-	                this.setState({
-	                    //    playing: false,
-	                    currentFrame: 0
-	                });
-	            }
-	        }
-	    }, {
-	        key: 'onToggle',
-	        value: function onToggle() {
-	            this.setState({ playing: !this.state.playing });
-
-	            if (!this.state.playing) {
-	                this.scheduleNextFrame(0, true);
-	            }
-	        }
-	    }, {
-	        key: 'getNumFrames',
-	        value: function getNumFrames() {
-	            if (!this.props.imageData) return 0;
-	            return this.props.imageData.frames.length;
-	        }
-	    }, {
-	        key: 'scheduleNextFrame',
-	        value: function scheduleNextFrame(delay, forcePlay) {
-	            var _this4 = this;
-
-	            if (!this.props.imageData || !forcePlay && !this.state.playing) return;
-
-	            var start = Date.now();
-	            setTimeout(function () {
-	                var nextFrame = _this4.state.currentFrame + 1;
-	                if (nextFrame >= _this4.getNumFrames() && !_this4.state.loop) {
-	                    _this4.setState({ playing: false });
-	                    return;
-	                }
-
-	                nextFrame %= _this4.getNumFrames();
-
-	                var interval = (_this4.props.imageData.frames[nextFrame].info.delay || 1) * 10 / _this4.state.playbackSpeed;
-	                var elapsed = Date.now() - start;
-	                var next = Math.max(0, interval - (elapsed - delay));
-	                _this4.setState({
-	                    currentFrame: nextFrame
-	                });
-	                _this4.scheduleNextFrame(next);
-	            }, delay);
-	        }
-	    }, {
-	        key: 'onSliderChange',
-	        value: function onSliderChange(e) {
-	            var frame = +e.target.value % this.getNumFrames();
-	            this.setState({ currentFrame: frame });
-	        }
-	    }, {
-	        key: 'onReplay',
-	        value: function onReplay() {
-	            this.setState({
-	                currentFrame: 0
-	            });
-	        }
-	    }, {
-	        key: 'onLoopToggle',
-	        value: function onLoopToggle() {
-	            this.setState({ loop: !this.state.loop });
-	        }
-	    }, {
-	        key: 'onPlaybackSpeedChange',
-	        value: function onPlaybackSpeedChange(e) {
-	            var value = +e.target.value;
-	            this.setState({ playbackSpeed: value });
-	        }
-	    }, {
-	        key: 'render',
-	        value: function render() {
-	            var playbackSpeedOptions = Object.keys(playbackSpeeds).map(function (x) {
-	                return _react2.default.createElement(
-	                    'option',
-	                    { value: playbackSpeeds[x], key: x },
-	                    x
-	                );
-	            });
-
-	            return _react2.default.createElement(
-	                'div',
-	                { className: 'gif-figure' },
-	                _react2.default.createElement(_gif_renderer2.default, _extends({}, this.props, { currentFrame: this.state.currentFrame })),
-	                _react2.default.createElement(
-	                    'div',
-	                    { className: 'content-wrapper' },
-	                    _react2.default.createElement(GifProperties, this.props)
-	                ),
-	                _react2.default.createElement(
-	                    'div',
-	                    { className: 'playback-controls content-wrapper' },
-	                    _react2.default.createElement(_labeled_slider2.default, { className: 'playback-tracker',
-	                        min: '0',
-	                        max: this.getNumFrames() - 1,
-	                        value: this.state.currentFrame,
-	                        onChange: this.onSliderChange.bind(this) }),
-	                    _react2.default.createElement(
-	                        'div',
-	                        { className: 'buttons' },
-	                        _react2.default.createElement(
-	                            'button',
-	                            {
-	                                title: 'Restart',
-	                                className: 'material-icons',
-	                                onClick: this.onReplay.bind(this) },
-	                            'replay'
-	                        ),
-	                        _react2.default.createElement(
-	                            'button',
-	                            {
-	                                className: 'material-icons',
-	                                onClick: this.onToggle.bind(this) },
-	                            this.state.playing ? 'pause' : 'play_arrow'
-	                        ),
-	                        _react2.default.createElement(
-	                            'div',
-	                            { className: 'playback-speed-selector' },
-	                            'Speed: ',
-	                            _react2.default.createElement(
-	                                'select',
-	                                { value: this.state.playbackSpeed, onChange: this.onPlaybackSpeedChange.bind(this) },
-	                                playbackSpeedOptions
-	                            )
-	                        )
-	                    )
-	                )
-	            );
-	        }
-	    }]);
-
-	    return GifFigure;
-	}(_react2.default.Component);
-
-	;
-
-	var ModeSelector = function (_React$Component4) {
-	    _inherits(ModeSelector, _React$Component4);
+	var ModeSelector = function (_React$Component) {
+	    _inherits(ModeSelector, _React$Component);
 
 	    function ModeSelector() {
 	        _classCallCheck(this, ModeSelector);
@@ -27960,15 +27715,15 @@
 	 */
 
 
-	var Viewer = function (_React$Component5) {
-	    _inherits(Viewer, _React$Component5);
+	var Viewer = function (_React$Component2) {
+	    _inherits(Viewer, _React$Component2);
 
 	    function Viewer(props) {
 	        _classCallCheck(this, Viewer);
 
-	        var _this6 = _possibleConstructorReturn(this, Object.getPrototypeOf(Viewer).call(this, props));
+	        var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(Viewer).call(this, props));
 
-	        _this6.state = {
+	        _this2.state = {
 	            imageData: null,
 	            mode: Object.keys(modes)[0],
 	            tileWidth: 10,
@@ -27977,7 +27732,7 @@
 	            frameIncrement: 1,
 	            playbackSpeed: 1
 	        };
-	        return _this6;
+	        return _this2;
 	    }
 
 	    _createClass(Viewer, [{
@@ -28002,10 +27757,10 @@
 	    }, {
 	        key: 'loadGif',
 	        value: function loadGif(file) {
-	            var _this7 = this;
+	            var _this3 = this;
 
 	            (0, _loadGif3.default)(file).then(function (data) {
-	                _this7.setState({
+	                _this3.setState({
 	                    imageData: data,
 	                    playbackSpeed: 1,
 	                    initialFrame: 0,
@@ -28053,7 +27808,7 @@
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'gif-viewer', id: 'viewer' },
-	                _react2.default.createElement(GifFigure, this.state),
+	                _react2.default.createElement(_gif_player2.default, this.state),
 	                _react2.default.createElement(
 	                    'div',
 	                    { className: 'view-controls content-wrapper' },
@@ -29188,6 +28943,288 @@
 	}(_react2.default.Component);
 
 	exports.default = GifRenderer;
+	;
+
+/***/ },
+/* 211 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(38);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	var _labeled_slider = __webpack_require__(209);
+
+	var _labeled_slider2 = _interopRequireDefault(_labeled_slider);
+
+	var _gif_renderer = __webpack_require__(210);
+
+	var _gif_renderer2 = _interopRequireDefault(_gif_renderer);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var playbackSpeeds = {
+	    '1x': 1,
+	    '2x': 2,
+	    '4x': 4,
+	    '8x': 8,
+	    '1/2': 0.5,
+	    '1/4': 0.25,
+	    '1/8': 0.125
+	};
+
+	/**
+	 * Property of a gif
+	 */
+
+	var GifProperty = function (_React$Component) {
+	    _inherits(GifProperty, _React$Component);
+
+	    function GifProperty() {
+	        _classCallCheck(this, GifProperty);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(GifProperty).apply(this, arguments));
+	    }
+
+	    _createClass(GifProperty, [{
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'property' },
+	                _react2.default.createElement(
+	                    'span',
+	                    { className: 'key' },
+	                    this.props.label
+	                ),
+	                ': ',
+	                _react2.default.createElement(
+	                    'span',
+	                    { className: 'value' },
+	                    this.props.value
+	                )
+	            );
+	        }
+	    }]);
+
+	    return GifProperty;
+	}(_react2.default.Component);
+
+	;
+
+	/**
+	 * Property of a gif
+	 */
+
+	var GifProperties = function (_React$Component2) {
+	    _inherits(GifProperties, _React$Component2);
+
+	    function GifProperties() {
+	        _classCallCheck(this, GifProperties);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(GifProperties).apply(this, arguments));
+	    }
+
+	    _createClass(GifProperties, [{
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'gif-properties' },
+	                _react2.default.createElement(GifProperty, { label: 'Frames', value: this.props.imageData ? this.props.imageData.frames.length : '' }),
+	                _react2.default.createElement(GifProperty, { label: 'Width', value: this.props.imageData ? this.props.imageData.width : '' }),
+	                _react2.default.createElement(GifProperty, { label: 'Height', value: this.props.imageData ? this.props.imageData.height : '' })
+	            );
+	        }
+	    }]);
+
+	    return GifProperties;
+	}(_react2.default.Component);
+
+	;
+
+	/**
+	 * Playback controls for scanlined gif.
+	 */
+
+	var GifPlayer = function (_React$Component3) {
+	    _inherits(GifPlayer, _React$Component3);
+
+	    function GifPlayer(props) {
+	        _classCallCheck(this, GifPlayer);
+
+	        var _this3 = _possibleConstructorReturn(this, Object.getPrototypeOf(GifPlayer).call(this, props));
+
+	        _this3.state = {
+	            currentFrame: 0,
+	            playing: false,
+	            loop: true,
+	            playbackSpeed: 1
+	        };
+	        return _this3;
+	    }
+
+	    _createClass(GifPlayer, [{
+	        key: 'componentWillReceiveProps',
+	        value: function componentWillReceiveProps(newProps) {
+	            if (this.props.imageData !== newProps.imageData) {
+	                this.setState({
+	                    //    playing: false,
+	                    currentFrame: 0
+	                });
+	            }
+	        }
+	    }, {
+	        key: 'onToggle',
+	        value: function onToggle() {
+	            this.setState({ playing: !this.state.playing });
+
+	            if (!this.state.playing) {
+	                this.scheduleNextFrame(0, true);
+	            }
+	        }
+	    }, {
+	        key: 'getNumFrames',
+	        value: function getNumFrames() {
+	            if (!this.props.imageData) return 0;
+	            return this.props.imageData.frames.length;
+	        }
+	    }, {
+	        key: 'scheduleNextFrame',
+	        value: function scheduleNextFrame(delay, forcePlay) {
+	            var _this4 = this;
+
+	            if (!this.props.imageData || !forcePlay && !this.state.playing) return;
+
+	            var start = Date.now();
+	            setTimeout(function () {
+	                var nextFrame = _this4.state.currentFrame + 1;
+	                if (nextFrame >= _this4.getNumFrames() && !_this4.state.loop) {
+	                    _this4.setState({ playing: false });
+	                    return;
+	                }
+
+	                nextFrame %= _this4.getNumFrames();
+
+	                var interval = (_this4.props.imageData.frames[nextFrame].info.delay || 1) * 10 / _this4.state.playbackSpeed;
+	                var elapsed = Date.now() - start;
+	                var next = Math.max(0, interval - (elapsed - delay));
+	                _this4.setState({
+	                    currentFrame: nextFrame
+	                });
+	                _this4.scheduleNextFrame(next);
+	            }, delay);
+	        }
+	    }, {
+	        key: 'onSliderChange',
+	        value: function onSliderChange(e) {
+	            var frame = +e.target.value % this.getNumFrames();
+	            this.setState({ currentFrame: frame });
+	        }
+	    }, {
+	        key: 'onReplay',
+	        value: function onReplay() {
+	            this.setState({
+	                currentFrame: 0
+	            });
+	        }
+	    }, {
+	        key: 'onLoopToggle',
+	        value: function onLoopToggle() {
+	            this.setState({ loop: !this.state.loop });
+	        }
+	    }, {
+	        key: 'onPlaybackSpeedChange',
+	        value: function onPlaybackSpeedChange(e) {
+	            var value = +e.target.value;
+	            this.setState({ playbackSpeed: value });
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var playbackSpeedOptions = Object.keys(playbackSpeeds).map(function (x) {
+	                return _react2.default.createElement(
+	                    'option',
+	                    { value: playbackSpeeds[x], key: x },
+	                    x
+	                );
+	            });
+
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'gif-figure' },
+	                _react2.default.createElement(_gif_renderer2.default, _extends({}, this.props, { currentFrame: this.state.currentFrame })),
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'content-wrapper' },
+	                    _react2.default.createElement(GifProperties, this.props)
+	                ),
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'playback-controls content-wrapper' },
+	                    _react2.default.createElement(_labeled_slider2.default, { className: 'playback-tracker',
+	                        min: '0',
+	                        max: this.getNumFrames() - 1,
+	                        value: this.state.currentFrame,
+	                        onChange: this.onSliderChange.bind(this) }),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'buttons' },
+	                        _react2.default.createElement(
+	                            'button',
+	                            {
+	                                title: 'Restart',
+	                                className: 'material-icons',
+	                                onClick: this.onReplay.bind(this) },
+	                            'replay'
+	                        ),
+	                        _react2.default.createElement(
+	                            'button',
+	                            {
+	                                className: 'material-icons',
+	                                onClick: this.onToggle.bind(this) },
+	                            this.state.playing ? 'pause' : 'play_arrow'
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'playback-speed-selector' },
+	                            'Speed: ',
+	                            _react2.default.createElement(
+	                                'select',
+	                                { value: this.state.playbackSpeed, onChange: this.onPlaybackSpeedChange.bind(this) },
+	                                playbackSpeedOptions
+	                            )
+	                        )
+	                    )
+	                )
+	            );
+	        }
+	    }]);
+
+	    return GifPlayer;
+	}(_react2.default.Component);
+
+	exports.default = GifPlayer;
 	;
 
 /***/ }
