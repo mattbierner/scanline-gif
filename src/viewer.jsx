@@ -36,18 +36,18 @@ class GifRenderer extends React.Component {
     drawGifForOptions(imageData, state) {
         if (!imageData)
             return;
-        
-        switch (state.mode) {
-        case modes.columns:
-            this.drawGif(imageData, imageData.width / imageData.frames.length, imageData.height, 0);
-            break;
 
-        case modes.rows:
-            this.drawGif(imageData, imageData.width, imageData.height / imageData.frames.length, 0);
-            break;
-        
-        default:
-            this.drawGif(imageData, state.tileWidth, state.tileHeight, state.initialFrame);
+        switch (state.mode) {
+            case modes.columns:
+                this.drawGif(imageData, imageData.width / imageData.frames.length, imageData.height, 0);
+                break;
+
+            case modes.rows:
+                this.drawGif(imageData, imageData.width, imageData.height / imageData.frames.length, 0);
+                break;
+
+            default:
+                this.drawGif(imageData, state.tileWidth, state.tileHeight, state.initialFrame);
         }
     }
 
@@ -70,7 +70,7 @@ class GifRenderer extends React.Component {
             for (let y = 0; y < imageData.height; y += tileHeight) {
                 const frameNumber = i++ % len;
                 ctx.save();
-                
+
                 // Create clipping rect.
                 ctx.beginPath();
                 ctx.moveTo(x, y);
@@ -92,6 +92,47 @@ class GifRenderer extends React.Component {
     }
 };
 
+/**
+ * Property of a gif
+ */
+class GifProperty extends React.Component {
+    render() {
+        return (
+            <div className="property">
+                <span className="key">{this.props.label}</span>: <span className="value">{this.props.value}</span>
+            </div>
+        );
+    }
+};
+
+/**
+ * Property of a gif
+ */
+class GifProperties extends React.Component {
+    render() {
+        return (
+            <div className="gif-properties">
+                <GifProperty label="Frames" value={this.props.imageData ? this.props.imageData.frames.length : ''} />
+                <GifProperty label="Width" value={this.props.imageData ? this.props.imageData.width : ''} />
+                <GifProperty label="Height" value={this.props.imageData ? this.props.imageData.height : ''} />
+            </div>
+        );
+    }
+};
+
+/**
+ * Displays a scannedlined gif plus metadata info about it.
+ */
+class GifFigure extends React.Component {
+    render() {
+        return (
+            <div className="gif-figure">
+                <GifRenderer {...this.props} />
+                <GifProperties {...this.props} />
+            </div>
+        );
+    }
+};
 
 /**
  * Displays an interative scanlined gif with controls. 
@@ -159,18 +200,14 @@ export default class Viewer extends React.Component {
 
         return (
             <div className="gif-viewer" id="viewer">
-                <div className="gif-figure">
-                    <GifRenderer {...this.state} />
-                    <div className="gif-info">
-                        <span>Frames: {this.state.imageData ? this.state.imageData.frames.length : ''}</span>
-                    </div>
-                </div>
+                <GifFigure {...this.state} />
+
                 <div className="view-controls">
-                    <select value={this.state.mode} onChange={this.onModeChange.bind(this)}>
+                    <select value={this.state.mode} onChange={this.onModeChange.bind(this) }>
                         {options}
                     </select>
 
-                    <div className={"custom-controls " + (this.state.mode === modes.custom ? '' : 'hidden')}>
+                    <div className={"custom-controls " + (this.state.mode === modes.custom ? '' : 'hidden') }>
                         Width: <input type="range" min="1" max="500" value={this.state.tileWidth}
                             onChange={this.onTileWidthChange.bind(this) }/>
 

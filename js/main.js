@@ -27756,25 +27756,125 @@
 	;
 
 	/**
+	 * Property of a gif
+	 */
+
+	var GifProperty = function (_React$Component2) {
+	    _inherits(GifProperty, _React$Component2);
+
+	    function GifProperty() {
+	        _classCallCheck(this, GifProperty);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(GifProperty).apply(this, arguments));
+	    }
+
+	    _createClass(GifProperty, [{
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'property' },
+	                _react2.default.createElement(
+	                    'span',
+	                    { className: 'key' },
+	                    this.props.label
+	                ),
+	                ': ',
+	                _react2.default.createElement(
+	                    'span',
+	                    { className: 'value' },
+	                    this.props.value
+	                )
+	            );
+	        }
+	    }]);
+
+	    return GifProperty;
+	}(_react2.default.Component);
+
+	;
+
+	/**
+	 * Property of a gif
+	 */
+
+	var GifProperties = function (_React$Component3) {
+	    _inherits(GifProperties, _React$Component3);
+
+	    function GifProperties() {
+	        _classCallCheck(this, GifProperties);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(GifProperties).apply(this, arguments));
+	    }
+
+	    _createClass(GifProperties, [{
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'gif-properties' },
+	                _react2.default.createElement(GifProperty, { label: 'Frames', value: this.props.imageData ? this.props.imageData.frames.length : '' }),
+	                _react2.default.createElement(GifProperty, { label: 'Width', value: this.props.imageData ? this.props.imageData.width : '' }),
+	                _react2.default.createElement(GifProperty, { label: 'Height', value: this.props.imageData ? this.props.imageData.height : '' })
+	            );
+	        }
+	    }]);
+
+	    return GifProperties;
+	}(_react2.default.Component);
+
+	;
+
+	/**
+	 * Displays a scannedlined gif plus metadata info about it.
+	 */
+
+	var GifFigure = function (_React$Component4) {
+	    _inherits(GifFigure, _React$Component4);
+
+	    function GifFigure() {
+	        _classCallCheck(this, GifFigure);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(GifFigure).apply(this, arguments));
+	    }
+
+	    _createClass(GifFigure, [{
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'gif-figure' },
+	                _react2.default.createElement(GifRenderer, this.props),
+	                _react2.default.createElement(GifProperties, this.props)
+	            );
+	        }
+	    }]);
+
+	    return GifFigure;
+	}(_react2.default.Component);
+
+	;
+
+	/**
 	 * Displays an interative scanlined gif with controls. 
 	 */
 
-	var Viewer = function (_React$Component2) {
-	    _inherits(Viewer, _React$Component2);
+	var Viewer = function (_React$Component5) {
+	    _inherits(Viewer, _React$Component5);
 
 	    function Viewer(props) {
 	        _classCallCheck(this, Viewer);
 
-	        var _this3 = _possibleConstructorReturn(this, Object.getPrototypeOf(Viewer).call(this, props));
+	        var _this6 = _possibleConstructorReturn(this, Object.getPrototypeOf(Viewer).call(this, props));
 
-	        _this3.state = {
+	        _this6.state = {
 	            imageData: null,
 	            mode: Object.keys(modes)[0],
 	            tileWidth: 10,
 	            tileHeight: 10,
 	            initialFrame: 0
 	        };
-	        return _this3;
+	        return _this6;
 	    }
 
 	    _createClass(Viewer, [{
@@ -27799,10 +27899,10 @@
 	    }, {
 	        key: 'loadGif',
 	        value: function loadGif(file) {
-	            var _this4 = this;
+	            var _this7 = this;
 
 	            (0, _loadGif3.default)(file).then(function (data) {
-	                _this4.setState({ imageData: data });
+	                _this7.setState({ imageData: data });
 	            }).catch(function (e) {
 	                return console.error(e);
 	            });
@@ -27845,21 +27945,7 @@
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'gif-viewer', id: 'viewer' },
-	                _react2.default.createElement(
-	                    'div',
-	                    { className: 'gif-figure' },
-	                    _react2.default.createElement(GifRenderer, this.state),
-	                    _react2.default.createElement(
-	                        'div',
-	                        { className: 'gif-info' },
-	                        _react2.default.createElement(
-	                            'span',
-	                            null,
-	                            'Frames: ',
-	                            this.state.imageData ? this.state.imageData.frames.length : ''
-	                        )
-	                    )
-	                ),
+	                _react2.default.createElement(GifFigure, this.state),
 	                _react2.default.createElement(
 	                    'div',
 	                    { className: 'view-controls' },
