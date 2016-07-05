@@ -47,7 +47,7 @@ class GifProperties extends React.Component {
  */
 export default class GifPlayer extends React.Component {
     constructor(props) {
-        super(props)
+        super(props);
         this.state = {
             currentFrame: 0,
             playing: false,
@@ -59,9 +59,8 @@ export default class GifPlayer extends React.Component {
     componentWillReceiveProps(newProps) {
         if (this.props.imageData !== newProps.imageData) {
             this.setState({
-                //    playing: false,
                 currentFrame: 0
-            })
+            });
         }
     }
 

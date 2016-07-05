@@ -29,6 +29,7 @@ button.material-icons {
     border: none;
     background: none;
     color: $text-color;
+    outline: none;
 
     &:hover {
         color: #777;
@@ -42,12 +43,12 @@ button.material-icons {
 
 .label {
     font-size: 12px;
-    color: #aaa;
+    color: $light-gray;
 }
 
 .control-description {
     font-size: 12px;
-    color: #aaa;
+    color: $light-gray;
     font-style: italic;
 }
 

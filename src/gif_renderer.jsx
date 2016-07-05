@@ -14,7 +14,7 @@ export default class GifRenderer extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const propsToCheck = ['imageData', 'mode', 'gridColumns', 'gridRows', 'diagonalWidth', 'diagonalAngle', 'initialFrame', 'currentFrame', 'frameIncrement'];
+        const propsToCheck = ['imageData', 'mode', 'gridColumns', 'gridRows', 'diagonalWidth', 'diagonalAngle', 'reverseFrameOrder', 'currentFrame', 'frameIncrement'];
         const isDiff = propsToCheck.some(prop => this.props[prop] !== newProps[prop]);
         if (isDiff) {
             this.drawGifForOptions(newProps.imageData, newProps);
@@ -25,16 +25,26 @@ export default class GifRenderer extends React.Component {
         if (!imageData)
             return;
 
-        const startFrame = state.initialFrame + state.currentFrame;
+        const increment = state.reverseFrameOrder ? -state.frameIncrement : state.frameIncrement;
 
         switch (state.mode) {
             case 'columns':
-                this.drawGrid(imageData, imageData.width / imageData.frames.length, imageData.height, startFrame, state.frameIncrement);
+                this.drawGrid(
+                    imageData,
+                    imageData.width / imageData.frames.length,
+                    imageData.height,
+                    state.currentFrame,
+                    increment);
                 break;
 
             case 'rows':
             default:
-                this.drawGrid(imageData, imageData.width, imageData.height / imageData.frames.length, startFrame, state.frameIncrement);
+                this.drawGrid(
+                    imageData,
+                    imageData.width,
+                    imageData.height / imageData.frames.length,
+                    state.currentFrame,
+                    increment);
                 break;
 
             case 'grid':
@@ -42,36 +52,36 @@ export default class GifRenderer extends React.Component {
                     imageData,
                     imageData.width / state.gridColumns,
                     imageData.height / state.gridRows,
-                    startFrame,
-                    state.frameIncrement);
+                    state.currentFrame,
+                    increment);
                 break;
 
             case 'diagonal':
-                this.drawDiag(imageData, state.diagonalWidth, state.diagonalAngle, startFrame, state.frameIncrement);
+                this.drawDiag(
+                    imageData,
+                    state.diagonalWidth,
+                    state.diagonalAngle,
+                    state.currentFrame,
+                    increment);
                 break;
         }
     }
 
     drawDiag(imageData, gridColumns, angle, initialFrame, increment) {
-        if (!imageData)
-            return;
-
         const radAngle = angle * (Math.PI / 180);
+        const {width, height} = imageData;
 
         const ctx = this._ctx;
         const canvas = this._canvas;
-        const {width, height} = imageData;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         canvas.width = imageData.width;
         canvas.height = imageData.height;
-        const len = imageData.frames.length;
 
-        const diag = Math.sqrt(Math.pow(imageData.width, 2) + Math.pow(imageData.height, 2));
+        const diag = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
 
         for (let i = 0, numDraws = Math.ceil((diag / gridColumns) / 2); i <= numDraws; ++i) {
-            const frame1 = (initialFrame + i * increment) % len;
-            const frame2Start = (initialFrame - ((i + 1) * increment)) % len;
-            const frame2 = frame2Start < 0 ? len - 1 - Math.abs(frame2Start) : frame2Start;
+            const frame1 = this.getFrame(imageData, initialFrame + i * increment);
+            const frame2 = this.getFrame(imageData, initialFrame - ((i + 1) * increment));
 
             // draw first
             ctx.save();
@@ -86,7 +96,7 @@ export default class GifRenderer extends React.Component {
 
                 ctx.clip();
 
-                ctx.drawImage(imageData.frames[frame1].canvas, 0, 0);
+                ctx.drawImage(frame1.canvas, 0, 0);
             }
             ctx.restore();
 
@@ -102,16 +112,21 @@ export default class GifRenderer extends React.Component {
                 ctx.restore();
                 ctx.clip();
 
-                ctx.drawImage(imageData.frames[frame2].canvas, 0, 0);
+                ctx.drawImage(frame2.canvas, 0, 0);
             }
             ctx.restore();
         }
     }
 
-    drawGrid(imageData, gridColumns, gridRows, initialFrame, increment) {
-        if (!imageData)
-            return;
+    getFrame(imageData, index) {
+        const len = imageData.frames.length;
+        index %= len;
+        if (index < 0)
+            return imageData.frames[len - 1 - Math.abs(index)];
+        return imageData.frames[index];
+    }
 
+    drawGrid(imageData, columnWidth, columnHeight, initialFrame, increment) {
         const ctx = this._ctx;
         const canvas = this._canvas;
 
@@ -119,28 +134,23 @@ export default class GifRenderer extends React.Component {
         canvas.width = imageData.width;
         canvas.height = imageData.height;
 
-        const len = imageData.frames.length;
-        const dy = imageData.height
-
         let i = initialFrame;
-        for (let x = 0; x < imageData.width; x += gridColumns) {
-            for (let y = 0; y < imageData.height; y += gridRows) {
-                const frameNumber = i % len;
-                i += increment;
+        for (let x = 0; x < imageData.width; x += columnWidth) {
+            for (let y = 0; y < imageData.height; y += columnHeight) {
+                const frame = this.getFrame(imageData, i);
                 ctx.save();
 
                 // Create clipping rect.
                 ctx.beginPath();
-                ctx.moveTo(x, y);
-                ctx.lineTo(x + gridColumns, y);
-                ctx.lineTo(x + gridColumns, y + gridRows);
-                ctx.lineTo(x, y + gridRows);
+                ctx.rect(x, y, columnWidth, columnHeight)
                 ctx.clip();
 
                 // Draw gif with clipping applied
-                ctx.drawImage(imageData.frames[frameNumber].canvas, 0, 0);
+                ctx.drawImage(frame.canvas, 0, 0);
 
                 ctx.restore();
+
+                i += increment;
             }
         }
     }

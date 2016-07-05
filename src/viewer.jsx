@@ -52,10 +52,14 @@ export default class Viewer extends React.Component {
         super(props);
         this.state = {
             imageData: null,
-            mode: Object.keys(modes)[0],
+            mode: 'grid',//Object.keys(modes)[0],
+
+            //grid
             gridColumns: 10,
             gridRows: 10,
-            initialFrame: 0,
+
+            // playback
+            reverseFrameOrder: false,
             frameIncrement: 1,
             playbackSpeed: 1,
 
@@ -92,7 +96,7 @@ export default class Viewer extends React.Component {
                     error: null,
 
                     playbackSpeed: 1,
-                    initialFrame: 0,
+                    reverseFrameOrder: false,
                     frameIncrement: 1,
                     gridColumns: 10,
                     gridRows: 10,
@@ -120,9 +124,9 @@ export default class Viewer extends React.Component {
         this.setState({ gridColumns: value });
     }
 
-    onInitialFrameChange(e) {
-        const value = +e.target.value;
-        this.setState({ initialFrame: value });
+    onReverseFrameOrderChange(e) {
+        const value = e.target.checked;
+        this.setState({ reverseFrameOrder: value });
     }
 
     onFrameIncrementChange(e) {
@@ -155,49 +159,59 @@ export default class Viewer extends React.Component {
                     <ModeSelector value={this.state.mode} onChange={this.onModeChange.bind(this) } />
 
                     <div className="frame-controls">
-                        <LabeledSlider title='Initial Frame'
-                            min="0"
-                            max={this.state.imageData ? this.state.imageData.frames.length - 1 : 0}
-                            value={this.state.initialFrame}
-                            onChange={this.onInitialFrameChange.bind(this) }/>
-
-                        <LabeledSlider title='Frame Increment'
-                            min="1"
-                            max={this.state.imageData ? this.state.imageData.frames.length - 1 : 0}
-                            value={this.state.frameIncrement}
-                            onChange={this.onFrameIncrementChange.bind(this) }/>
+                        <div>
+                            <LabeledSlider title='Frame Increment'
+                                min="1"
+                                max={this.state.imageData ? this.state.imageData.frames.length - 1 : 0}
+                                value={this.state.frameIncrement}
+                                onChange={this.onFrameIncrementChange.bind(this) }/>
+                        </div>
+                        <div>
+                            <div className="control-group">
+                                <div className='control-title'>Reverse Frame Order</div>
+                                <input type="checkbox" value="reverseFrameOrder" onChange={this.onReverseFrameOrderChange.bind(this)}/>
+                            </div>
+                        </div>
                     </div>
 
-                    <div className={"grid-controls " + (this.state.mode === 'grid' ? '' : 'hidden') }>
-                        <LabeledSlider title="Columns"
-                            units=" columns"
-                            min="1"
-                            max={this.state.imageData ? this.state.imageData.width : 1}
-                            value={this.state.gridColumns}
-                            onChange={this.onGridColumnsChange.bind(this) }/>
-
-                        <LabeledSlider title="Rows"
-                            units=" rows"
-                            min="1"
-                            max={this.state.imageData ? this.state.imageData.height : 1}
-                            value={this.state.gridRows}
-                            onChange={this.onGridRowsChange.bind(this) }/>
+                    <div className={"mode-control-set grid-controls " + (this.state.mode === 'grid' ? '' : 'hidden') }>
+                        <h4 className="control-set-label">Grid options</h4>
+                        <div>
+                            <LabeledSlider title="Columns"
+                                units=" columns"
+                                min="1"
+                                max={this.state.imageData ? this.state.imageData.width : 1}
+                                value={this.state.gridColumns}
+                                onChange={this.onGridColumnsChange.bind(this) }/>
+                        </div>
+                        <div>
+                            <LabeledSlider title="Rows"
+                                units=" rows"
+                                min="1"
+                                max={this.state.imageData ? this.state.imageData.height : 1}
+                                value={this.state.gridRows}
+                                onChange={this.onGridRowsChange.bind(this) }/>
+                        </div>
                     </div>
 
-                    <div className={"diagonal-controls " + (this.state.mode === 'diagonal' ? '' : 'hidden') }>
-                        <LabeledSlider title="Angle"
-                            units="deg"
-                            min="0"
-                            max="360"
-                            value={this.state.diagonalAngle}
-                            onChange={this.onDiagonalAngleChange.bind(this) }/>
-
-                        <LabeledSlider title="Width"
-                            units="px"
-                            min="1"
-                            max={this.state.imageData ? this.state.imageData.height : 1}
-                            value={this.state.diagonalWidth}
-                            onChange={this.onDiagonalWidthChange.bind(this) }/>
+                    <div className={"mode-control-set diagonal-controls " + (this.state.mode === 'diagonal' ? '' : 'hidden') }>
+                        <h4 className="control-set-label">Diagonal Options</h4>
+                        <div>
+                            <LabeledSlider title="Angle"
+                                units=" deg"
+                                min="0"
+                                max="360"
+                                value={this.state.diagonalAngle}
+                                onChange={this.onDiagonalAngleChange.bind(this) }/>
+                        </div>
+                        <div>
+                            <LabeledSlider title="Width"
+                                units="px"
+                                min="1"
+                                max={this.state.imageData ? Math.max(this.state.imageData.height, this.state.imageData.width) : 1}
+                                value={this.state.diagonalWidth}
+                                onChange={this.onDiagonalWidthChange.bind(this) }/>
+                        </div>
                     </div>
                 </div>
             </div>);

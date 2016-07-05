@@ -13,3 +13,54 @@
         padding: 1.6em;
     }
 }
+
+
+.mode-control-set {
+    display: flex;
+    flex-wrap: wrap;
+    & > * {
+        width: 50%;
+    }
+
+    .control-group {
+        padding: 0.2em 1.6em;
+    }
+
+    h4 {
+        width: 100%;
+        flex: 1 0 100%;
+    }
+}
+
+.control-set-label {
+    border-bottom: 1px solid #eee;
+    position: relative;
+    color: $light-gray;
+    text-transform: capitalize;
+    font-size: 12px;
+
+    &:before,
+    &:after {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        content: "";
+        display: block;
+        border-style: solid;
+        width: 0;
+        height: 0;
+        margin-left: -5px;
+        border-width: 10px 10px 0 10px;
+        border-color: #007bff transparent transparent transparent;
+    }
+
+    &:before {
+        margin-bottom:-10px;
+        border-color: #eee transparent transparent transparent;
+    }
+
+    &:after {
+        border-color: $background-color transparent transparent transparent;
+        margin-bottom:-9px;
+    }
+}

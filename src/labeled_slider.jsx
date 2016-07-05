@@ -8,7 +8,7 @@ export default class LabeledRange extends React.Component {
     render() {
         const title = this.props.title ? (<div className='control-title'>{this.props.title}</div>) : '';
         return (
-            <div className={'labeled-slider ' + (this.props.className || '')}>
+            <div className={'control-group labeled-slider ' + (this.props.className || '')}>
                 {title}
                 <input className="slider"
                     type="range"

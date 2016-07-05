@@ -27874,10 +27874,14 @@
 
 	        _this2.state = {
 	            imageData: null,
-	            mode: Object.keys(modes)[0],
+	            mode: 'grid', //Object.keys(modes)[0],
+
+	            //grid
 	            gridColumns: 10,
 	            gridRows: 10,
-	            initialFrame: 0,
+
+	            // playback
+	            reverseFrameOrder: false,
 	            frameIncrement: 1,
 	            playbackSpeed: 1,
 
@@ -27919,7 +27923,7 @@
 	                    error: null,
 
 	                    playbackSpeed: 1,
-	                    initialFrame: 0,
+	                    reverseFrameOrder: false,
 	                    frameIncrement: 1,
 	                    gridColumns: 10,
 	                    gridRows: 10,
@@ -27948,10 +27952,10 @@
 	            this.setState({ gridColumns: value });
 	        }
 	    }, {
-	        key: 'onInitialFrameChange',
-	        value: function onInitialFrameChange(e) {
-	            var value = +e.target.value;
-	            this.setState({ initialFrame: value });
+	        key: 'onReverseFrameOrderChange',
+	        value: function onReverseFrameOrderChange(e) {
+	            var value = e.target.checked;
+	            this.setState({ reverseFrameOrder: value });
 	        }
 	    }, {
 	        key: 'onFrameIncrementChange',
@@ -27995,48 +27999,87 @@
 	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'frame-controls' },
-	                        _react2.default.createElement(_labeled_slider2.default, { title: 'Initial Frame',
-	                            min: '0',
-	                            max: this.state.imageData ? this.state.imageData.frames.length - 1 : 0,
-	                            value: this.state.initialFrame,
-	                            onChange: this.onInitialFrameChange.bind(this) }),
-	                        _react2.default.createElement(_labeled_slider2.default, { title: 'Frame Increment',
-	                            min: '1',
-	                            max: this.state.imageData ? this.state.imageData.frames.length - 1 : 0,
-	                            value: this.state.frameIncrement,
-	                            onChange: this.onFrameIncrementChange.bind(this) })
+	                        _react2.default.createElement(
+	                            'div',
+	                            null,
+	                            _react2.default.createElement(_labeled_slider2.default, { title: 'Frame Increment',
+	                                min: '1',
+	                                max: this.state.imageData ? this.state.imageData.frames.length - 1 : 0,
+	                                value: this.state.frameIncrement,
+	                                onChange: this.onFrameIncrementChange.bind(this) })
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            null,
+	                            _react2.default.createElement(
+	                                'div',
+	                                { className: 'control-group' },
+	                                _react2.default.createElement(
+	                                    'div',
+	                                    { className: 'control-title' },
+	                                    'Reverse Frame Order'
+	                                ),
+	                                _react2.default.createElement('input', { type: 'checkbox', value: 'reverseFrameOrder', onChange: this.onReverseFrameOrderChange.bind(this) })
+	                            )
+	                        )
 	                    ),
 	                    _react2.default.createElement(
 	                        'div',
-	                        { className: "grid-controls " + (this.state.mode === 'grid' ? '' : 'hidden') },
-	                        _react2.default.createElement(_labeled_slider2.default, { title: 'Columns',
-	                            units: ' columns',
-	                            min: '1',
-	                            max: this.state.imageData ? this.state.imageData.width : 1,
-	                            value: this.state.gridColumns,
-	                            onChange: this.onGridColumnsChange.bind(this) }),
-	                        _react2.default.createElement(_labeled_slider2.default, { title: 'Rows',
-	                            units: ' rows',
-	                            min: '1',
-	                            max: this.state.imageData ? this.state.imageData.height : 1,
-	                            value: this.state.gridRows,
-	                            onChange: this.onGridRowsChange.bind(this) })
+	                        { className: "mode-control-set grid-controls " + (this.state.mode === 'grid' ? '' : 'hidden') },
+	                        _react2.default.createElement(
+	                            'h4',
+	                            { className: 'control-set-label' },
+	                            'Grid options'
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            null,
+	                            _react2.default.createElement(_labeled_slider2.default, { title: 'Columns',
+	                                units: ' columns',
+	                                min: '1',
+	                                max: this.state.imageData ? this.state.imageData.width : 1,
+	                                value: this.state.gridColumns,
+	                                onChange: this.onGridColumnsChange.bind(this) })
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            null,
+	                            _react2.default.createElement(_labeled_slider2.default, { title: 'Rows',
+	                                units: ' rows',
+	                                min: '1',
+	                                max: this.state.imageData ? this.state.imageData.height : 1,
+	                                value: this.state.gridRows,
+	                                onChange: this.onGridRowsChange.bind(this) })
+	                        )
 	                    ),
 	                    _react2.default.createElement(
 	                        'div',
-	                        { className: "diagonal-controls " + (this.state.mode === 'diagonal' ? '' : 'hidden') },
-	                        _react2.default.createElement(_labeled_slider2.default, { title: 'Angle',
-	                            units: 'deg',
-	                            min: '0',
-	                            max: '360',
-	                            value: this.state.diagonalAngle,
-	                            onChange: this.onDiagonalAngleChange.bind(this) }),
-	                        _react2.default.createElement(_labeled_slider2.default, { title: 'Width',
-	                            units: 'px',
-	                            min: '1',
-	                            max: this.state.imageData ? this.state.imageData.height : 1,
-	                            value: this.state.diagonalWidth,
-	                            onChange: this.onDiagonalWidthChange.bind(this) })
+	                        { className: "mode-control-set diagonal-controls " + (this.state.mode === 'diagonal' ? '' : 'hidden') },
+	                        _react2.default.createElement(
+	                            'h4',
+	                            { className: 'control-set-label' },
+	                            'Diagonal Options'
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            null,
+	                            _react2.default.createElement(_labeled_slider2.default, { title: 'Angle',
+	                                units: ' deg',
+	                                min: '0',
+	                                max: '360',
+	                                value: this.state.diagonalAngle,
+	                                onChange: this.onDiagonalAngleChange.bind(this) })
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            null,
+	                            _react2.default.createElement(_labeled_slider2.default, { title: 'Width',
+	                                units: 'px',
+	                                min: '1',
+	                                max: this.state.imageData ? Math.max(this.state.imageData.height, this.state.imageData.width) : 1,
+	                                value: this.state.diagonalWidth,
+	                                onChange: this.onDiagonalWidthChange.bind(this) })
+	                        )
 	                    )
 	                )
 	            );
@@ -28973,7 +29016,7 @@
 	            ) : '';
 	            return _react2.default.createElement(
 	                'div',
-	                { className: 'labeled-slider ' + (this.props.className || '') },
+	                { className: 'control-group labeled-slider ' + (this.props.className || '') },
 	                title,
 	                _react2.default.createElement('input', { className: 'slider',
 	                    type: 'range',
@@ -29150,7 +29193,6 @@
 	        value: function componentWillReceiveProps(newProps) {
 	            if (this.props.imageData !== newProps.imageData) {
 	                this.setState({
-	                    //    playing: false,
 	                    currentFrame: 0
 	                });
 	            }
@@ -29343,7 +29385,7 @@
 	        value: function componentWillReceiveProps(newProps) {
 	            var _this2 = this;
 
-	            var propsToCheck = ['imageData', 'mode', 'gridColumns', 'gridRows', 'diagonalWidth', 'diagonalAngle', 'initialFrame', 'currentFrame', 'frameIncrement'];
+	            var propsToCheck = ['imageData', 'mode', 'gridColumns', 'gridRows', 'diagonalWidth', 'diagonalAngle', 'reverseFrameOrder', 'currentFrame', 'frameIncrement'];
 	            var isDiff = propsToCheck.some(function (prop) {
 	                return _this2.props[prop] !== newProps[prop];
 	            });
@@ -29356,50 +29398,46 @@
 	        value: function drawGifForOptions(imageData, state) {
 	            if (!imageData) return;
 
-	            var startFrame = state.initialFrame + state.currentFrame;
+	            var increment = state.reverseFrameOrder ? -state.frameIncrement : state.frameIncrement;
 
 	            switch (state.mode) {
 	                case 'columns':
-	                    this.drawGrid(imageData, imageData.width / imageData.frames.length, imageData.height, startFrame, state.frameIncrement);
+	                    this.drawGrid(imageData, imageData.width / imageData.frames.length, imageData.height, state.currentFrame, increment);
 	                    break;
 
 	                case 'rows':
 	                default:
-	                    this.drawGrid(imageData, imageData.width, imageData.height / imageData.frames.length, startFrame, state.frameIncrement);
+	                    this.drawGrid(imageData, imageData.width, imageData.height / imageData.frames.length, state.currentFrame, increment);
 	                    break;
 
 	                case 'grid':
-	                    this.drawGrid(imageData, imageData.width / state.gridColumns, imageData.height / state.gridRows, startFrame, state.frameIncrement);
+	                    this.drawGrid(imageData, imageData.width / state.gridColumns, imageData.height / state.gridRows, state.currentFrame, increment);
 	                    break;
 
 	                case 'diagonal':
-	                    this.drawDiag(imageData, state.diagonalWidth, state.diagonalAngle, startFrame, state.frameIncrement);
+	                    this.drawDiag(imageData, state.diagonalWidth, state.diagonalAngle, state.currentFrame, increment);
 	                    break;
 	            }
 	        }
 	    }, {
 	        key: 'drawDiag',
 	        value: function drawDiag(imageData, gridColumns, angle, initialFrame, increment) {
-	            if (!imageData) return;
-
 	            var radAngle = angle * (Math.PI / 180);
-
-	            var ctx = this._ctx;
-	            var canvas = this._canvas;
 	            var width = imageData.width;
 	            var height = imageData.height;
 
+
+	            var ctx = this._ctx;
+	            var canvas = this._canvas;
 	            ctx.clearRect(0, 0, canvas.width, canvas.height);
 	            canvas.width = imageData.width;
 	            canvas.height = imageData.height;
-	            var len = imageData.frames.length;
 
-	            var diag = Math.sqrt(Math.pow(imageData.width, 2) + Math.pow(imageData.height, 2));
+	            var diag = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
 
 	            for (var i = 0, numDraws = Math.ceil(diag / gridColumns / 2); i <= numDraws; ++i) {
-	                var frame1 = (initialFrame + i * increment) % len;
-	                var frame2Start = (initialFrame - (i + 1) * increment) % len;
-	                var frame2 = frame2Start < 0 ? len - 1 - Math.abs(frame2Start) : frame2Start;
+	                var frame1 = this.getFrame(imageData, initialFrame + i * increment);
+	                var frame2 = this.getFrame(imageData, initialFrame - (i + 1) * increment);
 
 	                // draw first
 	                ctx.save();
@@ -29414,7 +29452,7 @@
 
 	                    ctx.clip();
 
-	                    ctx.drawImage(imageData.frames[frame1].canvas, 0, 0);
+	                    ctx.drawImage(frame1.canvas, 0, 0);
 	                }
 	                ctx.restore();
 
@@ -29430,16 +29468,22 @@
 	                    ctx.restore();
 	                    ctx.clip();
 
-	                    ctx.drawImage(imageData.frames[frame2].canvas, 0, 0);
+	                    ctx.drawImage(frame2.canvas, 0, 0);
 	                }
 	                ctx.restore();
 	            }
 	        }
 	    }, {
+	        key: 'getFrame',
+	        value: function getFrame(imageData, index) {
+	            var len = imageData.frames.length;
+	            index %= len;
+	            if (index < 0) return imageData.frames[len - 1 - Math.abs(index)];
+	            return imageData.frames[index];
+	        }
+	    }, {
 	        key: 'drawGrid',
-	        value: function drawGrid(imageData, gridColumns, gridRows, initialFrame, increment) {
-	            if (!imageData) return;
-
+	        value: function drawGrid(imageData, columnWidth, columnHeight, initialFrame, increment) {
 	            var ctx = this._ctx;
 	            var canvas = this._canvas;
 
@@ -29447,28 +29491,23 @@
 	            canvas.width = imageData.width;
 	            canvas.height = imageData.height;
 
-	            var len = imageData.frames.length;
-	            var dy = imageData.height;
-
 	            var i = initialFrame;
-	            for (var x = 0; x < imageData.width; x += gridColumns) {
-	                for (var y = 0; y < imageData.height; y += gridRows) {
-	                    var frameNumber = i % len;
-	                    i += increment;
+	            for (var x = 0; x < imageData.width; x += columnWidth) {
+	                for (var y = 0; y < imageData.height; y += columnHeight) {
+	                    var frame = this.getFrame(imageData, i);
 	                    ctx.save();
 
 	                    // Create clipping rect.
 	                    ctx.beginPath();
-	                    ctx.moveTo(x, y);
-	                    ctx.lineTo(x + gridColumns, y);
-	                    ctx.lineTo(x + gridColumns, y + gridRows);
-	                    ctx.lineTo(x, y + gridRows);
+	                    ctx.rect(x, y, columnWidth, columnHeight);
 	                    ctx.clip();
 
 	                    // Draw gif with clipping applied
-	                    ctx.drawImage(imageData.frames[frameNumber].canvas, 0, 0);
+	                    ctx.drawImage(frame.canvas, 0, 0);
 
 	                    ctx.restore();
+
+	                    i += increment;
 	                }
 	            }
 	        }
