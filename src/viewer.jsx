@@ -5,8 +5,6 @@ import loadGif from './loadGif';
 import LabeledSlider from './labeled_slider';
 import GifPlayer from './gif_player';
 
-import * as url_persist from './url_persist';
-
 /**
  * Display modes
  */
@@ -45,16 +43,6 @@ class ModeSelector extends React.Component {
     }
 }
 
-const persistedStateKeys = [
-    'mode',
-    'tileWidth',
-    'tileHeight',
-    'initialFrame',
-    'frameIncrement',
-    'playbackSpeed',
-    'diagonalWidth',
-    'diagonalAngle'
-];
 
 /**
  * Displays an interative scanlined gif with controls. 
@@ -65,8 +53,8 @@ export default class Viewer extends React.Component {
         this.state = {
             imageData: null,
             mode: Object.keys(modes)[0],
-            tileWidth: 10,
-            tileHeight: 10,
+            gridColumns: 10,
+            gridRows: 10,
             initialFrame: 0,
             frameIncrement: 1,
             playbackSpeed: 1,
@@ -84,9 +72,6 @@ export default class Viewer extends React.Component {
         this._canvas = canvas;
         this._ctx = ctx;
 
-        const state = url_persist.read(persistedStateKeys);
-        this.setState(state);
-
         this.loadGif(this.props.file);
     }
 
@@ -94,14 +79,6 @@ export default class Viewer extends React.Component {
         if (newProps.file && newProps.file.length && newProps.file !== this.props.file) {
             this.loadGif(newProps.file);
         }
-    }
-
-    componentDidUpdate() {
-        this.persist();
-    }
-
-    persist() {
-     //   url_persist.write(persistedStateKeys, this.state);
     }
 
     loadGif(file) {
@@ -112,17 +89,25 @@ export default class Viewer extends React.Component {
                 
                 this.setState({
                     imageData: data,
+                    error: null,
+
                     playbackSpeed: 1,
                     initialFrame: 0,
                     frameIncrement: 1,
-                    tileWidth: 10,
-                    tileHeight: 10,
+                    gridColumns: 10,
+                    gridRows: 10,
 
                     diagonalWidth: 20,
                     diagonalAngle: 45
                 });
             })
-            .catch(e => console.error(e));
+            .catch(e => {
+                console.error(e);
+                this.setState({
+                    imageData: [],
+                    error: 'Could not load gif'
+                })
+            });
     }
 
     onModeChange(e) {
@@ -130,9 +115,9 @@ export default class Viewer extends React.Component {
         this.setState({ mode: value });
     }
 
-    onTileWidthChange(e) {
+    onGridColumnsChange(e) {
         const value = +e.target.value;
-        this.setState({ tileWidth: value });
+        this.setState({ gridColumns: value });
     }
 
     onInitialFrameChange(e) {
@@ -145,9 +130,9 @@ export default class Viewer extends React.Component {
         this.setState({ frameIncrement: value });
     }
 
-    onTileHeightChange(e) {
+    onGridRowsChange(e) {
         const value = +e.target.value;
-        this.setState({ tileHeight: value });
+        this.setState({ gridRows: value });
     }
 
     onDiagonalAngleChange(e) {
@@ -184,19 +169,19 @@ export default class Viewer extends React.Component {
                     </div>
 
                     <div className={"grid-controls " + (this.state.mode === 'grid' ? '' : 'hidden') }>
-                        <LabeledSlider title="Title Width"
-                            units="px"
+                        <LabeledSlider title="Columns"
+                            units=" columns"
                             min="1"
                             max={this.state.imageData ? this.state.imageData.width : 1}
-                            value={this.state.tileWidth}
-                            onChange={this.onTileWidthChange.bind(this) }/>
+                            value={this.state.gridColumns}
+                            onChange={this.onGridColumnsChange.bind(this) }/>
 
-                        <LabeledSlider title="Title Height"
-                            units="px"
+                        <LabeledSlider title="Rows"
+                            units=" rows"
                             min="1"
                             max={this.state.imageData ? this.state.imageData.height : 1}
-                            value={this.state.tileHeight}
-                            onChange={this.onTileHeightChange.bind(this) }/>
+                            value={this.state.gridRows}
+                            onChange={this.onGridRowsChange.bind(this) }/>
                     </div>
 
                     <div className={"diagonal-controls " + (this.state.mode === 'diagonal' ? '' : 'hidden') }>

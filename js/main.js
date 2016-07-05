@@ -64,12 +64,6 @@
 
 	var _viewer2 = _interopRequireDefault(_viewer);
 
-	var _url_persist = __webpack_require__(213);
-
-	var url_persist = _interopRequireWildcard(_url_persist);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -93,18 +87,9 @@
 	    }
 
 	    _createClass(Main, [{
-	        key: 'componentDidMount',
-	        value: function componentDidMount() {
-	            var state = url_persist.read(['gif']);
-	            if (state.gif) {
-	                this.onGifSelected(state.gif);
-	            }
-	        }
-	    }, {
 	        key: 'onGifSelected',
 	        value: function onGifSelected(src) {
 	            this.setState({ selectedGif: src });
-	            var state = url_persist.write(['gif'], { 'gif': src });
 	        }
 	    }, {
 	        key: 'render',
@@ -27800,12 +27785,6 @@
 
 	var _gif_player2 = _interopRequireDefault(_gif_player);
 
-	var _url_persist = __webpack_require__(213);
-
-	var url_persist = _interopRequireWildcard(_url_persist);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -27880,11 +27859,10 @@
 	    return ModeSelector;
 	}(_react2.default.Component);
 
-	var persistedStateKeys = ['mode', 'tileWidth', 'tileHeight', 'initialFrame', 'frameIncrement', 'playbackSpeed', 'diagonalWidth', 'diagonalAngle'];
-
 	/**
 	 * Displays an interative scanlined gif with controls. 
 	 */
+
 
 	var Viewer = function (_React$Component2) {
 	    _inherits(Viewer, _React$Component2);
@@ -27897,8 +27875,8 @@
 	        _this2.state = {
 	            imageData: null,
 	            mode: Object.keys(modes)[0],
-	            tileWidth: 10,
-	            tileHeight: 10,
+	            gridColumns: 10,
+	            gridRows: 10,
 	            initialFrame: 0,
 	            frameIncrement: 1,
 	            playbackSpeed: 1,
@@ -27919,9 +27897,6 @@
 	            this._canvas = canvas;
 	            this._ctx = ctx;
 
-	            var state = url_persist.read(persistedStateKeys);
-	            this.setState(state);
-
 	            this.loadGif(this.props.file);
 	        }
 	    }, {
@@ -27930,16 +27905,6 @@
 	            if (newProps.file && newProps.file.length && newProps.file !== this.props.file) {
 	                this.loadGif(newProps.file);
 	            }
-	        }
-	    }, {
-	        key: 'componentDidUpdate',
-	        value: function componentDidUpdate() {
-	            this.persist();
-	        }
-	    }, {
-	        key: 'persist',
-	        value: function persist() {
-	            //   url_persist.write(persistedStateKeys, this.state);
 	        }
 	    }, {
 	        key: 'loadGif',
@@ -27951,17 +27916,23 @@
 
 	                _this3.setState({
 	                    imageData: data,
+	                    error: null,
+
 	                    playbackSpeed: 1,
 	                    initialFrame: 0,
 	                    frameIncrement: 1,
-	                    tileWidth: 10,
-	                    tileHeight: 10,
+	                    gridColumns: 10,
+	                    gridRows: 10,
 
 	                    diagonalWidth: 20,
 	                    diagonalAngle: 45
 	                });
 	            }).catch(function (e) {
-	                return console.error(e);
+	                console.error(e);
+	                _this3.setState({
+	                    imageData: [],
+	                    error: 'Could not load gif'
+	                });
 	            });
 	        }
 	    }, {
@@ -27971,10 +27942,10 @@
 	            this.setState({ mode: value });
 	        }
 	    }, {
-	        key: 'onTileWidthChange',
-	        value: function onTileWidthChange(e) {
+	        key: 'onGridColumnsChange',
+	        value: function onGridColumnsChange(e) {
 	            var value = +e.target.value;
-	            this.setState({ tileWidth: value });
+	            this.setState({ gridColumns: value });
 	        }
 	    }, {
 	        key: 'onInitialFrameChange',
@@ -27989,10 +27960,10 @@
 	            this.setState({ frameIncrement: value });
 	        }
 	    }, {
-	        key: 'onTileHeightChange',
-	        value: function onTileHeightChange(e) {
+	        key: 'onGridRowsChange',
+	        value: function onGridRowsChange(e) {
 	            var value = +e.target.value;
-	            this.setState({ tileHeight: value });
+	            this.setState({ gridRows: value });
 	        }
 	    }, {
 	        key: 'onDiagonalAngleChange',
@@ -28038,18 +28009,18 @@
 	                    _react2.default.createElement(
 	                        'div',
 	                        { className: "grid-controls " + (this.state.mode === 'grid' ? '' : 'hidden') },
-	                        _react2.default.createElement(_labeled_slider2.default, { title: 'Title Width',
-	                            units: 'px',
+	                        _react2.default.createElement(_labeled_slider2.default, { title: 'Columns',
+	                            units: ' columns',
 	                            min: '1',
 	                            max: this.state.imageData ? this.state.imageData.width : 1,
-	                            value: this.state.tileWidth,
-	                            onChange: this.onTileWidthChange.bind(this) }),
-	                        _react2.default.createElement(_labeled_slider2.default, { title: 'Title Height',
-	                            units: 'px',
+	                            value: this.state.gridColumns,
+	                            onChange: this.onGridColumnsChange.bind(this) }),
+	                        _react2.default.createElement(_labeled_slider2.default, { title: 'Rows',
+	                            units: ' rows',
 	                            min: '1',
 	                            max: this.state.imageData ? this.state.imageData.height : 1,
-	                            value: this.state.tileHeight,
-	                            onChange: this.onTileHeightChange.bind(this) })
+	                            value: this.state.gridRows,
+	                            onChange: this.onGridRowsChange.bind(this) })
 	                    ),
 	                    _react2.default.createElement(
 	                        'div',
@@ -29372,7 +29343,7 @@
 	        value: function componentWillReceiveProps(newProps) {
 	            var _this2 = this;
 
-	            var propsToCheck = ['imageData', 'mode', 'tileWidth', 'tileHeight', 'diagonalWidth', 'diagonalAngle', 'initialFrame', 'currentFrame', 'frameIncrement'];
+	            var propsToCheck = ['imageData', 'mode', 'gridColumns', 'gridRows', 'diagonalWidth', 'diagonalAngle', 'initialFrame', 'currentFrame', 'frameIncrement'];
 	            var isDiff = propsToCheck.some(function (prop) {
 	                return _this2.props[prop] !== newProps[prop];
 	            });
@@ -29385,28 +29356,30 @@
 	        value: function drawGifForOptions(imageData, state) {
 	            if (!imageData) return;
 
+	            var startFrame = state.initialFrame + state.currentFrame;
+
 	            switch (state.mode) {
 	                case 'columns':
-	                    this.drawGrid(imageData, imageData.width / imageData.frames.length, imageData.height, state.initialFrame + state.currentFrame, state.frameIncrement);
+	                    this.drawGrid(imageData, imageData.width / imageData.frames.length, imageData.height, startFrame, state.frameIncrement);
 	                    break;
 
 	                case 'rows':
-	                    this.drawGrid(imageData, imageData.width, imageData.height / imageData.frames.length, state.initialFrame + state.currentFrame, state.frameIncrement);
+	                default:
+	                    this.drawGrid(imageData, imageData.width, imageData.height / imageData.frames.length, startFrame, state.frameIncrement);
 	                    break;
 
 	                case 'grid':
-	                default:
-	                    this.drawGrid(imageData, state.tileWidth, state.tileHeight, state.initialFrame + state.currentFrame, state.frameIncrement);
+	                    this.drawGrid(imageData, imageData.width / state.gridColumns, imageData.height / state.gridRows, startFrame, state.frameIncrement);
 	                    break;
 
 	                case 'diagonal':
-	                    this.drawDiag(imageData, state.diagonalWidth, state.diagonalAngle, state.initialFrame + state.currentFrame, state.frameIncrement);
+	                    this.drawDiag(imageData, state.diagonalWidth, state.diagonalAngle, startFrame, state.frameIncrement);
 	                    break;
 	            }
 	        }
 	    }, {
 	        key: 'drawDiag',
-	        value: function drawDiag(imageData, tileWidth, angle, initialFrame, increment) {
+	        value: function drawDiag(imageData, gridColumns, angle, initialFrame, increment) {
 	            if (!imageData) return;
 
 	            var radAngle = angle * (Math.PI / 180);
@@ -29423,7 +29396,7 @@
 
 	            var diag = Math.sqrt(Math.pow(imageData.width, 2) + Math.pow(imageData.height, 2));
 
-	            for (var i = 0, numDraws = Math.ceil(diag / tileWidth / 2); i <= numDraws; ++i) {
+	            for (var i = 0, numDraws = Math.ceil(diag / gridColumns / 2); i <= numDraws; ++i) {
 	                var frame1 = (initialFrame + i * increment) % len;
 	                var frame2Start = (initialFrame - (i + 1) * increment) % len;
 	                var frame2 = frame2Start < 0 ? len - 1 - Math.abs(frame2Start) : frame2Start;
@@ -29436,7 +29409,7 @@
 	                    ctx.rotate(radAngle);
 	                    ctx.translate(-width / 2, -height / 2);
 	                    ctx.beginPath();
-	                    ctx.rect(-diag, height / 2 + i * tileWidth, diag * 2, tileWidth);
+	                    ctx.rect(-diag, height / 2 + i * gridColumns, diag * 2, gridColumns);
 	                    ctx.restore();
 
 	                    ctx.clip();
@@ -29453,7 +29426,7 @@
 	                    ctx.rotate(radAngle);
 	                    ctx.translate(-width / 2, -height / 2);
 	                    ctx.beginPath();
-	                    ctx.rect(-diag, height / 2 - i * tileWidth, diag * 2, tileWidth);
+	                    ctx.rect(-diag, height / 2 - i * gridColumns, diag * 2, gridColumns);
 	                    ctx.restore();
 	                    ctx.clip();
 
@@ -29464,7 +29437,7 @@
 	        }
 	    }, {
 	        key: 'drawGrid',
-	        value: function drawGrid(imageData, tileWidth, tileHeight, initialFrame, increment) {
+	        value: function drawGrid(imageData, gridColumns, gridRows, initialFrame, increment) {
 	            if (!imageData) return;
 
 	            var ctx = this._ctx;
@@ -29478,8 +29451,8 @@
 	            var dy = imageData.height;
 
 	            var i = initialFrame;
-	            for (var x = 0; x < imageData.width; x += tileWidth) {
-	                for (var y = 0; y < imageData.height; y += tileHeight) {
+	            for (var x = 0; x < imageData.width; x += gridColumns) {
+	                for (var y = 0; y < imageData.height; y += gridRows) {
 	                    var frameNumber = i % len;
 	                    i += increment;
 	                    ctx.save();
@@ -29487,9 +29460,9 @@
 	                    // Create clipping rect.
 	                    ctx.beginPath();
 	                    ctx.moveTo(x, y);
-	                    ctx.lineTo(x + tileWidth, y);
-	                    ctx.lineTo(x + tileWidth, y + tileHeight);
-	                    ctx.lineTo(x, y + tileHeight);
+	                    ctx.lineTo(x + gridColumns, y);
+	                    ctx.lineTo(x + gridColumns, y + gridRows);
+	                    ctx.lineTo(x, y + gridRows);
 	                    ctx.clip();
 
 	                    // Draw gif with clipping applied
@@ -29564,68 +29537,6 @@
 	}(_react2.default.Component);
 
 	exports.default = LoadingSpinner;
-
-/***/ },
-/* 213 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
-	/**
-	 * 
-	 */
-	var readAll = exports.readAll = function readAll() {
-	    var search = window.location.search;
-	    if (search[0] === '?') search = search.slice(1);
-
-	    var pairs = search.split('&');
-	    return pairs.reduce(function (p, pair) {
-	        var _pair$split = pair.split('=');
-
-	        var _pair$split2 = _slicedToArray(_pair$split, 2);
-
-	        var key = _pair$split2[0];
-	        var value = _pair$split2[1];
-
-	        if (key.length && value.length) p[key] = decodeURIComponent(value);
-	        return p;
-	    }, {});
-	};
-
-	/**
-	 * 
-	 */
-	var read = exports.read = function read(keys) {
-	    var all = readAll();
-	    return Object.keys(all).reduce(function (p, key) {
-	        if (keys.indexOf(key) >= 0) {
-	            p[key] = all[key];
-	        }
-	        return p;
-	    }, {});
-	};
-
-	/**
-	 * 
-	 */
-	var write = exports.write = function write(keys, state) {
-	    var pairs = readAll();
-	    keys.forEach(function (key) {
-	        return pairs[key] = state[key];
-	    });
-
-	    var search = Object.keys(pairs).map(function (key) {
-	        return key + '=' + encodeURIComponent(pairs[key]);
-	    }).join('&');
-	    var url = window.location.protocol + '//' + window.location.host + window.location.pathname + '?' + search + window.location.hash;
-	    window.history.replaceState({}, '', url);
-	};
 
 /***/ }
 /******/ ]);
