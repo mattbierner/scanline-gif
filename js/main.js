@@ -28113,7 +28113,7 @@
 	                            _react2.default.createElement(_labeled_slider2.default, { title: 'Step Size',
 	                                units: 'px',
 	                                min: '1',
-	                                max: this.state.imageData ? Math.max(this.state.imageData.height, this.state.imageData.width) : 1,
+	                                max: this.state.imageData ? Math.max(this.state.imageData.height, this.state.imageData.width) / 2 : 1,
 	                                value: this.state.radiusWidth,
 	                                onChange: this.onRadiusWidthChange.bind(this) })
 	                        )
