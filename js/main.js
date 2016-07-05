@@ -64,6 +64,12 @@
 
 	var _viewer2 = _interopRequireDefault(_viewer);
 
+	var _url_persist = __webpack_require__(213);
+
+	var url_persist = _interopRequireWildcard(_url_persist);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -87,9 +93,18 @@
 	    }
 
 	    _createClass(Main, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            var state = url_persist.read(['gif']);
+	            if (state.gif) {
+	                this.onGifSelected(state.gif);
+	            }
+	        }
+	    }, {
 	        key: 'onGifSelected',
 	        value: function onGifSelected(src) {
 	            this.setState({ selectedGif: src });
+	            var state = url_persist.write(['gif'], { 'gif': src });
 	        }
 	    }, {
 	        key: 'render',
@@ -27785,6 +27800,12 @@
 
 	var _gif_player2 = _interopRequireDefault(_gif_player);
 
+	var _url_persist = __webpack_require__(213);
+
+	var url_persist = _interopRequireWildcard(_url_persist);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -27859,10 +27880,11 @@
 	    return ModeSelector;
 	}(_react2.default.Component);
 
+	var persistedStateKeys = ['mode', 'tileWidth', 'tileHeight', 'initialFrame', 'frameIncrement', 'playbackSpeed', 'diagonalWidth', 'diagonalAngle'];
+
 	/**
 	 * Displays an interative scanlined gif with controls. 
 	 */
-
 
 	var Viewer = function (_React$Component2) {
 	    _inherits(Viewer, _React$Component2);
@@ -27897,6 +27919,9 @@
 	            this._canvas = canvas;
 	            this._ctx = ctx;
 
+	            var state = url_persist.read(persistedStateKeys);
+	            this.setState(state);
+
 	            this.loadGif(this.props.file);
 	        }
 	    }, {
@@ -27907,11 +27932,23 @@
 	            }
 	        }
 	    }, {
+	        key: 'componentDidUpdate',
+	        value: function componentDidUpdate() {
+	            this.persist();
+	        }
+	    }, {
+	        key: 'persist',
+	        value: function persist() {
+	            //   url_persist.write(persistedStateKeys, this.state);
+	        }
+	    }, {
 	        key: 'loadGif',
 	        value: function loadGif(file) {
 	            var _this3 = this;
 
 	            (0, _loadGif3.default)(file).then(function (data) {
+	                if (file !== _this3.props.file) return;
+
 	                _this3.setState({
 	                    imageData: data,
 	                    playbackSpeed: 1,
@@ -29527,6 +29564,68 @@
 	}(_react2.default.Component);
 
 	exports.default = LoadingSpinner;
+
+/***/ },
+/* 213 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+	/**
+	 * 
+	 */
+	var readAll = exports.readAll = function readAll() {
+	    var search = window.location.search;
+	    if (search[0] === '?') search = search.slice(1);
+
+	    var pairs = search.split('&');
+	    return pairs.reduce(function (p, pair) {
+	        var _pair$split = pair.split('=');
+
+	        var _pair$split2 = _slicedToArray(_pair$split, 2);
+
+	        var key = _pair$split2[0];
+	        var value = _pair$split2[1];
+
+	        if (key.length && value.length) p[key] = decodeURIComponent(value);
+	        return p;
+	    }, {});
+	};
+
+	/**
+	 * 
+	 */
+	var read = exports.read = function read(keys) {
+	    var all = readAll();
+	    return Object.keys(all).reduce(function (p, key) {
+	        if (keys.indexOf(key) >= 0) {
+	            p[key] = all[key];
+	        }
+	        return p;
+	    }, {});
+	};
+
+	/**
+	 * 
+	 */
+	var write = exports.write = function write(keys, state) {
+	    var pairs = readAll();
+	    keys.forEach(function (key) {
+	        return pairs[key] = state[key];
+	    });
+
+	    var search = Object.keys(pairs).map(function (key) {
+	        return key + '=' + encodeURIComponent(pairs[key]);
+	    }).join('&');
+	    var url = window.location.protocol + '//' + window.location.host + window.location.pathname + '?' + search + window.location.hash;
+	    window.history.replaceState({}, '', url);
+	};
 
 /***/ }
 /******/ ]);

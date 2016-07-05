@@ -5,6 +5,8 @@ import loadGif from './loadGif';
 import LabeledSlider from './labeled_slider';
 import GifPlayer from './gif_player';
 
+import * as url_persist from './url_persist';
+
 /**
  * Display modes
  */
@@ -43,6 +45,17 @@ class ModeSelector extends React.Component {
     }
 }
 
+const persistedStateKeys = [
+    'mode',
+    'tileWidth',
+    'tileHeight',
+    'initialFrame',
+    'frameIncrement',
+    'playbackSpeed',
+    'diagonalWidth',
+    'diagonalAngle'
+];
+
 /**
  * Displays an interative scanlined gif with controls. 
  */
@@ -71,6 +84,9 @@ export default class Viewer extends React.Component {
         this._canvas = canvas;
         this._ctx = ctx;
 
+        const state = url_persist.read(persistedStateKeys);
+        this.setState(state);
+
         this.loadGif(this.props.file);
     }
 
@@ -80,9 +96,20 @@ export default class Viewer extends React.Component {
         }
     }
 
+    componentDidUpdate() {
+        this.persist();
+    }
+
+    persist() {
+     //   url_persist.write(persistedStateKeys, this.state);
+    }
+
     loadGif(file) {
         loadGif(file)
             .then(data => {
+                if (file !== this.props.file)
+                    return;
+                
                 this.setState({
                     imageData: data,
                     playbackSpeed: 1,
