@@ -61,52 +61,43 @@ export default class GifRenderer extends React.Component {
 
         const diag = Math.sqrt(Math.pow(imageData.width, 2) + Math.pow(imageData.height, 2));
 
-        let count = 0
-        let i = initialFrame;
-        let i2 = initialFrame - increment;
-        
-        while (count <= Math.ceil((diag / tileWidth) / 2)) {
+        for (let i = 0, numDraws = Math.ceil((diag / tileWidth) / 2); i <= numDraws; ++i) {
+            const frame1 = (initialFrame + i * increment) % len;
+            const frame2Start = (initialFrame - ((i + 1) * increment)) % len;
+            const frame2 = frame2Start < 0 ? len - 1 - Math.abs(frame2Start) : frame2Start;
+
             // draw first
             ctx.save();
+            {
+                ctx.save();
+                ctx.translate(width / 2, height / 2);
+                ctx.rotate(radAngle);
+                ctx.translate(-width / 2, -height / 2);
+                ctx.beginPath();
+                ctx.rect(-diag, height / 2 + (i * tileWidth), diag * 2, tileWidth);
+                ctx.restore();
 
-            ctx.save();
-            ctx.translate(width / 2, height / 2);
-            ctx.rotate(radAngle);
-            ctx.translate(-width / 2, -height / 2);
+                ctx.clip();
 
-            ctx.rect(-diag, height / 2 + (count * tileWidth), diag * 2, tileWidth);
-            
-            ctx.restore();
-
-            ctx.clip();
-            const frameNumber = i % len;
-            ctx.drawImage(imageData.frames[frameNumber].canvas, 0, 0);
-
+                ctx.drawImage(imageData.frames[frame1].canvas, 0, 0);
+            }
             ctx.restore();
 
             // draw second
             ctx.save();
+            {
+                ctx.save();
+                ctx.translate(width / 2, height / 2);
+                ctx.rotate(radAngle);
+                ctx.translate(-width / 2, -height / 2);
+                ctx.beginPath();
+                ctx.rect(-diag, height / 2 - (i * tileWidth), diag * 2, tileWidth);
+                ctx.restore();
+                ctx.clip();
 
-            ctx.save();
-            ctx.translate(width / 2, height / 2);
-            ctx.rotate(radAngle);
-            ctx.translate(-width / 2, -height / 2);
-
-            ctx.beginPath();
-            ctx.rect(-diag, height / 2 - (count * tileWidth), diag * 2, tileWidth);
-
+                ctx.drawImage(imageData.frames[frame2].canvas, 0, 0);
+            }
             ctx.restore();
-
-            ctx.clip();
-            const frameNumber2 = Math.abs(i2 < 0 ? len - i2 : i2) % len;
-
-            ctx.drawImage(imageData.frames[frameNumber2].canvas, 0, 0);
-
-            ctx.restore();
-
-            ++count;
-            i += increment;
-            i2 -= increment;
         }
     }
 

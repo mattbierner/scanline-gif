@@ -29386,52 +29386,43 @@
 
 	            var diag = Math.sqrt(Math.pow(imageData.width, 2) + Math.pow(imageData.height, 2));
 
-	            var count = 0;
-	            var i = initialFrame;
-	            var i2 = initialFrame - increment;
+	            for (var i = 0, numDraws = Math.ceil(diag / tileWidth / 2); i <= numDraws; ++i) {
+	                var frame1 = (initialFrame + i * increment) % len;
+	                var frame2Start = (initialFrame - (i + 1) * increment) % len;
+	                var frame2 = frame2Start < 0 ? len - 1 - Math.abs(frame2Start) : frame2Start;
 
-	            while (count <= Math.ceil(diag / tileWidth / 2)) {
 	                // draw first
 	                ctx.save();
+	                {
+	                    ctx.save();
+	                    ctx.translate(width / 2, height / 2);
+	                    ctx.rotate(radAngle);
+	                    ctx.translate(-width / 2, -height / 2);
+	                    ctx.beginPath();
+	                    ctx.rect(-diag, height / 2 + i * tileWidth, diag * 2, tileWidth);
+	                    ctx.restore();
 
-	                ctx.save();
-	                ctx.translate(width / 2, height / 2);
-	                ctx.rotate(radAngle);
-	                ctx.translate(-width / 2, -height / 2);
+	                    ctx.clip();
 
-	                ctx.rect(-diag, height / 2 + count * tileWidth, diag * 2, tileWidth);
-
-	                ctx.restore();
-
-	                ctx.clip();
-	                var frameNumber = i % len;
-	                ctx.drawImage(imageData.frames[frameNumber].canvas, 0, 0);
-
+	                    ctx.drawImage(imageData.frames[frame1].canvas, 0, 0);
+	                }
 	                ctx.restore();
 
 	                // draw second
 	                ctx.save();
+	                {
+	                    ctx.save();
+	                    ctx.translate(width / 2, height / 2);
+	                    ctx.rotate(radAngle);
+	                    ctx.translate(-width / 2, -height / 2);
+	                    ctx.beginPath();
+	                    ctx.rect(-diag, height / 2 - i * tileWidth, diag * 2, tileWidth);
+	                    ctx.restore();
+	                    ctx.clip();
 
-	                ctx.save();
-	                ctx.translate(width / 2, height / 2);
-	                ctx.rotate(radAngle);
-	                ctx.translate(-width / 2, -height / 2);
-
-	                ctx.beginPath();
-	                ctx.rect(-diag, height / 2 - count * tileWidth, diag * 2, tileWidth);
-
+	                    ctx.drawImage(imageData.frames[frame2].canvas, 0, 0);
+	                }
 	                ctx.restore();
-
-	                ctx.clip();
-	                var frameNumber2 = Math.abs(i2 < 0 ? len - i2 : i2) % len;
-
-	                ctx.drawImage(imageData.frames[frameNumber2].canvas, 0, 0);
-
-	                ctx.restore();
-
-	                ++count;
-	                i += increment;
-	                i2 -= increment;
 	            }
 	        }
 	    }, {
