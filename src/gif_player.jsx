@@ -59,8 +59,10 @@ export default class GifPlayer extends React.Component {
     componentWillReceiveProps(newProps) {
         if (this.props.imageData !== newProps.imageData) {
             this.setState({
-                currentFrame: 0
+                currentFrame: 0,
+                playing: true
             });
+            this.scheduleNextFrame(0, true);
         }
     }
 
@@ -68,7 +70,7 @@ export default class GifPlayer extends React.Component {
         this.setState({ playing: !this.state.playing });
 
         if (!this.state.playing) {
-            this.scheduleNextFrame(0, true);
+            this.scheduleNextFrame(this.props.imageData, 0, true);
         }
     }
 
@@ -79,11 +81,14 @@ export default class GifPlayer extends React.Component {
     }
 
     scheduleNextFrame(delay, forcePlay) {
-        if (!this.props.imageData || (!forcePlay && !this.state.playing))
+        if (!forcePlay && !this.state.playing)
             return;
 
         const start = Date.now();
         setTimeout(() => {
+            if (!this.props.imageData)
+                return;
+            
             let nextFrame = (this.state.currentFrame + 1);
             if (nextFrame >= this.getNumFrames() && !this.state.loop) {
                 this.setState({ playing: false });

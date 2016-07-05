@@ -105,6 +105,7 @@ export default class Viewer extends React.Component {
 
                     playbackSpeed: 1,
                     reverseFrameOrder: false,
+                    
                     frameIncrement: 1,
                     gridColumns: 10,
                     gridRows: 10,

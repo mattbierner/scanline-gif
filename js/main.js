@@ -85,7 +85,7 @@
 	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Main).call(this, props));
 
 	        _this.state = {
-	            selectedGif: "./examples/cat.gif"
+	            selectedGif: "http://media2.giphy.com/media/jb5WFJTgSSonu/giphy.gif"
 	        };
 	        return _this;
 	    }
@@ -27936,6 +27936,7 @@
 
 	                    playbackSpeed: 1,
 	                    reverseFrameOrder: false,
+
 	                    frameIncrement: 1,
 	                    gridColumns: 10,
 	                    gridRows: 10,
@@ -29230,8 +29231,10 @@
 	        value: function componentWillReceiveProps(newProps) {
 	            if (this.props.imageData !== newProps.imageData) {
 	                this.setState({
-	                    currentFrame: 0
+	                    currentFrame: 0,
+	                    playing: true
 	                });
+	                this.scheduleNextFrame(0, true);
 	            }
 	        }
 	    }, {
@@ -29240,7 +29243,7 @@
 	            this.setState({ playing: !this.state.playing });
 
 	            if (!this.state.playing) {
-	                this.scheduleNextFrame(0, true);
+	                this.scheduleNextFrame(this.props.imageData, 0, true);
 	            }
 	        }
 	    }, {
@@ -29254,10 +29257,12 @@
 	        value: function scheduleNextFrame(delay, forcePlay) {
 	            var _this4 = this;
 
-	            if (!this.props.imageData || !forcePlay && !this.state.playing) return;
+	            if (!forcePlay && !this.state.playing) return;
 
 	            var start = Date.now();
 	            setTimeout(function () {
+	                if (!_this4.props.imageData) return;
+
 	                var nextFrame = _this4.state.currentFrame + 1;
 	                if (nextFrame >= _this4.getNumFrames() && !_this4.state.loop) {
 	                    _this4.setState({ playing: false });
