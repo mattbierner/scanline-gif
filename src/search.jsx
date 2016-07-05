@@ -31,7 +31,6 @@ class SearchResult extends React.Component {
 
     onSelect() {
         this.props.onGifSelected(this.props.data);
-        window.location = '#viewer';
     }
 
     onTouchDown() {

@@ -24,6 +24,10 @@ const modes = {
     'diagonal': {
         title: 'Diagonal',
         description: 'Configurable diagonal lines'
+    },
+    'circle': {
+        title: 'Circles',
+        description: 'Configurable circles'
     }
 };
 
@@ -52,7 +56,7 @@ export default class Viewer extends React.Component {
         super(props);
         this.state = {
             imageData: null,
-            mode: 'grid',//Object.keys(modes)[0],
+            mode: Object.keys(modes)[0],
 
             //grid
             gridColumns: 10,
@@ -63,8 +67,12 @@ export default class Viewer extends React.Component {
             frameIncrement: 1,
             playbackSpeed: 1,
 
+            // Diagonal
             diagonalWidth: 20,
-            diagonalAngle: 45
+            diagonalAngle: 45,
+
+            // Circles
+            radiusWidth: 10
         };
     }
 
@@ -149,6 +157,11 @@ export default class Viewer extends React.Component {
         this.setState({ diagonalWidth: value });
     }
 
+    onRadiusWidthChange(e) {
+        const value = +e.target.value;
+        this.setState({ radiusWidth: value });
+    }
+
     render() {
         return (
             <div className="gif-viewer" id="viewer">
@@ -205,12 +218,24 @@ export default class Viewer extends React.Component {
                                 onChange={this.onDiagonalAngleChange.bind(this) }/>
                         </div>
                         <div>
-                            <LabeledSlider title="Width"
+                            <LabeledSlider title="Step Size"
                                 units="px"
                                 min="1"
                                 max={this.state.imageData ? Math.max(this.state.imageData.height, this.state.imageData.width) : 1}
                                 value={this.state.diagonalWidth}
                                 onChange={this.onDiagonalWidthChange.bind(this) }/>
+                        </div>
+                    </div>
+
+                    <div className={"mode-control-set circle-controls " + (this.state.mode === 'circle' ? '' : 'hidden') }>
+                        <h4 className="control-set-label">Circle Options</h4>
+                        <div>
+                            <LabeledSlider title="Step Size"
+                                units="px"
+                                min="1"
+                                max={this.state.imageData ? Math.max(this.state.imageData.height, this.state.imageData.width) : 1}
+                                value={this.state.radiusWidth}
+                                onChange={this.onRadiusWidthChange.bind(this) }/>
                         </div>
                     </div>
                 </div>

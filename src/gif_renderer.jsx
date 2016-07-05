@@ -14,7 +14,7 @@ export default class GifRenderer extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const propsToCheck = ['imageData', 'mode', 'gridColumns', 'gridRows', 'diagonalWidth', 'diagonalAngle', 'reverseFrameOrder', 'currentFrame', 'frameIncrement'];
+        const propsToCheck = ['imageData', 'mode', 'gridColumns', 'gridRows', 'diagonalWidth', 'diagonalAngle', 'reverseFrameOrder', 'currentFrame', 'frameIncrement', 'radiusWidth'];
         const isDiff = propsToCheck.some(prop => this.props[prop] !== newProps[prop]);
         if (isDiff) {
             this.drawGifForOptions(newProps.imageData, newProps);
@@ -29,41 +29,45 @@ export default class GifRenderer extends React.Component {
 
         switch (state.mode) {
             case 'columns':
-                this.drawGrid(
+                return this.drawGrid(
                     imageData,
                     imageData.width / imageData.frames.length,
                     imageData.height,
                     state.currentFrame,
                     increment);
-                break;
-
+            
             case 'rows':
             default:
-                this.drawGrid(
+                return this.drawGrid(
                     imageData,
                     imageData.width,
                     imageData.height / imageData.frames.length,
                     state.currentFrame,
                     increment);
-                break;
 
             case 'grid':
-                this.drawGrid(
+                return this.drawGrid(
                     imageData,
                     imageData.width / state.gridColumns,
                     imageData.height / state.gridRows,
                     state.currentFrame,
                     increment);
-                break;
 
             case 'diagonal':
-                this.drawDiag(
+                return this.drawDiag(
                     imageData,
                     state.diagonalWidth,
                     state.diagonalAngle,
                     state.currentFrame,
                     increment);
-                break;
+            
+            case 'circle':
+                return this.drawCircle(
+                    imageData,
+                    state.radiusWidth,
+                    state.currentFrame,
+                    increment);
+
         }
     }
 
@@ -152,6 +156,35 @@ export default class GifRenderer extends React.Component {
 
                 i += increment;
             }
+        }
+    }
+
+    drawCircle(imageData, radiusStep, initialFrame, increment) {
+        const {width, height} = imageData;
+
+        const ctx = this._ctx;
+        const canvas = this._canvas;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.width = imageData.width;
+        canvas.height = imageData.height;
+        let i = initialFrame;
+        for (let r = 0, len = Math.max(width, height); r < len; r += radiusStep) {
+            const frame = this.getFrame(imageData, i);
+            ctx.save();
+
+            // Create clipping rect.
+            ctx.beginPath();
+            ctx.arc(width / 2, height / 2, r + radiusStep, 0, Math.PI * 2, false);
+            ctx.arc(width / 2, height / 2, r, 0, Math.PI * 2, true);
+            ctx.clip()
+
+            // Draw gif with clipping applied
+            ctx.drawImage(frame.canvas, 0, 0);
+
+            ctx.restore();
+
+            i += increment;
         }
     }
 

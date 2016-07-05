@@ -72,6 +72,10 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	/**
+	 * Main application.
+	 */
+
 	var Main = function (_React$Component) {
 	    _inherits(Main, _React$Component);
 
@@ -90,6 +94,7 @@
 	        key: 'onGifSelected',
 	        value: function onGifSelected(src) {
 	            this.setState({ selectedGif: src });
+	            window.location = '#viewer';
 	        }
 	    }, {
 	        key: 'render',
@@ -20488,7 +20493,6 @@
 	        key: 'onSelect',
 	        value: function onSelect() {
 	            this.props.onGifSelected(this.props.data);
-	            window.location = '#viewer';
 	        }
 	    }, {
 	        key: 'onTouchDown',
@@ -27812,6 +27816,10 @@
 	    'diagonal': {
 	        title: 'Diagonal',
 	        description: 'Configurable diagonal lines'
+	    },
+	    'circle': {
+	        title: 'Circles',
+	        description: 'Configurable circles'
 	    }
 	};
 
@@ -27874,7 +27882,7 @@
 
 	        _this2.state = {
 	            imageData: null,
-	            mode: 'grid', //Object.keys(modes)[0],
+	            mode: Object.keys(modes)[0],
 
 	            //grid
 	            gridColumns: 10,
@@ -27885,8 +27893,12 @@
 	            frameIncrement: 1,
 	            playbackSpeed: 1,
 
+	            // Diagonal
 	            diagonalWidth: 20,
-	            diagonalAngle: 45
+	            diagonalAngle: 45,
+
+	            // Circles
+	            radiusWidth: 10
 	        };
 	        return _this2;
 	    }
@@ -27982,6 +27994,12 @@
 	            this.setState({ diagonalWidth: value });
 	        }
 	    }, {
+	        key: 'onRadiusWidthChange',
+	        value: function onRadiusWidthChange(e) {
+	            var value = +e.target.value;
+	            this.setState({ radiusWidth: value });
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
 	            return _react2.default.createElement(
@@ -28073,12 +28091,31 @@
 	                        _react2.default.createElement(
 	                            'div',
 	                            null,
-	                            _react2.default.createElement(_labeled_slider2.default, { title: 'Width',
+	                            _react2.default.createElement(_labeled_slider2.default, { title: 'Step Size',
 	                                units: 'px',
 	                                min: '1',
 	                                max: this.state.imageData ? Math.max(this.state.imageData.height, this.state.imageData.width) : 1,
 	                                value: this.state.diagonalWidth,
 	                                onChange: this.onDiagonalWidthChange.bind(this) })
+	                        )
+	                    ),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: "mode-control-set circle-controls " + (this.state.mode === 'circle' ? '' : 'hidden') },
+	                        _react2.default.createElement(
+	                            'h4',
+	                            { className: 'control-set-label' },
+	                            'Circle Options'
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            null,
+	                            _react2.default.createElement(_labeled_slider2.default, { title: 'Step Size',
+	                                units: 'px',
+	                                min: '1',
+	                                max: this.state.imageData ? Math.max(this.state.imageData.height, this.state.imageData.width) : 1,
+	                                value: this.state.radiusWidth,
+	                                onChange: this.onRadiusWidthChange.bind(this) })
 	                        )
 	                    )
 	                )
@@ -29385,7 +29422,7 @@
 	        value: function componentWillReceiveProps(newProps) {
 	            var _this2 = this;
 
-	            var propsToCheck = ['imageData', 'mode', 'gridColumns', 'gridRows', 'diagonalWidth', 'diagonalAngle', 'reverseFrameOrder', 'currentFrame', 'frameIncrement'];
+	            var propsToCheck = ['imageData', 'mode', 'gridColumns', 'gridRows', 'diagonalWidth', 'diagonalAngle', 'reverseFrameOrder', 'currentFrame', 'frameIncrement', 'radiusWidth'];
 	            var isDiff = propsToCheck.some(function (prop) {
 	                return _this2.props[prop] !== newProps[prop];
 	            });
@@ -29402,21 +29439,21 @@
 
 	            switch (state.mode) {
 	                case 'columns':
-	                    this.drawGrid(imageData, imageData.width / imageData.frames.length, imageData.height, state.currentFrame, increment);
-	                    break;
+	                    return this.drawGrid(imageData, imageData.width / imageData.frames.length, imageData.height, state.currentFrame, increment);
 
 	                case 'rows':
 	                default:
-	                    this.drawGrid(imageData, imageData.width, imageData.height / imageData.frames.length, state.currentFrame, increment);
-	                    break;
+	                    return this.drawGrid(imageData, imageData.width, imageData.height / imageData.frames.length, state.currentFrame, increment);
 
 	                case 'grid':
-	                    this.drawGrid(imageData, imageData.width / state.gridColumns, imageData.height / state.gridRows, state.currentFrame, increment);
-	                    break;
+	                    return this.drawGrid(imageData, imageData.width / state.gridColumns, imageData.height / state.gridRows, state.currentFrame, increment);
 
 	                case 'diagonal':
-	                    this.drawDiag(imageData, state.diagonalWidth, state.diagonalAngle, state.currentFrame, increment);
-	                    break;
+	                    return this.drawDiag(imageData, state.diagonalWidth, state.diagonalAngle, state.currentFrame, increment);
+
+	                case 'circle':
+	                    return this.drawCircle(imageData, state.radiusWidth, state.currentFrame, increment);
+
 	            }
 	        }
 	    }, {
@@ -29509,6 +29546,38 @@
 
 	                    i += increment;
 	                }
+	            }
+	        }
+	    }, {
+	        key: 'drawCircle',
+	        value: function drawCircle(imageData, radiusStep, initialFrame, increment) {
+	            var width = imageData.width;
+	            var height = imageData.height;
+
+
+	            var ctx = this._ctx;
+	            var canvas = this._canvas;
+
+	            ctx.clearRect(0, 0, canvas.width, canvas.height);
+	            canvas.width = imageData.width;
+	            canvas.height = imageData.height;
+	            var i = initialFrame;
+	            for (var r = 0, len = Math.max(width, height); r < len; r += radiusStep) {
+	                var frame = this.getFrame(imageData, i);
+	                ctx.save();
+
+	                // Create clipping rect.
+	                ctx.beginPath();
+	                ctx.arc(width / 2, height / 2, r + radiusStep, 0, Math.PI * 2, false);
+	                ctx.arc(width / 2, height / 2, r, 0, Math.PI * 2, true);
+	                ctx.clip();
+
+	                // Draw gif with clipping applied
+	                ctx.drawImage(frame.canvas, 0, 0);
+
+	                ctx.restore();
+
+	                i += increment;
 	            }
 	        }
 	    }, {
