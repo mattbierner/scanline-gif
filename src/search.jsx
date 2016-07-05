@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-const Waypoint = require('react-waypoint');
+
+import LoadingSpinner from './loading_spinner';
 
 const giphy = require('giphy-api')('dc6zaTOxFJmzC');
 
@@ -78,7 +79,7 @@ class GifSearchBar extends React.Component {
     render() {
         return (
             <div className="gif-search-bar content-wrapper">
-                <button onClick={this.onSearch.bind(this)}><span className="material-icons">search</span></button>
+                <button onClick={this.onSearch.bind(this) }><span className="material-icons">search</span></button>
                 <input type="search"
                     value={this.props.searchText}
                     placeholder="find a gif"
@@ -86,6 +87,32 @@ class GifSearchBar extends React.Component {
                     onChange={this.props.onChange} />
             </div>
         );
+    }
+}
+
+
+/**
+ * Displays list of gif search results
+ */
+class GifSearchResults extends React.Component {
+    render() {
+        let results;
+        if (this.props.results && this.props.results.length === 0) {
+            if (!this.props.loading) {
+                results = <div>No gifs found</div>;
+            }
+        } else if (this.props.results) {
+            results = this.props.results.map(x =>
+                <SearchResult key={x.id} data={x}
+                    onGifSelected={this.props.onGifSelected} />);
+        }
+
+        return (
+            <div>
+                <div className="search-label">{this.props.query}</div>
+                <LoadingSpinner active={this.props.loading} />
+                <ul className="search-results">{results}</ul>
+            </div>);
     }
 }
 
@@ -97,7 +124,9 @@ export default class Search extends React.Component {
         super(props);
         this.state = {
             searchText: '',
-            results: []
+            query: '', // search term for current results
+            loading: false,
+            results: null
         };
     }
 
@@ -107,12 +136,24 @@ export default class Search extends React.Component {
     }
 
     search() {
+        this.setState({
+            loading: true,
+            query: this.state.searchText,
+            results: []
+        });
+
         giphy.search(this.state.searchText)
             .then(res => {
-                this.setState({ results: res.data })
+                this.setState({
+                    results: res.data,
+                    loading: false,
+                });
             })
             .catch(err => {
                 console.error(err);
+                this.setState({
+                    loading: false,
+                })
             });
     }
 
@@ -122,17 +163,13 @@ export default class Search extends React.Component {
     }
 
     render() {
-        const results = this.state.results.map(x =>
-            <SearchResult key={x.id} data={x}
-                onGifSelected={this.onGifSelected.bind(this) } />);
-
         return (
             <div className="gif-search">
                 <GifSearchBar
-                    onChange={this.onSearchTextChange.bind(this)}
-                    onSearch={this.search.bind(this)}/>
-
-                <ul className="search-results">{results}</ul>
+                    onChange={this.onSearchTextChange.bind(this) }
+                    onSearch={this.search.bind(this) }/>
+                <GifSearchResults {...this.state}
+                    onGifSelected={this.onGifSelected.bind(this) }/>
             </div>);
     }
 };

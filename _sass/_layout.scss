@@ -19,3 +19,14 @@ body {
 .spacer {
     flex: 1;
 }
+
+.loading-spinner {
+    color: #aaa;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0); }
+    to { transform: rotate(360deg); }
+}
+
