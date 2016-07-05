@@ -43,3 +43,32 @@
         background: #eee;
     }
 }
+
+.gif-search-bar {
+    border-bottom: 2px solid $brand-color;
+    max-width: 300px;
+    display: flex;
+
+    button {
+        border: none;
+        outline: none;
+        background: none;
+
+        &:hover {
+            opacity: 0.7;
+        }
+    }
+
+    input {
+        max-width: 100%;
+        display: block;
+        flex: 1;
+        border: none;
+        background: none;
+        font-size: 24px;
+        font-weight: 300;
+        outline: none;
+        color: $text-color;
+        text-align: center;
+    }
+}

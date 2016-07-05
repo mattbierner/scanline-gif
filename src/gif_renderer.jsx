@@ -61,9 +61,6 @@ export default class GifRenderer extends React.Component {
 
         const diag = Math.sqrt(Math.pow(imageData.width, 2) + Math.pow(imageData.height, 2));
 
-        let y = height / 2;
-        let y2 = height / 2
-
         let count = 0
         let i = initialFrame;
         let i2 = initialFrame - increment;
@@ -77,11 +74,8 @@ export default class GifRenderer extends React.Component {
             ctx.rotate(radAngle);
             ctx.translate(-width / 2, -height / 2);
 
-            ctx.beginPath();
-            ctx.moveTo(-diag, y);
-            ctx.lineTo(diag, y);
-            ctx.lineTo(diag, y + tileWidth);
-            ctx.lineTo(-diag, y + tileWidth);
+            ctx.rect(-diag, height / 2 + (count * tileWidth), diag * 2, tileWidth);
+            
             ctx.restore();
 
             ctx.clip();
@@ -99,10 +93,8 @@ export default class GifRenderer extends React.Component {
             ctx.translate(-width / 2, -height / 2);
 
             ctx.beginPath();
-            ctx.moveTo(-diag, y2);
-            ctx.lineTo(diag, y2);
-            ctx.lineTo(diag, y2 + tileWidth);
-            ctx.lineTo(-diag, y2 + tileWidth);
+            ctx.rect(-diag, height / 2 - (count * tileWidth), diag * 2, tileWidth);
+
             ctx.restore();
 
             ctx.clip();
@@ -112,8 +104,6 @@ export default class GifRenderer extends React.Component {
 
             ctx.restore();
 
-            y += tileWidth;
-            y2 -= tileWidth;
             ++count;
             i += increment;
             i2 -= increment;

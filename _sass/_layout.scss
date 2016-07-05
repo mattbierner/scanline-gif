@@ -1,13 +1,21 @@
 html, body {
-    height: 100%;
-    min-height: 100%;
+    min-height: 100vh;
     min-width: 100%;
-
-    text-align: center;
 }
 
 .content-wrapper {
     max-width: 600px;
     padding: 0 1em;
     margin: 0 auto;
+}
+
+
+body {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.spacer {
+    flex: 1;
 }

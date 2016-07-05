@@ -20526,22 +20526,75 @@
 	;
 
 	/**
+	 * Search bar for entering text
+	 */
+
+	var GifSearchBar = function (_React$Component2) {
+	    _inherits(GifSearchBar, _React$Component2);
+
+	    function GifSearchBar() {
+	        _classCallCheck(this, GifSearchBar);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(GifSearchBar).apply(this, arguments));
+	    }
+
+	    _createClass(GifSearchBar, [{
+	        key: 'onKeyPress',
+	        value: function onKeyPress(e) {
+	            if (e.key === 'Enter') {
+	                this.onSearch();
+	            }
+	        }
+	    }, {
+	        key: 'onSearch',
+	        value: function onSearch() {
+	            this.props.onSearch(this.props.searchText);
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'gif-search-bar content-wrapper' },
+	                _react2.default.createElement(
+	                    'button',
+	                    { onClick: this.onSearch.bind(this) },
+	                    _react2.default.createElement(
+	                        'span',
+	                        { className: 'material-icons' },
+	                        'search'
+	                    )
+	                ),
+	                _react2.default.createElement('input', { type: 'search',
+	                    value: this.props.searchText,
+	                    placeholder: 'find a gif',
+	                    onKeyPress: this.onKeyPress.bind(this),
+	                    onChange: this.props.onChange })
+	            );
+	        }
+	    }]);
+
+	    return GifSearchBar;
+	}(_react2.default.Component);
+
+	/**
 	 * Gif search control.
 	 */
 
-	var Search = function (_React$Component2) {
-	    _inherits(Search, _React$Component2);
+
+	var Search = function (_React$Component3) {
+	    _inherits(Search, _React$Component3);
 
 	    function Search(props) {
 	        _classCallCheck(this, Search);
 
-	        var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(Search).call(this, props));
+	        var _this3 = _possibleConstructorReturn(this, Object.getPrototypeOf(Search).call(this, props));
 
-	        _this2.state = {
-	            searchText: 'cat',
+	        _this3.state = {
+	            searchText: '',
 	            results: []
 	        };
-	        return _this2;
+	        return _this3;
 	    }
 
 	    _createClass(Search, [{
@@ -20553,11 +20606,10 @@
 	    }, {
 	        key: 'search',
 	        value: function search() {
-	            var _this3 = this;
+	            var _this4 = this;
 
 	            giphy.search(this.state.searchText).then(function (res) {
-	                console.log(res);
-	                _this3.setState({ results: res.data });
+	                _this4.setState({ results: res.data });
 	            }).catch(function (err) {
 	                console.error(err);
 	            });
@@ -20565,31 +20617,25 @@
 	    }, {
 	        key: 'onGifSelected',
 	        value: function onGifSelected(data) {
-	            var src = data.images.original.url;
+	            var src = data.images.downsized_medium.url;
 	            this.props.onGifSelected(src);
 	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var _this4 = this;
+	            var _this5 = this;
 
 	            var results = this.state.results.map(function (x) {
 	                return _react2.default.createElement(SearchResult, { key: x.id, data: x,
-	                    onGifSelected: _this4.onGifSelected.bind(_this4) });
+	                    onGifSelected: _this5.onGifSelected.bind(_this5) });
 	            });
 
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'gif-search' },
-	                _react2.default.createElement('input', { type: 'search',
-	                    value: this.state.searchText,
-	                    placeholder: 'Find gif',
-	                    onChange: this.onSearchTextChange.bind(this) }),
-	                _react2.default.createElement(
-	                    'button',
-	                    { onClick: this.search.bind(this) },
-	                    'Search'
-	                ),
+	                _react2.default.createElement(GifSearchBar, {
+	                    onChange: this.onSearchTextChange.bind(this),
+	                    onSearch: this.search.bind(this) }),
 	                _react2.default.createElement(
 	                    'ul',
 	                    { className: 'search-results' },
@@ -29682,9 +29728,6 @@
 
 	            var diag = Math.sqrt(Math.pow(imageData.width, 2) + Math.pow(imageData.height, 2));
 
-	            var y = height / 2;
-	            var y2 = height / 2;
-
 	            var count = 0;
 	            var i = initialFrame;
 	            var i2 = initialFrame - increment;
@@ -29698,11 +29741,8 @@
 	                ctx.rotate(radAngle);
 	                ctx.translate(-width / 2, -height / 2);
 
-	                ctx.beginPath();
-	                ctx.moveTo(-diag, y);
-	                ctx.lineTo(diag, y);
-	                ctx.lineTo(diag, y + tileWidth);
-	                ctx.lineTo(-diag, y + tileWidth);
+	                ctx.rect(-diag, height / 2 + count * tileWidth, diag * 2, tileWidth);
+
 	                ctx.restore();
 
 	                ctx.clip();
@@ -29720,10 +29760,8 @@
 	                ctx.translate(-width / 2, -height / 2);
 
 	                ctx.beginPath();
-	                ctx.moveTo(-diag, y2);
-	                ctx.lineTo(diag, y2);
-	                ctx.lineTo(diag, y2 + tileWidth);
-	                ctx.lineTo(-diag, y2 + tileWidth);
+	                ctx.rect(-diag, height / 2 - count * tileWidth, diag * 2, tileWidth);
+
 	                ctx.restore();
 
 	                ctx.clip();
@@ -29733,8 +29771,6 @@
 
 	                ctx.restore();
 
-	                y += tileWidth;
-	                y2 -= tileWidth;
 	                ++count;
 	                i += increment;
 	                i2 -= increment;

@@ -2,14 +2,10 @@
 #site-header {
     text-align: center;
     display: flex;
-    height: 300px;
+
+    height: 260px;
     padding-bottom: 4em;
     color: $brand-color;
-
-    img {
-        max-width: 100%;
-        width: 600px;
-    }
 
     .scans {
         position: relative;
@@ -23,11 +19,16 @@
         }
     }
 
+    .site-title-wrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
     #site-title {
         display: block;
         flex: 0;
         padding: 0 1rem;
-        margin-top: 22%;
 
         font-weight: 100;
         font-size: 48px;
@@ -36,11 +37,51 @@
 
     }
 
-    .blurb {
-    }
-
     .links a {
         color: #aaa;
         padding: 0 0.6em;
+    }
+}
+
+@media only screen and (max-width: 1000px){
+    #site-header {
+        #site-title {
+            font-size: 42px;
+            letter-spacing: 16px;
+            margin-right: -16px;
+        }
+    }
+}
+
+@media only screen and (max-width: 700px),
+only screen and (max-height: 1000px) {
+    #site-header {
+        height: 200px;
+    }
+}
+
+@media only screen and (max-height: 600px) {
+    #site-header {
+        height: 140px;
+    }
+}
+
+@media only screen and (max-width: 700px) {
+    #site-header {
+        #site-title {
+            font-size: 32px;
+            letter-spacing: 12px;
+            margin-right: -16px;
+        }
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    #site-header {
+        #site-title {
+            font-size: 28px;
+            letter-spacing: 8px;
+            margin-right: -8px;
+        }
     }
 }

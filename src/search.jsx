@@ -21,11 +21,11 @@ class SearchResult extends React.Component {
     }
 
     onMouseOver() {
-        this.setState({active: true});
+        this.setState({ active: true });
     }
 
     onMouseOut() {
-        this.setState({active: false});
+        this.setState({ active: false });
     }
 
     onSelect() {
@@ -61,6 +61,33 @@ class SearchResult extends React.Component {
     }
 };
 
+/**
+ * Search bar for entering text
+ */
+class GifSearchBar extends React.Component {
+    onKeyPress(e) {
+        if (e.key === 'Enter') {
+            this.onSearch();
+        }
+    }
+
+    onSearch() {
+        this.props.onSearch(this.props.searchText);
+    }
+
+    render() {
+        return (
+            <div className="gif-search-bar content-wrapper">
+                <button onClick={this.onSearch.bind(this)}><span className="material-icons">search</span></button>
+                <input type="search"
+                    value={this.props.searchText}
+                    placeholder="find a gif"
+                    onKeyPress={this.onKeyPress.bind(this) }
+                    onChange={this.props.onChange} />
+            </div>
+        );
+    }
+}
 
 /**
  * Gif search control.
@@ -69,7 +96,7 @@ export default class Search extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            searchText: 'cat',
+            searchText: '',
             results: []
         };
     }
@@ -82,7 +109,6 @@ export default class Search extends React.Component {
     search() {
         giphy.search(this.state.searchText)
             .then(res => {
-                console.log(res);
                 this.setState({ results: res.data })
             })
             .catch(err => {
@@ -91,7 +117,7 @@ export default class Search extends React.Component {
     }
 
     onGifSelected(data) {
-        const src = data.images.original.url;
+        const src = data.images.downsized_medium.url;
         this.props.onGifSelected(src);
     }
 
@@ -102,11 +128,10 @@ export default class Search extends React.Component {
 
         return (
             <div className="gif-search">
-                <input type="search"
-                    value={this.state.searchText}
-                    placeholder="Find gif"
-                    onChange={this.onSearchTextChange.bind(this) } />
-                <button onClick={this.search.bind(this) }>Search</button>
+                <GifSearchBar
+                    onChange={this.onSearchTextChange.bind(this)}
+                    onSearch={this.search.bind(this)}/>
+
                 <ul className="search-results">{results}</ul>
             </div>);
     }

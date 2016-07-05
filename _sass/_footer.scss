@@ -1,3 +1,16 @@
 #site-footer {
     margin-top: 3em;
+    background: $brand-color;
+    color: $background-color;
+
+    font-size: 12px;
+    padding-top: 1em;
+
+    a {
+        color: $background-color;
+    }
+
+    #copyright {
+        padding-top: 0.8em;
+    }
 }
