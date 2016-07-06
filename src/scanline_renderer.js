@@ -19,9 +19,9 @@ const prepCanvas = (canvas, ctx, imageData) =>  {
 };
 
 /**
- * 
+ * Render gif using diagonal scanlines
  */
-export const drawDiag = (canvas, ctx, imageData, gridColumns, angle, initialFrame, increment) => {
+export const drawDiag = (canvas, ctx, imageData, initialFrame, increment, gridColumns, angle) => {
     const radAngle = angle * (Math.PI / 180);
     const {width, height} = imageData;
     const diag = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
@@ -68,9 +68,9 @@ export const drawDiag = (canvas, ctx, imageData, gridColumns, angle, initialFram
 };
 
 /**
- * 
+ * Render gif using a grid.
  */
-export const drawGrid = (canvas, ctx, imageData, columnWidth, columnHeight, initialFrame, increment) =>  {
+export const drawGrid = (canvas, ctx, imageData, initialFrame, increment, columnWidth, columnHeight) =>  {
     prepCanvas(canvas, ctx, imageData);
 
     let i = initialFrame;
@@ -95,9 +95,9 @@ export const drawGrid = (canvas, ctx, imageData, columnWidth, columnHeight, init
 };
 
 /**
- * 
+ * Render gif using circles.
  */
-export const drawCircle = (canvas, ctx, imageData, radiusStep, initialFrame, increment) => {
+export const drawCircle = (canvas, ctx, imageData, initialFrame, increment, radiusStep) => {
     const {width, height} = imageData;
     prepCanvas(canvas, ctx, imageData);
 
@@ -106,7 +106,7 @@ export const drawCircle = (canvas, ctx, imageData, radiusStep, initialFrame, inc
         const frame = getFrame(imageData, i);
         ctx.save();
 
-        // Create clipping rect.
+        // Create clipping circle.
         ctx.beginPath();
         ctx.arc(width / 2, height / 2, r + radiusStep, 0, Math.PI * 2, false);
         ctx.arc(width / 2, height / 2, r, 0, Math.PI * 2, true);
@@ -118,5 +118,64 @@ export const drawCircle = (canvas, ctx, imageData, radiusStep, initialFrame, inc
         ctx.restore();
 
         i += increment;
+    }
+};
+
+/**
+ * Draw a scanlined gif for a set of options
+ */
+export const drawForOptions = (canvas, ctx, imageData, state) => {
+    const increment = state.reverseFrameOrder ? -state.frameIncrement : state.frameIncrement;
+
+    switch (state.mode) {
+        case 'columns':
+            return drawGrid(
+                canvas,
+                ctx,
+                imageData,
+                state.currentFrame,
+                increment,
+                imageData.width / imageData.frames.length,
+                imageData.height);
+        
+        case 'rows':
+        default:
+            return drawGrid(
+                canvas,
+                ctx,
+                imageData,
+                state.currentFrame,
+                increment,
+                imageData.width,
+                imageData.height / imageData.frames.length);
+
+        case 'grid':
+            return drawGrid(
+                canvas,
+                ctx,
+                imageData,
+                state.currentFrame,
+                increment,
+                imageData.width / state.gridColumns,
+                imageData.height / state.gridRows);
+
+        case 'diagonal':
+            return drawDiag(
+                canvas,
+                ctx,
+                imageData,
+                state.currentFrame,
+                increment,
+                state.diagonalWidth,
+                state.diagonalAngle);
+        
+        case 'circle':
+            return drawCircle(
+                canvas,
+                ctx,
+                imageData,
+                state.currentFrame,
+                increment,
+                state.radiusWidth);
     }
 };

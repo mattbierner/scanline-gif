@@ -25,61 +25,8 @@ export default class GifRenderer extends React.Component {
     }
 
     drawGifForOptions(imageData, state) {
-        if (!imageData)
-            return;
-
-        const increment = state.reverseFrameOrder ? -state.frameIncrement : state.frameIncrement;
-
-        switch (state.mode) {
-            case 'columns':
-                return scanline_renderer.drawGrid(
-                    this._canvas,
-                    this._ctx,
-                    imageData,
-                    imageData.width / imageData.frames.length,
-                    imageData.height,
-                    state.currentFrame,
-                    increment);
-            
-            case 'rows':
-            default:
-                return scanline_renderer.drawGrid(
-                    this._canvas,
-                    this._ctx,
-                    imageData,
-                    imageData.width,
-                    imageData.height / imageData.frames.length,
-                    state.currentFrame,
-                    increment);
-
-            case 'grid':
-                return scanline_renderer.drawGrid(
-                    this._canvas,
-                    this._ctx,
-                    imageData,
-                    imageData.width / state.gridColumns,
-                    imageData.height / state.gridRows,
-                    state.currentFrame,
-                    increment);
-
-            case 'diagonal':
-                return scanline_renderer.drawDiag(
-                    this._canvas,
-                    this._ctx,
-                    imageData,
-                    state.diagonalWidth,
-                    state.diagonalAngle,
-                    state.currentFrame,
-                    increment);
-            
-            case 'circle':
-                return scanline_renderer.drawCircle(
-                    this._canvas,
-                    this._ctx,
-                    imageData,
-                    state.radiusWidth,
-                    state.currentFrame,
-                    increment);
+        if (imageData) {
+            scanline_renderer.drawForOptions(this._canvas, this._ctx, imageData, state);
         }
     }
 

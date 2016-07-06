@@ -29497,26 +29497,8 @@
 	    }, {
 	        key: 'drawGifForOptions',
 	        value: function drawGifForOptions(imageData, state) {
-	            if (!imageData) return;
-
-	            var increment = state.reverseFrameOrder ? -state.frameIncrement : state.frameIncrement;
-
-	            switch (state.mode) {
-	                case 'columns':
-	                    return scanline_renderer.drawGrid(this._canvas, this._ctx, imageData, imageData.width / imageData.frames.length, imageData.height, state.currentFrame, increment);
-
-	                case 'rows':
-	                default:
-	                    return scanline_renderer.drawGrid(this._canvas, this._ctx, imageData, imageData.width, imageData.height / imageData.frames.length, state.currentFrame, increment);
-
-	                case 'grid':
-	                    return scanline_renderer.drawGrid(this._canvas, this._ctx, imageData, imageData.width / state.gridColumns, imageData.height / state.gridRows, state.currentFrame, increment);
-
-	                case 'diagonal':
-	                    return scanline_renderer.drawDiag(this._canvas, this._ctx, imageData, state.diagonalWidth, state.diagonalAngle, state.currentFrame, increment);
-
-	                case 'circle':
-	                    return scanline_renderer.drawCircle(this._canvas, this._ctx, imageData, state.radiusWidth, state.currentFrame, increment);
+	            if (imageData) {
+	                scanline_renderer.drawForOptions(this._canvas, this._ctx, imageData, state);
 	            }
 	        }
 	    }, {
@@ -29536,7 +29518,7 @@
 /* 212 */
 /***/ function(module, exports) {
 
-	"use strict";
+	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -29562,9 +29544,9 @@
 	};
 
 	/**
-	 * 
+	 * Render gif using diagonal scanlines
 	 */
-	var drawDiag = exports.drawDiag = function drawDiag(canvas, ctx, imageData, gridColumns, angle, initialFrame, increment) {
+	var drawDiag = exports.drawDiag = function drawDiag(canvas, ctx, imageData, initialFrame, increment, gridColumns, angle) {
 	    var radAngle = angle * (Math.PI / 180);
 	    var width = imageData.width;
 	    var height = imageData.height;
@@ -29613,9 +29595,9 @@
 	};
 
 	/**
-	 * 
+	 * Render gif using a grid.
 	 */
-	var drawGrid = exports.drawGrid = function drawGrid(canvas, ctx, imageData, columnWidth, columnHeight, initialFrame, increment) {
+	var drawGrid = exports.drawGrid = function drawGrid(canvas, ctx, imageData, initialFrame, increment, columnWidth, columnHeight) {
 	    prepCanvas(canvas, ctx, imageData);
 
 	    var i = initialFrame;
@@ -29640,9 +29622,9 @@
 	};
 
 	/**
-	 * 
+	 * Render gif using circles.
 	 */
-	var drawCircle = exports.drawCircle = function drawCircle(canvas, ctx, imageData, radiusStep, initialFrame, increment) {
+	var drawCircle = exports.drawCircle = function drawCircle(canvas, ctx, imageData, initialFrame, increment, radiusStep) {
 	    var width = imageData.width;
 	    var height = imageData.height;
 
@@ -29653,7 +29635,7 @@
 	        var frame = getFrame(imageData, i);
 	        ctx.save();
 
-	        // Create clipping rect.
+	        // Create clipping circle.
 	        ctx.beginPath();
 	        ctx.arc(width / 2, height / 2, r + radiusStep, 0, Math.PI * 2, false);
 	        ctx.arc(width / 2, height / 2, r, 0, Math.PI * 2, true);
@@ -29665,6 +29647,31 @@
 	        ctx.restore();
 
 	        i += increment;
+	    }
+	};
+
+	/**
+	 * Draw a scanlined gif for a set of options
+	 */
+	var drawForOptions = exports.drawForOptions = function drawForOptions(canvas, ctx, imageData, state) {
+	    var increment = state.reverseFrameOrder ? -state.frameIncrement : state.frameIncrement;
+
+	    switch (state.mode) {
+	        case 'columns':
+	            return drawGrid(canvas, ctx, imageData, state.currentFrame, increment, imageData.width / imageData.frames.length, imageData.height);
+
+	        case 'rows':
+	        default:
+	            return drawGrid(canvas, ctx, imageData, state.currentFrame, increment, imageData.width, imageData.height / imageData.frames.length);
+
+	        case 'grid':
+	            return drawGrid(canvas, ctx, imageData, state.currentFrame, increment, imageData.width / state.gridColumns, imageData.height / state.gridRows);
+
+	        case 'diagonal':
+	            return drawDiag(canvas, ctx, imageData, state.currentFrame, increment, state.diagonalWidth, state.diagonalAngle);
+
+	        case 'circle':
+	            return drawCircle(canvas, ctx, imageData, state.currentFrame, increment, state.radiusWidth);
 	    }
 	};
 
