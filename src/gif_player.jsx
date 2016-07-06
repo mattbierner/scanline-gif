@@ -5,14 +5,31 @@ import LabeledSlider from './labeled_slider';
 import GifRenderer from './gif_renderer';
 
 const playbackSpeeds = {
-    '1x': 1,
-    '2x': 2,
-    '4x': 4,
-    '8x': 8,
-    '1/2': 0.5,
-    '1/4': 0.25,
-    '1/8': 0.125,
+    '1x speed': 1,
+    '2x speed': 2,
+    '4x speed': 4,
+    '8x speed': 8,
+    '1/2 speed': 0.5,
+    '1/4 speed': 0.25,
+    '1/8 speed': 0.125,
 };
+
+/**
+ * Select playback speed.
+ */
+class SpeedSelector extends React.Component {
+    render() {
+        const options = Object.keys(playbackSpeeds).map(x =>
+            <option value={playbackSpeeds[x]} key={x}>{x}</option>);
+
+        return (
+            <div className="playback-speed-selector">
+                <select value={this.props.value} onChange={this.props.onChange}>
+                    {options}
+                </select>
+            </div>);
+    }
+}
 
 /**
  * Property of a gif.
@@ -146,11 +163,7 @@ export default class GifPlayer extends React.Component {
                         <button
                             className="material-icons"
                             onClick={this.onToggle.bind(this) }>{this.state.playing ? 'pause' : 'play_arrow'}</button>
-                        <div className="playback-speed-selector">
-                            Speed: <select value={this.state.playbackSpeed} onChange={this.onPlaybackSpeedChange.bind(this) }>
-                                {playbackSpeedOptions}
-                            </select>
-                        </div>
+                        <SpeedSelector value={this.state.playbackSpeed} onChange={this.onPlaybackSpeedChange.bind(this) }/>
                     </div>
                 </div>
             </div>

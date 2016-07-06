@@ -27906,9 +27906,9 @@
 	                'div',
 	                { className: 'mode-selector control-group' },
 	                _react2.default.createElement(
-	                    'div',
+	                    'span',
 	                    { className: 'control-title' },
-	                    'Mode'
+	                    'Mode '
 	                ),
 	                _react2.default.createElement(
 	                    'select',
@@ -27916,7 +27916,7 @@
 	                    modeOptions
 	                ),
 	                _react2.default.createElement(
-	                    'p',
+	                    'div',
 	                    { className: 'control-description' },
 	                    modes[this.props.value].description
 	                )
@@ -28077,12 +28077,7 @@
 	                _react2.default.createElement(
 	                    'div',
 	                    { className: 'player-wrapper' },
-	                    _react2.default.createElement(_gif_player2.default, this.state),
-	                    _react2.default.createElement(
-	                        'button',
-	                        { onClick: this.onExport.bind(this) },
-	                        'Export to gif'
-	                    )
+	                    _react2.default.createElement(_gif_player2.default, this.state)
 	                ),
 	                _react2.default.createElement(
 	                    'div',
@@ -28191,6 +28186,11 @@
 	                                value: this.state.radiusWidth,
 	                                onChange: this.onRadiusWidthChange.bind(this) })
 	                        )
+	                    ),
+	                    _react2.default.createElement(
+	                        'button',
+	                        { onClick: this.onExport.bind(this) },
+	                        'Export to gif'
 	                    )
 	                )
 	            );
@@ -29199,21 +29199,61 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var playbackSpeeds = {
-	    '1x': 1,
-	    '2x': 2,
-	    '4x': 4,
-	    '8x': 8,
-	    '1/2': 0.5,
-	    '1/4': 0.25,
-	    '1/8': 0.125
+	    '1x speed': 1,
+	    '2x speed': 2,
+	    '4x speed': 4,
+	    '8x speed': 8,
+	    '1/2 speed': 0.5,
+	    '1/4 speed': 0.25,
+	    '1/8 speed': 0.125
 	};
+
+	/**
+	 * Select playback speed.
+	 */
+
+	var SpeedSelector = function (_React$Component) {
+	    _inherits(SpeedSelector, _React$Component);
+
+	    function SpeedSelector() {
+	        _classCallCheck(this, SpeedSelector);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(SpeedSelector).apply(this, arguments));
+	    }
+
+	    _createClass(SpeedSelector, [{
+	        key: 'render',
+	        value: function render() {
+	            var options = Object.keys(playbackSpeeds).map(function (x) {
+	                return _react2.default.createElement(
+	                    'option',
+	                    { value: playbackSpeeds[x], key: x },
+	                    x
+	                );
+	            });
+
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'playback-speed-selector' },
+	                _react2.default.createElement(
+	                    'select',
+	                    { value: this.props.value, onChange: this.props.onChange },
+	                    options
+	                )
+	            );
+	        }
+	    }]);
+
+	    return SpeedSelector;
+	}(_react2.default.Component);
 
 	/**
 	 * Property of a gif.
 	 */
 
-	var GifProperty = function (_React$Component) {
-	    _inherits(GifProperty, _React$Component);
+
+	var GifProperty = function (_React$Component2) {
+	    _inherits(GifProperty, _React$Component2);
 
 	    function GifProperty() {
 	        _classCallCheck(this, GifProperty);
@@ -29251,8 +29291,8 @@
 	 * Set of metadata displayed about a gif.
 	 */
 
-	var GifProperties = function (_React$Component2) {
-	    _inherits(GifProperties, _React$Component2);
+	var GifProperties = function (_React$Component3) {
+	    _inherits(GifProperties, _React$Component3);
 
 	    function GifProperties() {
 	        _classCallCheck(this, GifProperties);
@@ -29282,21 +29322,21 @@
 	 * Playback controls for scanlined gif.
 	 */
 
-	var GifPlayer = function (_React$Component3) {
-	    _inherits(GifPlayer, _React$Component3);
+	var GifPlayer = function (_React$Component4) {
+	    _inherits(GifPlayer, _React$Component4);
 
 	    function GifPlayer(props) {
 	        _classCallCheck(this, GifPlayer);
 
-	        var _this3 = _possibleConstructorReturn(this, Object.getPrototypeOf(GifPlayer).call(this, props));
+	        var _this4 = _possibleConstructorReturn(this, Object.getPrototypeOf(GifPlayer).call(this, props));
 
-	        _this3.state = {
+	        _this4.state = {
 	            currentFrame: 0,
 	            playing: false,
 	            loop: true,
 	            playbackSpeed: 1
 	        };
-	        return _this3;
+	        return _this4;
 	    }
 
 	    _createClass(GifPlayer, [{
@@ -29328,29 +29368,29 @@
 	    }, {
 	        key: 'scheduleNextFrame',
 	        value: function scheduleNextFrame(delay, forcePlay) {
-	            var _this4 = this;
+	            var _this5 = this;
 
 	            if (!forcePlay && !this.state.playing) return;
 
 	            var start = Date.now();
 	            setTimeout(function () {
-	                if (!_this4.props.imageData) return;
+	                if (!_this5.props.imageData) return;
 
-	                var nextFrame = _this4.state.currentFrame + 1;
-	                if (nextFrame >= _this4.getNumFrames() && !_this4.state.loop) {
-	                    _this4.setState({ playing: false });
+	                var nextFrame = _this5.state.currentFrame + 1;
+	                if (nextFrame >= _this5.getNumFrames() && !_this5.state.loop) {
+	                    _this5.setState({ playing: false });
 	                    return;
 	                }
 
-	                nextFrame %= _this4.getNumFrames();
+	                nextFrame %= _this5.getNumFrames();
 
-	                var interval = (_this4.props.imageData.frames[nextFrame].info.delay || 1) * 10 / _this4.state.playbackSpeed;
+	                var interval = (_this5.props.imageData.frames[nextFrame].info.delay || 1) * 10 / _this5.state.playbackSpeed;
 	                var elapsed = Date.now() - start;
 	                var next = Math.max(0, interval - (elapsed - delay));
-	                _this4.setState({
+	                _this5.setState({
 	                    currentFrame: nextFrame
 	                });
-	                _this4.scheduleNextFrame(next);
+	                _this5.scheduleNextFrame(next);
 	            }, delay);
 	        }
 	    }, {
@@ -29416,16 +29456,7 @@
 	                                onClick: this.onToggle.bind(this) },
 	                            this.state.playing ? 'pause' : 'play_arrow'
 	                        ),
-	                        _react2.default.createElement(
-	                            'div',
-	                            { className: 'playback-speed-selector' },
-	                            'Speed: ',
-	                            _react2.default.createElement(
-	                                'select',
-	                                { value: this.state.playbackSpeed, onChange: this.onPlaybackSpeedChange.bind(this) },
-	                                playbackSpeedOptions
-	                            )
-	                        )
+	                        _react2.default.createElement(SpeedSelector, { value: this.state.playbackSpeed, onChange: this.onPlaybackSpeedChange.bind(this) })
 	                    )
 	                )
 	            );

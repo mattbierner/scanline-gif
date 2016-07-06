@@ -41,11 +41,11 @@ class ModeSelector extends React.Component {
             <option value={x} key={x}>{modes[x].title}</option>);
         return (
             <div className="mode-selector control-group">
-                <div className="control-title">Mode</div>
+                <span className="control-title">Mode </span>
                 <select value={this.props.value} onChange={this.props.onChange }>
                     {modeOptions}
                 </select>
-                <p className="control-description">{modes[this.props.value].description}</p>
+                <div className="control-description">{modes[this.props.value].description}</div>
             </div>);
     }
 }
@@ -177,7 +177,6 @@ export default class Viewer extends React.Component {
             <div className="gif-viewer" id="viewer">
                 <div className="player-wrapper">
                     <GifPlayer {...this.state} />
-                    <button onClick={this.onExport.bind(this) }>Export to gif</button>
                 </div>
                 <div className="view-controls">
                     <ModeSelector value={this.state.mode} onChange={this.onModeChange.bind(this) } />
@@ -249,6 +248,9 @@ export default class Viewer extends React.Component {
                                 onChange={this.onRadiusWidthChange.bind(this) }/>
                         </div>
                     </div>
+
+                    <button onClick={this.onExport.bind(this) }>Export to gif</button>
+                    
                 </div>
             </div>);
     }
