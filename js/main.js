@@ -20441,7 +20441,7 @@
 
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 
-	var _loading_spinner = __webpack_require__(212);
+	var _loading_spinner = __webpack_require__(169);
 
 	var _loading_spinner2 = _interopRequireDefault(_loading_spinner);
 
@@ -20720,7 +20720,59 @@
 	;
 
 /***/ },
-/* 169 */,
+/* 169 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(38);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var LoadingSpinner = function (_React$Component) {
+	    _inherits(LoadingSpinner, _React$Component);
+
+	    function LoadingSpinner() {
+	        _classCallCheck(this, LoadingSpinner);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(LoadingSpinner).apply(this, arguments));
+	    }
+
+	    _createClass(LoadingSpinner, [{
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'span',
+	                { className: "material-icons loading-spinner " + (this.props.active ? '' : 'hidden') },
+	                'autorenew'
+	            );
+	        }
+	    }]);
+
+	    return LoadingSpinner;
+	}(_react2.default.Component);
+
+	exports.default = LoadingSpinner;
+
+/***/ },
 /* 170 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -29392,6 +29444,12 @@
 
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 
+	var _scanline_renderer = __webpack_require__(212);
+
+	var scanline_renderer = _interopRequireWildcard(_scanline_renderer);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -29445,152 +29503,20 @@
 
 	            switch (state.mode) {
 	                case 'columns':
-	                    return this.drawGrid(imageData, imageData.width / imageData.frames.length, imageData.height, state.currentFrame, increment);
+	                    return scanline_renderer.drawGrid(this._canvas, this._ctx, imageData, imageData.width / imageData.frames.length, imageData.height, state.currentFrame, increment);
 
 	                case 'rows':
 	                default:
-	                    return this.drawGrid(imageData, imageData.width, imageData.height / imageData.frames.length, state.currentFrame, increment);
+	                    return scanline_renderer.drawGrid(this._canvas, this._ctx, imageData, imageData.width, imageData.height / imageData.frames.length, state.currentFrame, increment);
 
 	                case 'grid':
-	                    return this.drawGrid(imageData, imageData.width / state.gridColumns, imageData.height / state.gridRows, state.currentFrame, increment);
+	                    return scanline_renderer.drawGrid(this._canvas, this._ctx, imageData, imageData.width / state.gridColumns, imageData.height / state.gridRows, state.currentFrame, increment);
 
 	                case 'diagonal':
-	                    return this.drawDiag(imageData, state.diagonalWidth, state.diagonalAngle, state.currentFrame, increment);
+	                    return scanline_renderer.drawDiag(this._canvas, this._ctx, imageData, state.diagonalWidth, state.diagonalAngle, state.currentFrame, increment);
 
 	                case 'circle':
-	                    return this.drawCircle(imageData, state.radiusWidth, state.currentFrame, increment);
-
-	            }
-	        }
-	    }, {
-	        key: 'resetCanvas',
-	        value: function resetCanvas(imageData) {
-	            var ctx = this._ctx;
-	            var canvas = this._canvas;
-	            ctx.clearRect(0, 0, canvas.width, canvas.height);
-	            canvas.width = imageData.width;
-	            canvas.height = imageData.height;
-	            return { canvas: canvas, ctx: ctx };
-	        }
-	    }, {
-	        key: 'drawDiag',
-	        value: function drawDiag(imageData, gridColumns, angle, initialFrame, increment) {
-	            var radAngle = angle * (Math.PI / 180);
-	            var width = imageData.width;
-	            var height = imageData.height;
-
-	            var diag = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
-
-	            var _resetCanvas = this.resetCanvas(imageData);
-
-	            var canvas = _resetCanvas.canvas;
-	            var ctx = _resetCanvas.ctx;
-
-
-	            for (var i = 0, numDraws = Math.ceil(diag / gridColumns / 2); i <= numDraws; ++i) {
-	                var frame1 = this.getFrame(imageData, initialFrame + i * increment);
-	                var frame2 = this.getFrame(imageData, initialFrame - (i + 1) * increment);
-
-	                // draw first
-	                ctx.save();
-	                {
-	                    ctx.save();
-	                    ctx.translate(width / 2, height / 2);
-	                    ctx.rotate(radAngle);
-	                    ctx.translate(-width / 2, -height / 2);
-	                    ctx.beginPath();
-	                    ctx.rect(-diag, height / 2 + i * gridColumns, diag * 2, gridColumns);
-	                    ctx.restore();
-
-	                    ctx.clip();
-
-	                    ctx.drawImage(frame1.canvas, 0, 0);
-	                }
-	                ctx.restore();
-
-	                // draw second
-	                ctx.save();
-	                {
-	                    ctx.save();
-	                    ctx.translate(width / 2, height / 2);
-	                    ctx.rotate(radAngle);
-	                    ctx.translate(-width / 2, -height / 2);
-	                    ctx.beginPath();
-	                    ctx.rect(-diag, height / 2 - i * gridColumns, diag * 2, gridColumns);
-	                    ctx.restore();
-	                    ctx.clip();
-
-	                    ctx.drawImage(frame2.canvas, 0, 0);
-	                }
-	                ctx.restore();
-	            }
-	        }
-	    }, {
-	        key: 'getFrame',
-	        value: function getFrame(imageData, index) {
-	            var len = imageData.frames.length;
-	            index %= len;
-	            if (index < 0) return imageData.frames[len - 1 - Math.abs(index)];
-	            return imageData.frames[index];
-	        }
-	    }, {
-	        key: 'drawGrid',
-	        value: function drawGrid(imageData, columnWidth, columnHeight, initialFrame, increment) {
-	            var _resetCanvas2 = this.resetCanvas(imageData);
-
-	            var canvas = _resetCanvas2.canvas;
-	            var ctx = _resetCanvas2.ctx;
-
-
-	            var i = initialFrame;
-	            for (var x = 0; x < imageData.width; x += columnWidth) {
-	                for (var y = 0; y < imageData.height; y += columnHeight) {
-	                    var frame = this.getFrame(imageData, i);
-	                    ctx.save();
-
-	                    // Create clipping rect.
-	                    ctx.beginPath();
-	                    ctx.rect(x, y, columnWidth, columnHeight);
-	                    ctx.clip();
-
-	                    // Draw gif with clipping applied
-	                    ctx.drawImage(frame.canvas, 0, 0);
-
-	                    ctx.restore();
-
-	                    i += increment;
-	                }
-	            }
-	        }
-	    }, {
-	        key: 'drawCircle',
-	        value: function drawCircle(imageData, radiusStep, initialFrame, increment) {
-	            var width = imageData.width;
-	            var height = imageData.height;
-
-	            var _resetCanvas3 = this.resetCanvas(imageData);
-
-	            var canvas = _resetCanvas3.canvas;
-	            var ctx = _resetCanvas3.ctx;
-
-
-	            var i = initialFrame;
-	            for (var r = 0, len = Math.max(width, height); r < len; r += radiusStep) {
-	                var frame = this.getFrame(imageData, i);
-	                ctx.save();
-
-	                // Create clipping rect.
-	                ctx.beginPath();
-	                ctx.arc(width / 2, height / 2, r + radiusStep, 0, Math.PI * 2, false);
-	                ctx.arc(width / 2, height / 2, r, 0, Math.PI * 2, true);
-	                ctx.clip();
-
-	                // Draw gif with clipping applied
-	                ctx.drawImage(frame.canvas, 0, 0);
-
-	                ctx.restore();
-
-	                i += increment;
+	                    return scanline_renderer.drawCircle(this._canvas, this._ctx, imageData, state.radiusWidth, state.currentFrame, increment);
 	            }
 	        }
 	    }, {
@@ -29608,56 +29534,139 @@
 
 /***/ },
 /* 212 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
-	'use strict';
+	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	/**
+	 * Get a given frame from a gif.
+	 * 
+	 * Handles looping indices and negative indices.
+	 */
+	var getFrame = function getFrame(imageData, index) {
+	    var len = imageData.frames.length;
+	    index %= len;
+	    return imageData.frames[index < 0 ? len - 1 - Math.abs(index) : index];
+	};
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	/**
+	 * Prepare a canvas for rendering a gif.
+	 */
+	var prepCanvas = function prepCanvas(canvas, ctx, imageData) {
+	    ctx.clearRect(0, 0, canvas.width, canvas.height);
+	    canvas.width = imageData.width;
+	    canvas.height = imageData.height;
+	};
 
-	var _react = __webpack_require__(1);
+	/**
+	 * 
+	 */
+	var drawDiag = exports.drawDiag = function drawDiag(canvas, ctx, imageData, gridColumns, angle, initialFrame, increment) {
+	    var radAngle = angle * (Math.PI / 180);
+	    var width = imageData.width;
+	    var height = imageData.height;
 
-	var _react2 = _interopRequireDefault(_react);
+	    var diag = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
 
-	var _reactDom = __webpack_require__(38);
+	    prepCanvas(canvas, ctx, imageData);
 
-	var _reactDom2 = _interopRequireDefault(_reactDom);
+	    for (var i = 0, numDraws = Math.ceil(diag / gridColumns / 2); i <= numDraws; ++i) {
+	        var frame1 = getFrame(imageData, initialFrame + i * increment);
+	        var frame2 = getFrame(imageData, initialFrame - (i + 1) * increment);
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	        // draw first
+	        ctx.save();
+	        {
+	            ctx.save();
+	            ctx.translate(width / 2, height / 2);
+	            ctx.rotate(radAngle);
+	            ctx.translate(-width / 2, -height / 2);
+	            ctx.beginPath();
+	            ctx.rect(-diag, height / 2 + i * gridColumns, diag * 2, gridColumns);
+	            ctx.restore();
 
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	            ctx.clip();
 
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var LoadingSpinner = function (_React$Component) {
-	    _inherits(LoadingSpinner, _React$Component);
-
-	    function LoadingSpinner() {
-	        _classCallCheck(this, LoadingSpinner);
-
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(LoadingSpinner).apply(this, arguments));
-	    }
-
-	    _createClass(LoadingSpinner, [{
-	        key: 'render',
-	        value: function render() {
-	            return _react2.default.createElement(
-	                'span',
-	                { className: "material-icons loading-spinner " + (this.props.active ? '' : 'hidden') },
-	                'autorenew'
-	            );
+	            ctx.drawImage(frame1.canvas, 0, 0);
 	        }
-	    }]);
+	        ctx.restore();
 
-	    return LoadingSpinner;
-	}(_react2.default.Component);
+	        // draw second
+	        ctx.save();
+	        {
+	            ctx.save();
+	            ctx.translate(width / 2, height / 2);
+	            ctx.rotate(radAngle);
+	            ctx.translate(-width / 2, -height / 2);
+	            ctx.beginPath();
+	            ctx.rect(-diag, height / 2 - i * gridColumns, diag * 2, gridColumns);
+	            ctx.restore();
+	            ctx.clip();
 
-	exports.default = LoadingSpinner;
+	            ctx.drawImage(frame2.canvas, 0, 0);
+	        }
+	        ctx.restore();
+	    }
+	};
+
+	/**
+	 * 
+	 */
+	var drawGrid = exports.drawGrid = function drawGrid(canvas, ctx, imageData, columnWidth, columnHeight, initialFrame, increment) {
+	    prepCanvas(canvas, ctx, imageData);
+
+	    var i = initialFrame;
+	    for (var x = 0; x < imageData.width; x += columnWidth) {
+	        for (var y = 0; y < imageData.height; y += columnHeight) {
+	            var frame = getFrame(imageData, i);
+	            ctx.save();
+
+	            // Create clipping rect.
+	            ctx.beginPath();
+	            ctx.rect(x, y, columnWidth, columnHeight);
+	            ctx.clip();
+
+	            // Draw gif with clipping applied
+	            ctx.drawImage(frame.canvas, 0, 0);
+
+	            ctx.restore();
+
+	            i += increment;
+	        }
+	    }
+	};
+
+	/**
+	 * 
+	 */
+	var drawCircle = exports.drawCircle = function drawCircle(canvas, ctx, imageData, radiusStep, initialFrame, increment) {
+	    var width = imageData.width;
+	    var height = imageData.height;
+
+	    prepCanvas(canvas, ctx, imageData);
+
+	    var i = initialFrame;
+	    for (var r = 0, len = Math.max(width, height); r < len; r += radiusStep) {
+	        var frame = getFrame(imageData, i);
+	        ctx.save();
+
+	        // Create clipping rect.
+	        ctx.beginPath();
+	        ctx.arc(width / 2, height / 2, r + radiusStep, 0, Math.PI * 2, false);
+	        ctx.arc(width / 2, height / 2, r, 0, Math.PI * 2, true);
+	        ctx.clip();
+
+	        // Draw gif with clipping applied
+	        ctx.drawImage(frame.canvas, 0, 0);
+
+	        ctx.restore();
+
+	        i += increment;
+	    }
+	};
 
 /***/ }
 /******/ ]);

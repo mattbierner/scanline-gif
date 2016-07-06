@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-const propsToCheck = ['imageData', 'mode', 'gridColumns', 'gridRows', 'diagonalWidth', 'diagonalAngle', 'reverseFrameOrder', 'currentFrame', 'frameIncrement', 'radiusWidth'];
+import * as scanline_renderer from './scanline_renderer';
 
+const propsToCheck = ['imageData', 'mode', 'gridColumns', 'gridRows', 'diagonalWidth', 'diagonalAngle', 'reverseFrameOrder', 'currentFrame', 'frameIncrement', 'radiusWidth'];
 
 /**
  * Renders a scanlined gif. 
@@ -31,7 +32,9 @@ export default class GifRenderer extends React.Component {
 
         switch (state.mode) {
             case 'columns':
-                return this.drawGrid(
+                return scanline_renderer.drawGrid(
+                    this._canvas,
+                    this._ctx,
                     imageData,
                     imageData.width / imageData.frames.length,
                     imageData.height,
@@ -40,7 +43,9 @@ export default class GifRenderer extends React.Component {
             
             case 'rows':
             default:
-                return this.drawGrid(
+                return scanline_renderer.drawGrid(
+                    this._canvas,
+                    this._ctx,
                     imageData,
                     imageData.width,
                     imageData.height / imageData.frames.length,
@@ -48,7 +53,9 @@ export default class GifRenderer extends React.Component {
                     increment);
 
             case 'grid':
-                return this.drawGrid(
+                return scanline_renderer.drawGrid(
+                    this._canvas,
+                    this._ctx,
                     imageData,
                     imageData.width / state.gridColumns,
                     imageData.height / state.gridRows,
@@ -56,7 +63,9 @@ export default class GifRenderer extends React.Component {
                     increment);
 
             case 'diagonal':
-                return this.drawDiag(
+                return scanline_renderer.drawDiag(
+                    this._canvas,
+                    this._ctx,
                     imageData,
                     state.diagonalWidth,
                     state.diagonalAngle,
@@ -64,123 +73,13 @@ export default class GifRenderer extends React.Component {
                     increment);
             
             case 'circle':
-                return this.drawCircle(
+                return scanline_renderer.drawCircle(
+                    this._canvas,
+                    this._ctx,
                     imageData,
                     state.radiusWidth,
                     state.currentFrame,
                     increment);
-
-        }
-    }
-
-    resetCanvas(imageData) {
-        const ctx = this._ctx;
-        const canvas = this._canvas;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        canvas.width = imageData.width;
-        canvas.height = imageData.height;
-        return {canvas, ctx};
-    }
-
-    drawDiag(imageData, gridColumns, angle, initialFrame, increment) {
-        const radAngle = angle * (Math.PI / 180);
-        const {width, height} = imageData;
-        const diag = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
-
-        const {canvas, ctx} = this.resetCanvas(imageData);
-
-        for (let i = 0, numDraws = Math.ceil((diag / gridColumns) / 2); i <= numDraws; ++i) {
-            const frame1 = this.getFrame(imageData, initialFrame + i * increment);
-            const frame2 = this.getFrame(imageData, initialFrame - ((i + 1) * increment));
-
-            // draw first
-            ctx.save();
-            {
-                ctx.save();
-                ctx.translate(width / 2, height / 2);
-                ctx.rotate(radAngle);
-                ctx.translate(-width / 2, -height / 2);
-                ctx.beginPath();
-                ctx.rect(-diag, height / 2 + (i * gridColumns), diag * 2, gridColumns);
-                ctx.restore();
-
-                ctx.clip();
-
-                ctx.drawImage(frame1.canvas, 0, 0);
-            }
-            ctx.restore();
-
-            // draw second
-            ctx.save();
-            {
-                ctx.save();
-                ctx.translate(width / 2, height / 2);
-                ctx.rotate(radAngle);
-                ctx.translate(-width / 2, -height / 2);
-                ctx.beginPath();
-                ctx.rect(-diag, height / 2 - (i * gridColumns), diag * 2, gridColumns);
-                ctx.restore();
-                ctx.clip();
-
-                ctx.drawImage(frame2.canvas, 0, 0);
-            }
-            ctx.restore();
-        }
-    }
-
-    getFrame(imageData, index) {
-        const len = imageData.frames.length;
-        index %= len;
-        if (index < 0)
-            return imageData.frames[len - 1 - Math.abs(index)];
-        return imageData.frames[index];
-    }
-
-    drawGrid(imageData, columnWidth, columnHeight, initialFrame, increment) {
-        const {canvas, ctx} = this.resetCanvas(imageData);
-
-        let i = initialFrame;
-        for (let x = 0; x < imageData.width; x += columnWidth) {
-            for (let y = 0; y < imageData.height; y += columnHeight) {
-                const frame = this.getFrame(imageData, i);
-                ctx.save();
-
-                // Create clipping rect.
-                ctx.beginPath();
-                ctx.rect(x, y, columnWidth, columnHeight)
-                ctx.clip();
-
-                // Draw gif with clipping applied
-                ctx.drawImage(frame.canvas, 0, 0);
-
-                ctx.restore();
-
-                i += increment;
-            }
-        }
-    }
-
-    drawCircle(imageData, radiusStep, initialFrame, increment) {
-        const {width, height} = imageData;
-        const {canvas, ctx} = this.resetCanvas(imageData);
-
-        let i = initialFrame;
-        for (let r = 0, len = Math.max(width, height); r < len; r += radiusStep) {
-            const frame = this.getFrame(imageData, i);
-            ctx.save();
-
-            // Create clipping rect.
-            ctx.beginPath();
-            ctx.arc(width / 2, height / 2, r + radiusStep, 0, Math.PI * 2, false);
-            ctx.arc(width / 2, height / 2, r, 0, Math.PI * 2, true);
-            ctx.clip()
-
-            // Draw gif with clipping applied
-            ctx.drawImage(frame.canvas, 0, 0);
-
-            ctx.restore();
-
-            i += increment;
         }
     }
 
