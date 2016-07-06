@@ -35,13 +35,13 @@ Gifs come from Giphy. Just enter a search term and select one of the returned gi
 ### Frame Increment
 Number of frames to skip ahead for each scan-line. In the column example, this is the number of frames between two columns.
 
-![](https://raw.githubusercontent.com/mattbierner/scanline-gif/gh-pages/documentation/images/rb-example-columns-inc2.gif)
-
 Frame increment of 2
 
-![](https://raw.githubusercontent.com/mattbierner/scanline-gif/gh-pages/documentation/images/rb-example-columns-inc6.gif)
+![](https://raw.githubusercontent.com/mattbierner/scanline-gif/gh-pages/documentation/images/rb-example-columns-inc2.gif)
 
 Frame increment of 6.
+
+![](https://raw.githubusercontent.com/mattbierner/scanline-gif/gh-pages/documentation/images/rb-example-columns-inc6.gif)
 
 
 ### Reverse Frames
@@ -51,7 +51,7 @@ Reverses the frame increment so that frames are sampled in backwards order.
 
 
 ### Mirror Frames
-When iterating through the frames, when the last frame is reached, instead of overflowing to 0, reverse increment order.
+When iterating through the frames, when the last frame is reached, instead of overflowing to 0, reverse increment order and go back to zero.
 
 ![](https://raw.githubusercontent.com/mattbierner/scanline-gif/gh-pages/documentation/images/rb-example-columns-mirror.gif)
 
@@ -89,7 +89,7 @@ Renders frames as rotated bars.
 ### Rings
 Renders frames as rings emanating from the center of the image.
 
-![](https://raw.githubusercontent.com/mattbierner/scanline-gif/gh-pages/documentation/images/rb-example-columns-reverse.gif)
+![](https://raw.githubusercontent.com/mattbierner/scanline-gif/gh-pages/documentation/images/rb-example-ringsgif)
 
 * Angle - Angle of rotation.
 * Step Size - Size of each ring in pixels.
