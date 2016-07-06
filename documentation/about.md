@@ -89,7 +89,7 @@ Renders frames as rotated bars.
 ### Rings
 Renders frames as rings emanating from the center of the image.
 
-![](https://raw.githubusercontent.com/mattbierner/scanline-gif/gh-pages/documentation/images/rb-example-ringsgif)
+![](https://raw.githubusercontent.com/mattbierner/scanline-gif/gh-pages/documentation/images/rb-example-rings.gif)
 
 * Angle - Angle of rotation.
 * Step Size - Size of each ring in pixels.
