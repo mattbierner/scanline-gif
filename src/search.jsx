@@ -3,7 +3,10 @@ import ReactDOM from 'react-dom';
 
 import LoadingSpinner from './loading_spinner';
 
-const giphy = require('giphy-api')('dc6zaTOxFJmzC');
+const giphy = require('giphy-api')({
+    https: true,
+    apiKey: 'dc6zaTOxFJmzC'
+});
 
 /**
  * Gif search result
