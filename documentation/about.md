@@ -1,6 +1,6 @@
 # About *scanline.gif*
 
-*[scanline.gif](site)* is an experiment flattening gifs so that multiple frames of the animation are rendered in a single image. The effect is kind of like [slit-scan photography](https://en.wikipedia.org/wiki/Slit-scan_photography).
+*[scanline.gif](site)* is an experiment flattening gifs so that multiple frames of animation are rendered in a single image. The effect is kind of like [slit-scan photography](https://en.wikipedia.org/wiki/Slit-scan_photography).
 
 This page overviews the concept, and details how you can customize the rendering.
 
