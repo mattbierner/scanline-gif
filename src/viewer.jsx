@@ -24,11 +24,11 @@ const modes = {
     },
     'diagonal': {
         title: 'Diagonal',
-        description: 'Configurable diagonal lines'
+        description: 'Configurable diagonal bars'
     },
     'circle': {
-        title: 'Circles',
-        description: 'Configurable circles'
+        title: 'Rings',
+        description: 'Configurable rings'
     }
 };
 

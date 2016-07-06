@@ -1,6 +1,6 @@
 title: "Scanline.gif"
 
-description: "Flattening gifs to images using scanlines."
+description: "Slit-scan style gif flattening"
 
 # Build settings
 markdown: kramdown

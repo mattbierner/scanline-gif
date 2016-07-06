@@ -1,3 +1,9 @@
+const chroma = require('chroma-js');
+
+const START_COLOR = 'red';
+const END_COLOR = 'blue';
+
+
 /**
  * Get a given frame from a gif.
  * 
@@ -20,23 +26,33 @@ const getFrame = (imageData, index, bounce) => {
         if (index < 0)
             index = len - 1 - Math.abs(index);
     }
-    return imageData.frames[index];
-
+    return index;
 };
 
 /**
  * Prepare a canvas for rendering a gif.
  */
-const prepCanvas = (canvas, ctx, imageData) =>  {
+const prepCanvas = (canvas, ctx, imageData) => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     canvas.width = imageData.width;
     canvas.height = imageData.height;
 };
 
+const drawFrame = (ctx, imageData, frame, debug = false) => {
+    if (debug) {
+        ctx.fillStyle = chroma.mix(START_COLOR, END_COLOR, frame / imageData.frames.length, 'rgb').css();
+        ctx.beginPath();
+        ctx.rect(0, 0, imageData.width, imageData.height);
+        ctx.fill();
+    } else {
+        ctx.drawImage(imageData.frames[frame].canvas, 0, 0);
+    }
+};
+
 /**
  * Render gif using diagonal scanlines
  */
-export const drawDiag = (canvas, ctx, imageData, initialFrame, increment, bounce, gridColumns, angle) => {
+export const drawDiag = (canvas, ctx, imageData, initialFrame, increment, bounce, gridColumns, angle, debug = false) => {
     const radAngle = angle * (Math.PI / 180);
     const {width, height} = imageData;
     const diag = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
@@ -59,8 +75,7 @@ export const drawDiag = (canvas, ctx, imageData, initialFrame, increment, bounce
             ctx.restore();
 
             ctx.clip();
-
-            ctx.drawImage(frame1.canvas, 0, 0);
+            drawFrame(ctx, imageData, frame1, debug);
         }
         ctx.restore();
 
@@ -76,7 +91,7 @@ export const drawDiag = (canvas, ctx, imageData, initialFrame, increment, bounce
             ctx.restore();
             ctx.clip();
 
-            ctx.drawImage(frame2.canvas, 0, 0);
+            drawFrame(ctx, imageData, frame2, debug);
         }
         ctx.restore();
     }
@@ -85,12 +100,13 @@ export const drawDiag = (canvas, ctx, imageData, initialFrame, increment, bounce
 /**
  * Render gif using a grid.
  */
-export const drawGrid = (canvas, ctx, imageData, initialFrame, increment, bounce, columnWidth, columnHeight) =>  {
+export const drawGrid = (canvas, ctx, imageData, initialFrame, increment, bounce, columnWidth, columnHeight, debug = false) => {
+    const {width, height} = imageData;
     prepCanvas(canvas, ctx, imageData);
 
     let i = initialFrame;
-    for (let x = 0; x < imageData.width; x += columnWidth) {
-        for (let y = 0; y < imageData.height; y += columnHeight) {
+    for (let x = 0; x < width; x += columnWidth) {
+        for (let y = 0; y < height; y += columnHeight) {
             const frame = getFrame(imageData, i, bounce);
             ctx.save();
 
@@ -99,8 +115,7 @@ export const drawGrid = (canvas, ctx, imageData, initialFrame, increment, bounce
             ctx.rect(x, y, columnWidth, columnHeight)
             ctx.clip();
 
-            // Draw gif with clipping applied
-            ctx.drawImage(frame.canvas, 0, 0);
+            drawFrame(ctx, imageData, frame, debug);
 
             ctx.restore();
 
@@ -112,7 +127,7 @@ export const drawGrid = (canvas, ctx, imageData, initialFrame, increment, bounce
 /**
  * Render gif using circles.
  */
-export const drawCircle = (canvas, ctx, imageData, initialFrame, increment, bounce, radiusStep) => {
+export const drawCircle = (canvas, ctx, imageData, initialFrame, increment, bounce, radiusStep, debug = false) => {
     const {width, height} = imageData;
     prepCanvas(canvas, ctx, imageData);
 
@@ -127,8 +142,7 @@ export const drawCircle = (canvas, ctx, imageData, initialFrame, increment, boun
         ctx.arc(width / 2, height / 2, r, 0, Math.PI * 2, true);
         ctx.clip()
 
-        // Draw gif with clipping applied
-        ctx.drawImage(frame.canvas, 0, 0);
+        drawFrame(ctx, imageData, frame, debug);
 
         ctx.restore();
 
@@ -153,7 +167,7 @@ export const drawForOptions = (canvas, ctx, imageData, state) => {
                 state.bounceFrameOrder,
                 imageData.width / imageData.frames.length,
                 imageData.height);
-        
+
         case 'rows':
         default:
             return drawGrid(
@@ -187,7 +201,7 @@ export const drawForOptions = (canvas, ctx, imageData, state) => {
                 state.bounceFrameOrder,
                 state.diagonalWidth,
                 state.diagonalAngle);
-        
+
         case 'circle':
             return drawCircle(
                 canvas,
