@@ -52,8 +52,8 @@ input[type=range] {
     }
 
     &::-webkit-slider-thumb {
-        width: 6px;
-        height: 20px;
+        width: 12px;
+        height: 24px;
         margin-top: -10px;
         border: 1px solid #aaa;
         background: $background-color;
@@ -96,6 +96,7 @@ button {
     border-radius: 0;
     outline: none;
     color: $text-color;
+    padding: 6px 12px;
 
     &:hover {
         background-color: $lightest-gray;
@@ -108,4 +109,5 @@ button {
 
 button.material-icons {
     border: none;
+    padding: 0;
 }
