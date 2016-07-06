@@ -15,7 +15,7 @@ Image a 13 frame gif where each frame is a solid color, starting with red at fra
 
 Now slice the gif into 13 columns of equal width. Draw each column of the image individually, but also advance the animation one frame after drawing a column. You end up with a single image that captures every frame of the original animation.
 
-![](https://raw.githubusercontent.com/mattbierner/scanline-gif/gh-pages/documentation/images/rb-example-example.png)
+![](https://raw.githubusercontent.com/mattbierner/scanline-gif/gh-pages/documentation/images/rb-example.png)
 
 These single images can be pretty cool but, for even more fun, you can then replay the animation. Here's what that looks like:
 
