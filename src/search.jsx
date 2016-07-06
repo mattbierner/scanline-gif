@@ -82,7 +82,7 @@ class GifSearchBar extends React.Component {
         return (
             <div className="gif-search-bar content-wrapper">
                 <button onClick={this.onSearch.bind(this) }><span className="material-icons">search</span></button>
-                <input type="search"
+                <input type="text"
                     value={this.props.searchText}
                     placeholder="find a gif"
                     onKeyPress={this.onKeyPress.bind(this) }

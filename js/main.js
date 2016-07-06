@@ -20576,7 +20576,7 @@
 	                        'search'
 	                    )
 	                ),
-	                _react2.default.createElement('input', { type: 'search',
+	                _react2.default.createElement('input', { type: 'text',
 	                    value: this.props.searchText,
 	                    placeholder: 'find a gif',
 	                    onKeyPress: this.onKeyPress.bind(this),
