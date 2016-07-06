@@ -29243,7 +29243,7 @@
 	            this.setState({ playing: !this.state.playing });
 
 	            if (!this.state.playing) {
-	                this.scheduleNextFrame(this.props.imageData, 0, true);
+	                this.scheduleNextFrame(0, true);
 	            }
 	        }
 	    }, {
@@ -29400,6 +29400,8 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	var propsToCheck = ['imageData', 'mode', 'gridColumns', 'gridRows', 'diagonalWidth', 'diagonalAngle', 'reverseFrameOrder', 'currentFrame', 'frameIncrement', 'radiusWidth'];
+
 	/**
 	 * Renders a scanlined gif. 
 	 */
@@ -29427,7 +29429,6 @@
 	        value: function componentWillReceiveProps(newProps) {
 	            var _this2 = this;
 
-	            var propsToCheck = ['imageData', 'mode', 'gridColumns', 'gridRows', 'diagonalWidth', 'diagonalAngle', 'reverseFrameOrder', 'currentFrame', 'frameIncrement', 'radiusWidth'];
 	            var isDiff = propsToCheck.some(function (prop) {
 	                return _this2.props[prop] !== newProps[prop];
 	            });
@@ -29462,20 +29463,29 @@
 	            }
 	        }
 	    }, {
+	        key: 'resetCanvas',
+	        value: function resetCanvas(imageData) {
+	            var ctx = this._ctx;
+	            var canvas = this._canvas;
+	            ctx.clearRect(0, 0, canvas.width, canvas.height);
+	            canvas.width = imageData.width;
+	            canvas.height = imageData.height;
+	            return { canvas: canvas, ctx: ctx };
+	        }
+	    }, {
 	        key: 'drawDiag',
 	        value: function drawDiag(imageData, gridColumns, angle, initialFrame, increment) {
 	            var radAngle = angle * (Math.PI / 180);
 	            var width = imageData.width;
 	            var height = imageData.height;
 
-
-	            var ctx = this._ctx;
-	            var canvas = this._canvas;
-	            ctx.clearRect(0, 0, canvas.width, canvas.height);
-	            canvas.width = imageData.width;
-	            canvas.height = imageData.height;
-
 	            var diag = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
+
+	            var _resetCanvas = this.resetCanvas(imageData);
+
+	            var canvas = _resetCanvas.canvas;
+	            var ctx = _resetCanvas.ctx;
+
 
 	            for (var i = 0, numDraws = Math.ceil(diag / gridColumns / 2); i <= numDraws; ++i) {
 	                var frame1 = this.getFrame(imageData, initialFrame + i * increment);
@@ -29526,12 +29536,11 @@
 	    }, {
 	        key: 'drawGrid',
 	        value: function drawGrid(imageData, columnWidth, columnHeight, initialFrame, increment) {
-	            var ctx = this._ctx;
-	            var canvas = this._canvas;
+	            var _resetCanvas2 = this.resetCanvas(imageData);
 
-	            ctx.clearRect(0, 0, canvas.width, canvas.height);
-	            canvas.width = imageData.width;
-	            canvas.height = imageData.height;
+	            var canvas = _resetCanvas2.canvas;
+	            var ctx = _resetCanvas2.ctx;
+
 
 	            var i = initialFrame;
 	            for (var x = 0; x < imageData.width; x += columnWidth) {
@@ -29559,13 +29568,12 @@
 	            var width = imageData.width;
 	            var height = imageData.height;
 
+	            var _resetCanvas3 = this.resetCanvas(imageData);
 
-	            var ctx = this._ctx;
-	            var canvas = this._canvas;
+	            var canvas = _resetCanvas3.canvas;
+	            var ctx = _resetCanvas3.ctx;
 
-	            ctx.clearRect(0, 0, canvas.width, canvas.height);
-	            canvas.width = imageData.width;
-	            canvas.height = imageData.height;
+
 	            var i = initialFrame;
 	            for (var r = 0, len = Math.max(width, height); r < len; r += radiusStep) {
 	                var frame = this.getFrame(imageData, i);

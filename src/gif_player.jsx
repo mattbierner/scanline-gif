@@ -70,7 +70,7 @@ export default class GifPlayer extends React.Component {
         this.setState({ playing: !this.state.playing });
 
         if (!this.state.playing) {
-            this.scheduleNextFrame(this.props.imageData, 0, true);
+            this.scheduleNextFrame(0, true);
         }
     }
 

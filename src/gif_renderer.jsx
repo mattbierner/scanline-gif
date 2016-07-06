@@ -1,6 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+const propsToCheck = ['imageData', 'mode', 'gridColumns', 'gridRows', 'diagonalWidth', 'diagonalAngle', 'reverseFrameOrder', 'currentFrame', 'frameIncrement', 'radiusWidth'];
+
+
 /**
  * Renders a scanlined gif. 
  */
@@ -14,7 +17,6 @@ export default class GifRenderer extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const propsToCheck = ['imageData', 'mode', 'gridColumns', 'gridRows', 'diagonalWidth', 'diagonalAngle', 'reverseFrameOrder', 'currentFrame', 'frameIncrement', 'radiusWidth'];
         const isDiff = propsToCheck.some(prop => this.props[prop] !== newProps[prop]);
         if (isDiff) {
             this.drawGifForOptions(newProps.imageData, newProps);
@@ -71,17 +73,21 @@ export default class GifRenderer extends React.Component {
         }
     }
 
-    drawDiag(imageData, gridColumns, angle, initialFrame, increment) {
-        const radAngle = angle * (Math.PI / 180);
-        const {width, height} = imageData;
-
+    resetCanvas(imageData) {
         const ctx = this._ctx;
         const canvas = this._canvas;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         canvas.width = imageData.width;
         canvas.height = imageData.height;
+        return {canvas, ctx};
+    }
 
+    drawDiag(imageData, gridColumns, angle, initialFrame, increment) {
+        const radAngle = angle * (Math.PI / 180);
+        const {width, height} = imageData;
         const diag = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
+
+        const {canvas, ctx} = this.resetCanvas(imageData);
 
         for (let i = 0, numDraws = Math.ceil((diag / gridColumns) / 2); i <= numDraws; ++i) {
             const frame1 = this.getFrame(imageData, initialFrame + i * increment);
@@ -131,12 +137,7 @@ export default class GifRenderer extends React.Component {
     }
 
     drawGrid(imageData, columnWidth, columnHeight, initialFrame, increment) {
-        const ctx = this._ctx;
-        const canvas = this._canvas;
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        canvas.width = imageData.width;
-        canvas.height = imageData.height;
+        const {canvas, ctx} = this.resetCanvas(imageData);
 
         let i = initialFrame;
         for (let x = 0; x < imageData.width; x += columnWidth) {
@@ -161,13 +162,8 @@ export default class GifRenderer extends React.Component {
 
     drawCircle(imageData, radiusStep, initialFrame, increment) {
         const {width, height} = imageData;
+        const {canvas, ctx} = this.resetCanvas(imageData);
 
-        const ctx = this._ctx;
-        const canvas = this._canvas;
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        canvas.width = imageData.width;
-        canvas.height = imageData.height;
         let i = initialFrame;
         for (let r = 0, len = Math.max(width, height); r < len; r += radiusStep) {
             const frame = this.getFrame(imageData, i);

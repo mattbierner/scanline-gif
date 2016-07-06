@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "css-element-queries": "^0.3.2",
+    "gif.js": "^0.1.6",
     "giphy": "0.0.4",
     "giphy-api": "^1.1.16",
     "moment": "^2.13.0",
