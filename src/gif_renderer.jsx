@@ -10,11 +10,8 @@ const propsToCheck = ['imageData', 'mode', 'gridColumns', 'gridRows', 'diagonalW
  */
 export default class GifRenderer extends React.Component {
     componentDidMount() {
-        const canvas = ReactDOM.findDOMNode(this);
-        const ctx = canvas.getContext('2d');
-
-        this._canvas = canvas;
-        this._ctx = ctx;
+        this._canvas = ReactDOM.findDOMNode(this);
+        this._ctx = this._canvas.getContext('2d');
     }
 
     componentWillReceiveProps(newProps) {

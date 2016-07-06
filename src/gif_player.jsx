@@ -88,7 +88,7 @@ export default class GifPlayer extends React.Component {
         setTimeout(() => {
             if (!this.props.imageData)
                 return;
-            
+
             let nextFrame = (this.state.currentFrame + 1);
             if (nextFrame >= this.getNumFrames() && !this.state.loop) {
                 this.setState({ playing: false });
@@ -113,13 +113,7 @@ export default class GifPlayer extends React.Component {
     }
 
     onReplay() {
-        this.setState({
-            currentFrame: 0
-        });
-    }
-
-    onLoopToggle() {
-        this.setState({ loop: !this.state.loop });
+        this.setState({ currentFrame: 0 });
     }
 
     onPlaybackSpeedChange(e) {
@@ -143,7 +137,7 @@ export default class GifPlayer extends React.Component {
                         max={this.getNumFrames() - 1}
                         value={this.state.currentFrame}
                         onChange={this.onSliderChange.bind(this) }/>
-                    
+
                     <div className="buttons">
                         <button
                             title="Restart"

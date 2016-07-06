@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import loadGif from './loadGif';
 import LabeledSlider from './labeled_slider';
 import GifPlayer from './gif_player';
+import exportGif from './gif_export';
 
 /**
  * Display modes
@@ -31,7 +32,9 @@ const modes = {
     }
 };
 
-
+/**
+ * Control for selecting rendering mode.
+ */
 class ModeSelector extends React.Component {
     render() {
         const modeOptions = Object.keys(modes).map(x =>
@@ -46,7 +49,6 @@ class ModeSelector extends React.Component {
             </div>);
     }
 }
-
 
 /**
  * Displays an interative scanlined gif with controls. 
@@ -163,11 +165,19 @@ export default class Viewer extends React.Component {
         this.setState({ radiusWidth: value });
     }
 
+    onExport() {
+        exportGif(this.state.imageData, this.state).then(blob => {
+            const url = URL.createObjectURL(blob);
+            window.open(url);
+        });
+    }
+
     render() {
         return (
             <div className="gif-viewer" id="viewer">
                 <div className="player-wrapper">
                     <GifPlayer {...this.state} />
+                    <button onClick={this.onExport.bind(this) }>Export to gif</button>
                 </div>
                 <div className="view-controls">
                     <ModeSelector value={this.state.mode} onChange={this.onModeChange.bind(this) } />
