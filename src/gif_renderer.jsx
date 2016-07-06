@@ -3,8 +3,6 @@ import ReactDOM from 'react-dom';
 
 import * as scanline_renderer from './scanline_renderer';
 
-const propsToCheck = ['imageData', 'mode', 'gridColumns', 'gridRows', 'diagonalWidth', 'diagonalAngle', 'reverseFrameOrder', 'currentFrame', 'frameIncrement', 'radiusWidth'];
-
 /**
  * Renders a scanlined gif. 
  */
@@ -15,10 +13,7 @@ export default class GifRenderer extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const isDiff = propsToCheck.some(prop => this.props[prop] !== newProps[prop]);
-        if (isDiff) {
-            this.drawGifForOptions(newProps.imageData, newProps);
-        }
+        this.drawGifForOptions(newProps.imageData, newProps);
     }
 
     drawGifForOptions(imageData, state) {

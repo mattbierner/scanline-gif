@@ -27950,6 +27950,7 @@
 
 	            // playback
 	            reverseFrameOrder: false,
+	            bounceFrameOrder: false,
 	            frameIncrement: 1,
 	            playbackSpeed: 1,
 
@@ -28031,6 +28032,12 @@
 	            this.setState({ reverseFrameOrder: value });
 	        }
 	    }, {
+	        key: 'onBounceFrameOrderChange',
+	        value: function onBounceFrameOrderChange(e) {
+	            var value = e.target.checked;
+	            this.setState({ bounceFrameOrder: value });
+	        }
+	    }, {
 	        key: 'onFrameIncrementChange',
 	        value: function onFrameIncrementChange(e) {
 	            var value = +e.target.value;
@@ -28088,7 +28095,7 @@
 	                        { className: 'frame-controls' },
 	                        _react2.default.createElement(
 	                            'div',
-	                            null,
+	                            { className: 'full-width' },
 	                            _react2.default.createElement(_labeled_slider2.default, { title: 'Frame Increment',
 	                                min: '1',
 	                                max: this.state.imageData ? this.state.imageData.frames.length - 1 : 0,
@@ -28104,9 +28111,23 @@
 	                                _react2.default.createElement(
 	                                    'div',
 	                                    { className: 'control-title' },
-	                                    'Reverse Frame Order'
+	                                    'Reverse Frames'
 	                                ),
 	                                _react2.default.createElement('input', { type: 'checkbox', value: 'reverseFrameOrder', onChange: this.onReverseFrameOrderChange.bind(this) })
+	                            )
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            null,
+	                            _react2.default.createElement(
+	                                'div',
+	                                { className: 'control-group' },
+	                                _react2.default.createElement(
+	                                    'div',
+	                                    { className: 'control-title' },
+	                                    'Mirror Frames'
+	                                ),
+	                                _react2.default.createElement('input', { type: 'checkbox', value: 'reverseFrameOrder', onChange: this.onBounceFrameOrderChange.bind(this) })
 	                            )
 	                        )
 	                    ),
@@ -28178,7 +28199,7 @@
 	                        ),
 	                        _react2.default.createElement(
 	                            'div',
-	                            null,
+	                            { className: 'full-width' },
 	                            _react2.default.createElement(_labeled_slider2.default, { title: 'Step Size',
 	                                units: 'px',
 	                                min: '1',
@@ -28188,9 +28209,13 @@
 	                        )
 	                    ),
 	                    _react2.default.createElement(
-	                        'button',
-	                        { onClick: this.onExport.bind(this) },
-	                        'Export to gif'
+	                        'div',
+	                        { className: 'export-controls' },
+	                        _react2.default.createElement(
+	                            'button',
+	                            { onClick: this.onExport.bind(this) },
+	                            'Export to gif'
+	                        )
 	                    )
 	                )
 	            );
@@ -29503,8 +29528,6 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var propsToCheck = ['imageData', 'mode', 'gridColumns', 'gridRows', 'diagonalWidth', 'diagonalAngle', 'reverseFrameOrder', 'currentFrame', 'frameIncrement', 'radiusWidth'];
-
 	/**
 	 * Renders a scanlined gif. 
 	 */
@@ -29527,14 +29550,7 @@
 	    }, {
 	        key: 'componentWillReceiveProps',
 	        value: function componentWillReceiveProps(newProps) {
-	            var _this2 = this;
-
-	            var isDiff = propsToCheck.some(function (prop) {
-	                return _this2.props[prop] !== newProps[prop];
-	            });
-	            if (isDiff) {
-	                this.drawGifForOptions(newProps.imageData, newProps);
-	            }
+	            this.drawGifForOptions(newProps.imageData, newProps);
 	        }
 	    }, {
 	        key: 'drawGifForOptions',
@@ -29569,11 +29585,22 @@
 	 * Get a given frame from a gif.
 	 * 
 	 * Handles looping indices and negative indices.
+	 * 
+	 * @param imageData Data with frames.
+	 * @param index Input frame.
+	 * @param bounce Instead of overflowing, reverse so that the counter bounces between [0, len).
 	 */
-	var getFrame = function getFrame(imageData, index) {
+	var getFrame = function getFrame(imageData, index, bounce) {
 	    var len = imageData.frames.length;
-	    index %= len;
-	    return imageData.frames[index < 0 ? len - 1 - Math.abs(index) : index];
+	    if (bounce) {
+	        index %= len * 2;
+	        if (index < 0) index = len * 2 - 1 - Math.abs(index);
+	        if (index >= len) index = len - 1 - (index - len);
+	    } else {
+	        index %= len;
+	        if (index < 0) index = len - 1 - Math.abs(index);
+	    }
+	    return imageData.frames[index];
 	};
 
 	/**
@@ -29588,7 +29615,7 @@
 	/**
 	 * Render gif using diagonal scanlines
 	 */
-	var drawDiag = exports.drawDiag = function drawDiag(canvas, ctx, imageData, initialFrame, increment, gridColumns, angle) {
+	var drawDiag = exports.drawDiag = function drawDiag(canvas, ctx, imageData, initialFrame, increment, bounce, gridColumns, angle) {
 	    var radAngle = angle * (Math.PI / 180);
 	    var width = imageData.width;
 	    var height = imageData.height;
@@ -29598,8 +29625,8 @@
 	    prepCanvas(canvas, ctx, imageData);
 
 	    for (var i = 0, numDraws = Math.ceil(diag / gridColumns / 2); i <= numDraws; ++i) {
-	        var frame1 = getFrame(imageData, initialFrame + i * increment);
-	        var frame2 = getFrame(imageData, initialFrame - (i + 1) * increment);
+	        var frame1 = getFrame(imageData, initialFrame + i * increment, bounce);
+	        var frame2 = getFrame(imageData, initialFrame - (i + 1) * increment, bounce);
 
 	        // draw first
 	        ctx.save();
@@ -29639,13 +29666,13 @@
 	/**
 	 * Render gif using a grid.
 	 */
-	var drawGrid = exports.drawGrid = function drawGrid(canvas, ctx, imageData, initialFrame, increment, columnWidth, columnHeight) {
+	var drawGrid = exports.drawGrid = function drawGrid(canvas, ctx, imageData, initialFrame, increment, bounce, columnWidth, columnHeight) {
 	    prepCanvas(canvas, ctx, imageData);
 
 	    var i = initialFrame;
 	    for (var x = 0; x < imageData.width; x += columnWidth) {
 	        for (var y = 0; y < imageData.height; y += columnHeight) {
-	            var frame = getFrame(imageData, i);
+	            var frame = getFrame(imageData, i, bounce);
 	            ctx.save();
 
 	            // Create clipping rect.
@@ -29666,7 +29693,7 @@
 	/**
 	 * Render gif using circles.
 	 */
-	var drawCircle = exports.drawCircle = function drawCircle(canvas, ctx, imageData, initialFrame, increment, radiusStep) {
+	var drawCircle = exports.drawCircle = function drawCircle(canvas, ctx, imageData, initialFrame, increment, bounce, radiusStep) {
 	    var width = imageData.width;
 	    var height = imageData.height;
 
@@ -29674,7 +29701,7 @@
 
 	    var i = initialFrame;
 	    for (var r = 0, len = Math.max(width, height); r < len; r += radiusStep) {
-	        var frame = getFrame(imageData, i);
+	        var frame = getFrame(imageData, i, bounce);
 	        ctx.save();
 
 	        // Create clipping circle.
@@ -29700,20 +29727,20 @@
 
 	    switch (state.mode) {
 	        case 'columns':
-	            return drawGrid(canvas, ctx, imageData, state.currentFrame, increment, imageData.width / imageData.frames.length, imageData.height);
+	            return drawGrid(canvas, ctx, imageData, state.currentFrame, increment, state.bounceFrameOrder, imageData.width / imageData.frames.length, imageData.height);
 
 	        case 'rows':
 	        default:
-	            return drawGrid(canvas, ctx, imageData, state.currentFrame, increment, imageData.width, imageData.height / imageData.frames.length);
+	            return drawGrid(canvas, ctx, imageData, state.currentFrame, increment, state.bounceFrameOrder, imageData.width, imageData.height / imageData.frames.length);
 
 	        case 'grid':
-	            return drawGrid(canvas, ctx, imageData, state.currentFrame, increment, imageData.width / state.gridColumns, imageData.height / state.gridRows);
+	            return drawGrid(canvas, ctx, imageData, state.currentFrame, increment, state.bounceFrameOrder, imageData.width / state.gridColumns, imageData.height / state.gridRows);
 
 	        case 'diagonal':
-	            return drawDiag(canvas, ctx, imageData, state.currentFrame, increment, state.diagonalWidth, state.diagonalAngle);
+	            return drawDiag(canvas, ctx, imageData, state.currentFrame, increment, state.bounceFrameOrder, state.diagonalWidth, state.diagonalAngle);
 
 	        case 'circle':
-	            return drawCircle(canvas, ctx, imageData, state.currentFrame, increment, state.radiusWidth);
+	            return drawCircle(canvas, ctx, imageData, state.currentFrame, increment, state.bounceFrameOrder, state.radiusWidth);
 	    }
 	};
 

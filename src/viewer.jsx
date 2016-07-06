@@ -66,6 +66,7 @@ export default class Viewer extends React.Component {
 
             // playback
             reverseFrameOrder: false,
+            bounceFrameOrder: false,
             frameIncrement: 1,
             playbackSpeed: 1,
 
@@ -140,6 +141,11 @@ export default class Viewer extends React.Component {
         this.setState({ reverseFrameOrder: value });
     }
 
+    onBounceFrameOrderChange(e) {
+        const value = e.target.checked;
+        this.setState({ bounceFrameOrder: value });
+    }
+
     onFrameIncrementChange(e) {
         const value = +e.target.value;
         this.setState({ frameIncrement: value });
@@ -182,7 +188,7 @@ export default class Viewer extends React.Component {
                     <ModeSelector value={this.state.mode} onChange={this.onModeChange.bind(this) } />
 
                     <div className="frame-controls">
-                        <div>
+                        <div className="full-width">
                             <LabeledSlider title='Frame Increment'
                                 min="1"
                                 max={this.state.imageData ? this.state.imageData.frames.length - 1 : 0}
@@ -191,8 +197,14 @@ export default class Viewer extends React.Component {
                         </div>
                         <div>
                             <div className="control-group">
-                                <div className='control-title'>Reverse Frame Order</div>
+                                <div className='control-title'>Reverse Frames</div>
                                 <input type="checkbox" value="reverseFrameOrder" onChange={this.onReverseFrameOrderChange.bind(this)}/>
+                            </div>
+                        </div>
+                        <div>
+                            <div className="control-group">
+                                <div className='control-title'>Mirror Frames</div>
+                                <input type="checkbox" value="reverseFrameOrder" onChange={this.onBounceFrameOrderChange.bind(this)}/>
                             </div>
                         </div>
                     </div>
@@ -239,7 +251,7 @@ export default class Viewer extends React.Component {
 
                     <div className={"mode-control-set circle-controls " + (this.state.mode === 'circle' ? '' : 'hidden') }>
                         <h4 className="control-set-label">Circle Options</h4>
-                        <div>
+                        <div className="full-width">
                             <LabeledSlider title="Step Size"
                                 units="px"
                                 min="1"
@@ -249,8 +261,9 @@ export default class Viewer extends React.Component {
                         </div>
                     </div>
 
-                    <button onClick={this.onExport.bind(this) }>Export to gif</button>
-                    
+                    <div className="export-controls">
+                        <button onClick={this.onExport.bind(this) }>Export to gif</button>
+                    </div>
                 </div>
             </div>);
     }

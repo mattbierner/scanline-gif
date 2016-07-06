@@ -2,11 +2,26 @@
  * Get a given frame from a gif.
  * 
  * Handles looping indices and negative indices.
+ * 
+ * @param imageData Data with frames.
+ * @param index Input frame.
+ * @param bounce Instead of overflowing, reverse so that the counter bounces between [0, len).
  */
-const getFrame = (imageData, index) => {
+const getFrame = (imageData, index, bounce) => {
     const len = imageData.frames.length;
-    index %= len;
-    return imageData.frames[index < 0 ? len - 1 - Math.abs(index) : index];
+    if (bounce) {
+        index %= len * 2;
+        if (index < 0)
+            index = len * 2 - 1 - Math.abs(index);
+        if (index >= len)
+            index = len - 1 - (index - len);
+    } else {
+        index %= len;
+        if (index < 0)
+            index = len - 1 - Math.abs(index);
+    }
+    return imageData.frames[index];
+
 };
 
 /**
@@ -21,7 +36,7 @@ const prepCanvas = (canvas, ctx, imageData) =>  {
 /**
  * Render gif using diagonal scanlines
  */
-export const drawDiag = (canvas, ctx, imageData, initialFrame, increment, gridColumns, angle) => {
+export const drawDiag = (canvas, ctx, imageData, initialFrame, increment, bounce, gridColumns, angle) => {
     const radAngle = angle * (Math.PI / 180);
     const {width, height} = imageData;
     const diag = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
@@ -29,8 +44,8 @@ export const drawDiag = (canvas, ctx, imageData, initialFrame, increment, gridCo
     prepCanvas(canvas, ctx, imageData);
 
     for (let i = 0, numDraws = Math.ceil((diag / gridColumns) / 2); i <= numDraws; ++i) {
-        const frame1 = getFrame(imageData, initialFrame + i * increment);
-        const frame2 = getFrame(imageData, initialFrame - ((i + 1) * increment));
+        const frame1 = getFrame(imageData, initialFrame + i * increment, bounce);
+        const frame2 = getFrame(imageData, initialFrame - ((i + 1) * increment), bounce);
 
         // draw first
         ctx.save();
@@ -70,13 +85,13 @@ export const drawDiag = (canvas, ctx, imageData, initialFrame, increment, gridCo
 /**
  * Render gif using a grid.
  */
-export const drawGrid = (canvas, ctx, imageData, initialFrame, increment, columnWidth, columnHeight) =>  {
+export const drawGrid = (canvas, ctx, imageData, initialFrame, increment, bounce, columnWidth, columnHeight) =>  {
     prepCanvas(canvas, ctx, imageData);
 
     let i = initialFrame;
     for (let x = 0; x < imageData.width; x += columnWidth) {
         for (let y = 0; y < imageData.height; y += columnHeight) {
-            const frame = getFrame(imageData, i);
+            const frame = getFrame(imageData, i, bounce);
             ctx.save();
 
             // Create clipping rect.
@@ -97,13 +112,13 @@ export const drawGrid = (canvas, ctx, imageData, initialFrame, increment, column
 /**
  * Render gif using circles.
  */
-export const drawCircle = (canvas, ctx, imageData, initialFrame, increment, radiusStep) => {
+export const drawCircle = (canvas, ctx, imageData, initialFrame, increment, bounce, radiusStep) => {
     const {width, height} = imageData;
     prepCanvas(canvas, ctx, imageData);
 
     let i = initialFrame;
     for (let r = 0, len = Math.max(width, height); r < len; r += radiusStep) {
-        const frame = getFrame(imageData, i);
+        const frame = getFrame(imageData, i, bounce);
         ctx.save();
 
         // Create clipping circle.
@@ -135,6 +150,7 @@ export const drawForOptions = (canvas, ctx, imageData, state) => {
                 imageData,
                 state.currentFrame,
                 increment,
+                state.bounceFrameOrder,
                 imageData.width / imageData.frames.length,
                 imageData.height);
         
@@ -146,6 +162,7 @@ export const drawForOptions = (canvas, ctx, imageData, state) => {
                 imageData,
                 state.currentFrame,
                 increment,
+                state.bounceFrameOrder,
                 imageData.width,
                 imageData.height / imageData.frames.length);
 
@@ -156,6 +173,7 @@ export const drawForOptions = (canvas, ctx, imageData, state) => {
                 imageData,
                 state.currentFrame,
                 increment,
+                state.bounceFrameOrder,
                 imageData.width / state.gridColumns,
                 imageData.height / state.gridRows);
 
@@ -166,6 +184,7 @@ export const drawForOptions = (canvas, ctx, imageData, state) => {
                 imageData,
                 state.currentFrame,
                 increment,
+                state.bounceFrameOrder,
                 state.diagonalWidth,
                 state.diagonalAngle);
         
@@ -176,6 +195,7 @@ export const drawForOptions = (canvas, ctx, imageData, state) => {
                 imageData,
                 state.currentFrame,
                 increment,
+                state.bounceFrameOrder,
                 state.radiusWidth);
     }
 };
