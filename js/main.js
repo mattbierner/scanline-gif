@@ -28134,7 +28134,7 @@
 	                                    { className: 'control-title' },
 	                                    'Reverse Frames'
 	                                ),
-	                                _react2.default.createElement('input', { type: 'checkbox', value: 'reverseFrameOrder', onChange: this.onReverseFrameOrderChange.bind(this) })
+	                                _react2.default.createElement('input', { type: 'checkbox', value: this.state.reverseFrameOrder, onChange: this.onReverseFrameOrderChange.bind(this) })
 	                            )
 	                        ),
 	                        _react2.default.createElement(
@@ -28148,7 +28148,7 @@
 	                                    { className: 'control-title' },
 	                                    'Mirror Frames'
 	                                ),
-	                                _react2.default.createElement('input', { type: 'checkbox', value: 'reverseFrameOrder', onChange: this.onBounceFrameOrderChange.bind(this) })
+	                                _react2.default.createElement('input', { type: 'checkbox', value: this.state.bounceFrameOrder, onChange: this.onBounceFrameOrderChange.bind(this) })
 	                            )
 	                        )
 	                    ),

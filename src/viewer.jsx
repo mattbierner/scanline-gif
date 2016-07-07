@@ -213,13 +213,13 @@ export default class Viewer extends React.Component {
                         <div>
                             <div className="control-group">
                                 <div className='control-title'>Reverse Frames</div>
-                                <input type="checkbox" value="reverseFrameOrder" onChange={this.onReverseFrameOrderChange.bind(this) }/>
+                                <input type="checkbox" value={this.state.reverseFrameOrder} onChange={this.onReverseFrameOrderChange.bind(this) }/>
                             </div>
                         </div>
                         <div>
                             <div className="control-group">
                                 <div className='control-title'>Mirror Frames</div>
-                                <input type="checkbox" value="reverseFrameOrder" onChange={this.onBounceFrameOrderChange.bind(this) }/>
+                                <input type="checkbox" value={this.state.bounceFrameOrder} onChange={this.onBounceFrameOrderChange.bind(this) }/>
                             </div>
                         </div>
                     </div>
