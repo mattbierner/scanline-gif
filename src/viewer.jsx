@@ -196,19 +196,19 @@ export default class Viewer extends React.Component {
                     <ModeSelector value={this.state.mode} onChange={this.onModeChange.bind(this) } />
 
                     <div className="frame-controls">
-                        <div>
-                            <LabeledSlider title='Initial Frame'
-                                min="0"
-                                max={this.state.imageData ? this.state.imageData.frames.length - 1 : 0}
-                                value={this.state.initialFrame}
-                                onChange={this.onInitialFrameChange.bind(this) }/>
-                        </div>
-                        <div>
+                        <div className="full-width">
                             <LabeledSlider title='Frame Increment'
                                 min="1"
                                 max={this.state.imageData ? this.state.imageData.frames.length - 1 : 0}
                                 value={this.state.frameIncrement}
                                 onChange={this.onFrameIncrementChange.bind(this) }/>
+                        </div>
+                        <div className="full-width">
+                            <LabeledSlider title='Initial Frame'
+                                min="0"
+                                max={this.state.imageData ? this.state.imageData.frames.length - 1 : 0}
+                                value={this.state.initialFrame}
+                                onChange={this.onInitialFrameChange.bind(this) }/>
                         </div>
                         <div>
                             <div className="control-group">

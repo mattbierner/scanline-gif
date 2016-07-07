@@ -28107,21 +28107,21 @@
 	                        { className: 'frame-controls' },
 	                        _react2.default.createElement(
 	                            'div',
-	                            null,
-	                            _react2.default.createElement(_labeled_slider2.default, { title: 'Initial Frame',
-	                                min: '0',
-	                                max: this.state.imageData ? this.state.imageData.frames.length - 1 : 0,
-	                                value: this.state.initialFrame,
-	                                onChange: this.onInitialFrameChange.bind(this) })
-	                        ),
-	                        _react2.default.createElement(
-	                            'div',
-	                            null,
+	                            { className: 'full-width' },
 	                            _react2.default.createElement(_labeled_slider2.default, { title: 'Frame Increment',
 	                                min: '1',
 	                                max: this.state.imageData ? this.state.imageData.frames.length - 1 : 0,
 	                                value: this.state.frameIncrement,
 	                                onChange: this.onFrameIncrementChange.bind(this) })
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'full-width' },
+	                            _react2.default.createElement(_labeled_slider2.default, { title: 'Initial Frame',
+	                                min: '0',
+	                                max: this.state.imageData ? this.state.imageData.frames.length - 1 : 0,
+	                                value: this.state.initialFrame,
+	                                onChange: this.onInitialFrameChange.bind(this) })
 	                        ),
 	                        _react2.default.createElement(
 	                            'div',
