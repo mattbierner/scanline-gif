@@ -27954,6 +27954,7 @@
 	            // playback
 	            reverseFrameOrder: false,
 	            bounceFrameOrder: false,
+	            initialFrame: 0,
 	            frameIncrement: 1,
 	            playbackSpeed: 1,
 
@@ -28000,6 +28001,8 @@
 
 	                    playbackSpeed: 1,
 	                    reverseFrameOrder: false,
+	                    bounceFrameOrder: false,
+	                    initialFrame: 0,
 
 	                    frameIncrement: 1,
 	                    gridColumns: 10,
@@ -28045,6 +28048,12 @@
 	        value: function onFrameIncrementChange(e) {
 	            var value = +e.target.value;
 	            this.setState({ frameIncrement: value });
+	        }
+	    }, {
+	        key: 'onInitialFrameChange',
+	        value: function onInitialFrameChange(e) {
+	            var value = +e.target.value;
+	            this.setState({ initialFrame: value });
 	        }
 	    }, {
 	        key: 'onGridRowsChange',
@@ -28098,7 +28107,16 @@
 	                        { className: 'frame-controls' },
 	                        _react2.default.createElement(
 	                            'div',
-	                            { className: 'full-width' },
+	                            null,
+	                            _react2.default.createElement(_labeled_slider2.default, { title: 'Initial Frame',
+	                                min: '0',
+	                                max: this.state.imageData ? this.state.imageData.frames.length - 1 : 0,
+	                                value: this.state.initialFrame,
+	                                onChange: this.onInitialFrameChange.bind(this) })
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            null,
 	                            _react2.default.createElement(_labeled_slider2.default, { title: 'Frame Increment',
 	                                min: '1',
 	                                max: this.state.imageData ? this.state.imageData.frames.length - 1 : 0,
@@ -29776,23 +29794,24 @@
 	 */
 	var drawForOptions = exports.drawForOptions = function drawForOptions(canvas, ctx, imageData, state) {
 	    var increment = state.reverseFrameOrder ? -state.frameIncrement : state.frameIncrement;
+	    var frame = state.initialFrame + state.currentFrame;
 
 	    switch (state.mode) {
 	        case 'columns':
-	            return drawGrid(canvas, ctx, imageData, state.currentFrame, increment, state.bounceFrameOrder, imageData.width / imageData.frames.length, imageData.height);
+	            return drawGrid(canvas, ctx, imageData, frame, increment, state.bounceFrameOrder, imageData.width / imageData.frames.length, imageData.height);
 
 	        case 'rows':
 	        default:
-	            return drawGrid(canvas, ctx, imageData, state.currentFrame, increment, state.bounceFrameOrder, imageData.width, imageData.height / imageData.frames.length);
+	            return drawGrid(canvas, ctx, imageData, frame, increment, state.bounceFrameOrder, imageData.width, imageData.height / imageData.frames.length);
 
 	        case 'grid':
-	            return drawGrid(canvas, ctx, imageData, state.currentFrame, increment, state.bounceFrameOrder, imageData.width / state.gridColumns, imageData.height / state.gridRows);
+	            return drawGrid(canvas, ctx, imageData, frame, increment, state.bounceFrameOrder, imageData.width / state.gridColumns, imageData.height / state.gridRows);
 
 	        case 'diagonal':
-	            return drawDiag(canvas, ctx, imageData, state.currentFrame, increment, state.bounceFrameOrder, state.diagonalWidth, state.diagonalAngle);
+	            return drawDiag(canvas, ctx, imageData, frame, increment, state.bounceFrameOrder, state.diagonalWidth, state.diagonalAngle);
 
 	        case 'circle':
-	            return drawCircle(canvas, ctx, imageData, state.currentFrame, increment, state.bounceFrameOrder, state.radiusWidth);
+	            return drawCircle(canvas, ctx, imageData, frame, increment, state.bounceFrameOrder, state.radiusWidth);
 	    }
 	};
 

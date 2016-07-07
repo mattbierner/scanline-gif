@@ -155,6 +155,7 @@ export const drawCircle = (canvas, ctx, imageData, initialFrame, increment, boun
  */
 export const drawForOptions = (canvas, ctx, imageData, state) => {
     const increment = state.reverseFrameOrder ? -state.frameIncrement : state.frameIncrement;
+    const frame = state.initialFrame + state.currentFrame;
 
     switch (state.mode) {
         case 'columns':
@@ -162,7 +163,7 @@ export const drawForOptions = (canvas, ctx, imageData, state) => {
                 canvas,
                 ctx,
                 imageData,
-                state.currentFrame,
+                frame,
                 increment,
                 state.bounceFrameOrder,
                 imageData.width / imageData.frames.length,
@@ -174,7 +175,7 @@ export const drawForOptions = (canvas, ctx, imageData, state) => {
                 canvas,
                 ctx,
                 imageData,
-                state.currentFrame,
+                frame,
                 increment,
                 state.bounceFrameOrder,
                 imageData.width,
@@ -185,7 +186,7 @@ export const drawForOptions = (canvas, ctx, imageData, state) => {
                 canvas,
                 ctx,
                 imageData,
-                state.currentFrame,
+                frame,
                 increment,
                 state.bounceFrameOrder,
                 imageData.width / state.gridColumns,
@@ -196,7 +197,7 @@ export const drawForOptions = (canvas, ctx, imageData, state) => {
                 canvas,
                 ctx,
                 imageData,
-                state.currentFrame,
+                frame,
                 increment,
                 state.bounceFrameOrder,
                 state.diagonalWidth,
@@ -207,7 +208,7 @@ export const drawForOptions = (canvas, ctx, imageData, state) => {
                 canvas,
                 ctx,
                 imageData,
-                state.currentFrame,
+                frame,
                 increment,
                 state.bounceFrameOrder,
                 state.radiusWidth);

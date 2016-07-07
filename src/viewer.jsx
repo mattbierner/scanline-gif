@@ -67,6 +67,7 @@ export default class Viewer extends React.Component {
             // playback
             reverseFrameOrder: false,
             bounceFrameOrder: false,
+            initialFrame: 0,
             frameIncrement: 1,
             playbackSpeed: 1,
 
@@ -101,14 +102,16 @@ export default class Viewer extends React.Component {
             .then(data => {
                 if (file !== this.props.file)
                     return;
-                
+
                 this.setState({
                     imageData: data,
                     error: null,
 
                     playbackSpeed: 1,
                     reverseFrameOrder: false,
-                    
+                    bounceFrameOrder: false,
+                    initialFrame: 0,
+
                     frameIncrement: 1,
                     gridColumns: 10,
                     gridRows: 10,
@@ -151,6 +154,11 @@ export default class Viewer extends React.Component {
         this.setState({ frameIncrement: value });
     }
 
+    onInitialFrameChange(e) {
+        const value = +e.target.value;
+        this.setState({ initialFrame: value });
+    }
+
     onGridRowsChange(e) {
         const value = +e.target.value;
         this.setState({ gridRows: value });
@@ -188,7 +196,14 @@ export default class Viewer extends React.Component {
                     <ModeSelector value={this.state.mode} onChange={this.onModeChange.bind(this) } />
 
                     <div className="frame-controls">
-                        <div className="full-width">
+                        <div>
+                            <LabeledSlider title='Initial Frame'
+                                min="0"
+                                max={this.state.imageData ? this.state.imageData.frames.length - 1 : 0}
+                                value={this.state.initialFrame}
+                                onChange={this.onInitialFrameChange.bind(this) }/>
+                        </div>
+                        <div>
                             <LabeledSlider title='Frame Increment'
                                 min="1"
                                 max={this.state.imageData ? this.state.imageData.frames.length - 1 : 0}
@@ -198,13 +213,13 @@ export default class Viewer extends React.Component {
                         <div>
                             <div className="control-group">
                                 <div className='control-title'>Reverse Frames</div>
-                                <input type="checkbox" value="reverseFrameOrder" onChange={this.onReverseFrameOrderChange.bind(this)}/>
+                                <input type="checkbox" value="reverseFrameOrder" onChange={this.onReverseFrameOrderChange.bind(this) }/>
                             </div>
                         </div>
                         <div>
                             <div className="control-group">
                                 <div className='control-title'>Mirror Frames</div>
-                                <input type="checkbox" value="reverseFrameOrder" onChange={this.onBounceFrameOrderChange.bind(this)}/>
+                                <input type="checkbox" value="reverseFrameOrder" onChange={this.onBounceFrameOrderChange.bind(this) }/>
                             </div>
                         </div>
                     </div>
