@@ -39,21 +39,21 @@
 
 input[type=range] {
     -webkit-appearance: none;
+    -moz-appearance: none;
     appearance: none; 
-    height: 24px;
+    height: 28px;
     background: none; 
-
-    &::-webkit-slider-thumb {
-        -webkit-appearance: none;
-    }
 
     &:focus {
         outline: none;
     }
 
-    &::-webkit-slider-thumb {
-        width: 12px;
-        height: 24px;
+    &::-webkit-slider-thumb{
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none; 
+        width: 14px;
+        height: 26px;
         margin-top: -10px;
         border: 1px solid #aaa;
         background: $background-color;

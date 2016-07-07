@@ -28240,6 +28240,9 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 	var omggif = __webpack_require__(208);
 
 	/**
@@ -28274,6 +28277,30 @@
 	};
 
 	/**
+	 * Handle IE not supporting new ImageData()
+	 */
+	var createImageData = function () {
+	    try {
+	        new ImageData(1, 1);
+	        return function (width, height) {
+	            return new ImageData(width, height);
+	        };
+	    } catch (e) {
+	        var _ret = function () {
+	            var canvas = document.createElement("canvas");
+	            var ctx = canvas.getContext('2d');
+	            return {
+	                v: function v(width, height) {
+	                    return ctx.createImageData(width, height);
+	                }
+	            };
+	        }();
+
+	        if ((typeof _ret === "undefined" ? "undefined" : _typeof(_ret)) === "object") return _ret.v;
+	    }
+	}();
+
+	/**
 	 * Extract each frame of metadata / frame data (as a canvas) from a gif.
 	 */
 	var extractGifFrameData = function extractGifFrameData(reader) {
@@ -28282,7 +28309,7 @@
 	    var height = reader.height;
 
 
-	    var imageData = new ImageData(width, height);
+	    var imageData = createImageData(width, height);
 	    for (var i = 0, len = reader.numFrames(); i < len; ++i) {
 	        var info = reader.frameInfo(i);
 

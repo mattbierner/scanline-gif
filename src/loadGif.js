@@ -33,13 +33,27 @@ const decodeGif = byteArray => {
 };
 
 /**
+ * Handle IE not supporting new ImageData()
+ */
+const createImageData = (() => {
+    try {
+        new ImageData(1, 1);
+        return (width, height) => new ImageData(width, height);
+    }  catch (e) {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext('2d');
+        return (width, height) => ctx.createImageData(width, height);
+    }
+})();
+
+/**
  * Extract each frame of metadata / frame data (as a canvas) from a gif.
  */
 const extractGifFrameData = reader => {
     const frames = []
     const {width, height} = reader;
 
-    const imageData = new ImageData(width, height);
+    const imageData = createImageData(width, height);
     for (let i = 0, len = reader.numFrames(); i < len; ++i) {
         const info = reader.frameInfo(i);
 
