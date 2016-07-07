@@ -9,7 +9,7 @@ The original idea behind *scanline.gif* was to explore rendering an animated gif
 
 *scanline.gif* accomplishes this by rendering multiple frames of the original animation at the same time onto a single image. But only a slice of each frame is rendered, so one part of the image may be showing the second frame while another could be showing frame 7. It's easier to show than explain.
 
-Image a 13 frame gif where each frame is a solid color, starting with red at frame 1 and fading to blue at frame 13.
+Take a 13 frame gif where each frame is a solid color, starting with red at frame 1 and fading to blue at frame 13.
 
 ![](https://raw.githubusercontent.com/mattbierner/scanline-gif/gh-pages/documentation/images/rb-example-start.gif)
 
