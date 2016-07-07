@@ -5,7 +5,7 @@
 This page overviews the concept, and details how you can customize the rendering.
 
 # Concept
-The original idea behind: *scanline.gif* was to explore rendering an animated gif as a single (non-animated) image. Basically: I thought it would be interesting to try re-encoding the time aspect of the animation back into a single image.
+The original idea behind *scanline.gif* was to explore rendering an animated gif as a single (non-animated) image. Basically: wouldn't it be interesting to re-encoding the time aspect of the animation back into a single image?
 
 *scanline.gif* accomplishes this by rendering multiple frames of the original animation at the same time onto a single image. But only a slice of each frame is rendered, so one part of the image may be showing the second frame while another could be showing frame 7. It's easier to show than explain.
 
@@ -13,7 +13,7 @@ Image a 13 frame gif where each frame is a solid color, starting with red at fra
 
 ![](https://raw.githubusercontent.com/mattbierner/scanline-gif/gh-pages/documentation/images/rb-example-start.gif)
 
-Now slice the gif into 13 columns of equal width. Draw each column of the image individually, but also advance the animation one frame after drawing a column. You end up with a single image that captures every frame of the original animation.
+Now slice the gif into 13 equal width columns. Draw each column of the image individually, but also advance the animation one frame between columns. You end up with a single image that captures every frame of the original animation.
 
 ![](https://raw.githubusercontent.com/mattbierner/scanline-gif/gh-pages/documentation/images/rb-example.png)
 
