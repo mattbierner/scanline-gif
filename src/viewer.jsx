@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 
 import loadGif from './loadGif';
 import LabeledSlider from './labeled_slider';
+import LoadingSpinner from './loading_spinner';
 import GifPlayer from './gif_player';
 import exportGif from './gif_export';
 
@@ -59,6 +60,7 @@ export default class Viewer extends React.Component {
         this.state = {
             imageData: null,
             mode: Object.keys(modes)[0],
+            exporting: false,
 
             //grid
             gridColumns: 10,
@@ -180,7 +182,9 @@ export default class Viewer extends React.Component {
     }
 
     onExport() {
+        this.setState({ exporting: true });
         exportGif(this.state.imageData, this.state).then(blob => {
+            this.setState({ exporting: false });
             const url = URL.createObjectURL(blob);
             window.open(url);
         });
@@ -278,6 +282,9 @@ export default class Viewer extends React.Component {
 
                     <div className="export-controls">
                         <button onClick={this.onExport.bind(this) }>Export to gif</button>
+                        <div>
+                            <LoadingSpinner active={this.state.exporting} />
+                        </div>
                     </div>
                 </div>
             </div>);

@@ -21,11 +21,14 @@ export default (imageData, props) => {
 
     gif.setRepeat(0); // infinite loop
     gif.writeHeader();
-    for (let i = 0; i < imageData.frames.length; ++i) {
-        scanline_renderer.drawForOptions(canvas, ctx, imageData, Object.assign({ currentFrame: i }, props));
-        gif.setDelay(imageData.frames[i].info.delay * 10);
-        gif.addFrame(ctx.getImageData(0, 0, imageData.width, imageData.height).data);
-    }
-    gif.finish();
+
+    setTimeout(() => {
+        for (let i = 0; i < imageData.frames.length; ++i) {
+            scanline_renderer.drawForOptions(canvas, ctx, imageData, Object.assign({ currentFrame: i }, props));
+            gif.setDelay(imageData.frames[i].info.delay * 10);
+            gif.addFrame(ctx.getImageData(0, 0, imageData.width, imageData.height).data);
+        }
+        gif.finish();
+    }, 0);
     return p;
 };

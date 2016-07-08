@@ -28482,6 +28482,10 @@
 
 	var _labeled_slider2 = _interopRequireDefault(_labeled_slider);
 
+	var _loading_spinner = __webpack_require__(171);
+
+	var _loading_spinner2 = _interopRequireDefault(_loading_spinner);
+
 	var _gif_player = __webpack_require__(212);
 
 	var _gif_player2 = _interopRequireDefault(_gif_player);
@@ -28588,6 +28592,7 @@
 	        _this2.state = {
 	            imageData: null,
 	            mode: Object.keys(modes)[0],
+	            exporting: false,
 
 	            //grid
 	            gridColumns: 10,
@@ -28724,7 +28729,11 @@
 	    }, {
 	        key: 'onExport',
 	        value: function onExport() {
+	            var _this4 = this;
+
+	            this.setState({ exporting: true });
 	            (0, _gif_export2.default)(this.state.imageData, this.state).then(function (blob) {
+	                _this4.setState({ exporting: false });
 	                var url = URL.createObjectURL(blob);
 	                window.open(url);
 	            });
@@ -28878,6 +28887,11 @@
 	                            'button',
 	                            { onClick: this.onExport.bind(this) },
 	                            'Export to gif'
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            null,
+	                            _react2.default.createElement(_loading_spinner2.default, { active: this.state.exporting })
 	                        )
 	                    )
 	                )
@@ -33054,12 +33068,15 @@
 
 	    gif.setRepeat(0); // infinite loop
 	    gif.writeHeader();
-	    for (var i = 0; i < imageData.frames.length; ++i) {
-	        scanline_renderer.drawForOptions(canvas, ctx, imageData, Object.assign({ currentFrame: i }, props));
-	        gif.setDelay(imageData.frames[i].info.delay * 10);
-	        gif.addFrame(ctx.getImageData(0, 0, imageData.width, imageData.height).data);
-	    }
-	    gif.finish();
+
+	    setTimeout(function () {
+	        for (var i = 0; i < imageData.frames.length; ++i) {
+	            scanline_renderer.drawForOptions(canvas, ctx, imageData, Object.assign({ currentFrame: i }, props));
+	            gif.setDelay(imageData.frames[i].info.delay * 10);
+	            gif.addFrame(ctx.getImageData(0, 0, imageData.width, imageData.height).data);
+	        }
+	        gif.finish();
+	    }, 0);
 	    return p;
 	};
 
