@@ -1,23 +1,19 @@
 {
-  "name": "na-naa-na-na-na-na-naa-naa-naa-na",
+  "name": "scanline.gif",
   "version": "0.0.0",
-  "description": "Visualizing Katamari Damacy gameplay input",
+  "description": "Slit-scan style gif flattening",
   "private": true,
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mattbierner/na_naa-na-na-na_na-naa-naa-naa-n.git"
+    "url": "git+https://github.com/mattbierner/scanline-gif.git"
   },
   "keywords": [],
   "author": "Matt Bierner (http://mattbierner.com/)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mattbierner/na_naa-na-na-na_na-naa-naa-naa-n/issues"
+    "url": "https://github.com/mattbierner/scanline-gif/issues"
   },
-  "homepage": "https://github.com/mattbierner/na_naa-na-na-na_na-naa-naa-naa-n#readme",
+  "homepage": "https://mattbierner.github.io/scanline-gif",
   "devDependencies": {
     "babel": "^5.6.23",
     "babel-core": "^6.8.0",
@@ -29,15 +25,11 @@
     "webpack": "^1.13.0"
   },
   "dependencies": {
-    "css-element-queries": "^0.3.2",
+    "chroma-js": "^1.1.1",
     "gif-encoder": "^0.4.1",
-    "giphy": "0.0.4",
     "giphy-api": "^1.1.16",
     "omggif": "^1.0.8",
     "react": "^15.1.0",
-    "react-dom": "^15.1.0",
-    "react-input-range": "^0.8.0",
-    "react-waypoint": "^3.0.0",
-    "three": "^0.76.1"
+    "react-dom": "^15.1.0"
   }
 }
