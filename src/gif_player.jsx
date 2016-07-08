@@ -78,7 +78,7 @@ export default class GifPlayer extends React.Component {
         if (this.props.imageData !== newProps.imageData) {
             this.setState({
                 currentFrame: 0,
-                playing: true
+                playing: true // autoplay
             });
             this.scheduleNextFrame(newProps.imageData, 0, true);
         }
@@ -140,9 +140,6 @@ export default class GifPlayer extends React.Component {
     }
 
     render() {
-        const playbackSpeedOptions = Object.keys(playbackSpeeds).map(x =>
-            <option value={playbackSpeeds[x]} key={x}>{x}</option>);
-
         return (
             <div className="gif-figure">
                 <GifRenderer {...this.props} currentFrame={this.state.currentFrame} />

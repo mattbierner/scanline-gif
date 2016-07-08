@@ -30077,7 +30077,7 @@
 	            if (this.props.imageData !== newProps.imageData) {
 	                this.setState({
 	                    currentFrame: 0,
-	                    playing: true
+	                    playing: true // autoplay
 	                });
 	                this.scheduleNextFrame(newProps.imageData, 0, true);
 	            }
@@ -30145,14 +30145,6 @@
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var playbackSpeedOptions = Object.keys(playbackSpeeds).map(function (x) {
-	                return _react2.default.createElement(
-	                    'option',
-	                    { value: playbackSpeeds[x], key: x },
-	                    x
-	                );
-	            });
-
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'gif-figure' },
