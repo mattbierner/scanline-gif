@@ -30079,7 +30079,7 @@
 	                    currentFrame: 0,
 	                    playing: true
 	                });
-	                this.scheduleNextFrame(0, true);
+	                this.scheduleNextFrame(newProps.imageData, 0, true);
 	            }
 	        }
 	    }, {
@@ -30088,7 +30088,7 @@
 	            this.setState({ playing: !this.state.playing });
 
 	            if (!this.state.playing) {
-	                this.scheduleNextFrame(0, true);
+	                this.scheduleNextFrame(this.props.imageData, 0, true);
 	            }
 	        }
 	    }, {
@@ -30099,14 +30099,14 @@
 	        }
 	    }, {
 	        key: 'scheduleNextFrame',
-	        value: function scheduleNextFrame(delay, forcePlay) {
+	        value: function scheduleNextFrame(imageData, delay, forcePlay) {
 	            var _this5 = this;
 
 	            if (!forcePlay && !this.state.playing) return;
 
 	            var start = Date.now();
 	            setTimeout(function () {
-	                if (!_this5.props.imageData) return;
+	                if (!_this5.props.imageData || _this5.props.imageData !== imageData) return;
 
 	                var nextFrame = _this5.state.currentFrame + 1;
 	                if (nextFrame >= _this5.getNumFrames() && !_this5.state.loop) {
@@ -30122,7 +30122,7 @@
 	                _this5.setState({
 	                    currentFrame: nextFrame
 	                });
-	                _this5.scheduleNextFrame(next);
+	                _this5.scheduleNextFrame(imageData, next);
 	            }, delay);
 	        }
 	    }, {
