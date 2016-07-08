@@ -28591,6 +28591,7 @@
 
 	        _this2.state = {
 	            imageData: null,
+	            loadingGif: false,
 	            mode: Object.keys(modes)[0],
 	            exporting: false,
 
@@ -28618,13 +28619,6 @@
 	    _createClass(Viewer, [{
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
-	            var element = _reactDom2.default.findDOMNode(this);
-	            var canvas = element.getElementsByClassName('gif-canvas')[0];
-	            var ctx = canvas.getContext('2d');
-
-	            this._canvas = canvas;
-	            this._ctx = ctx;
-
 	            this.loadGif(this.props.file);
 	        }
 	    }, {
@@ -28639,11 +28633,13 @@
 	        value: function loadGif(file) {
 	            var _this3 = this;
 
+	            this.setState({ loadingGif: true });
 	            (0, _loadGif3.default)(file).then(function (data) {
 	                if (file !== _this3.props.file) return;
 
 	                _this3.setState({
 	                    imageData: data,
+	                    loadingGif: false,
 	                    error: null,
 
 	                    playbackSpeed: 1,
@@ -28659,9 +28655,12 @@
 	                    diagonalAngle: 45
 	                });
 	            }).catch(function (e) {
+	                if (file !== _this3.props.file) return;
+
 	                console.error(e);
 	                _this3.setState({
 	                    imageData: [],
+	                    loadingGif: false,
 	                    error: 'Could not load gif'
 	                });
 	            });
@@ -29915,6 +29914,10 @@
 
 	var _labeled_slider2 = _interopRequireDefault(_labeled_slider);
 
+	var _loading_spinner = __webpack_require__(171);
+
+	var _loading_spinner2 = _interopRequireDefault(_loading_spinner);
+
 	var _gif_renderer = __webpack_require__(213);
 
 	var _gif_renderer2 = _interopRequireDefault(_gif_renderer);
@@ -30158,6 +30161,11 @@
 	                    'div',
 	                    { className: 'content-wrapper' },
 	                    _react2.default.createElement(GifProperties, this.props)
+	                ),
+	                _react2.default.createElement(
+	                    'div',
+	                    null,
+	                    _react2.default.createElement(_loading_spinner2.default, { active: this.props.loadingGif })
 	                ),
 	                _react2.default.createElement(
 	                    'div',

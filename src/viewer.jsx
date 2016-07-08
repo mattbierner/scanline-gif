@@ -59,6 +59,7 @@ export default class Viewer extends React.Component {
         super(props);
         this.state = {
             imageData: null,
+            loadingGif: false,
             mode: Object.keys(modes)[0],
             exporting: false,
 
@@ -83,13 +84,6 @@ export default class Viewer extends React.Component {
     }
 
     componentDidMount() {
-        const element = ReactDOM.findDOMNode(this);
-        const canvas = element.getElementsByClassName('gif-canvas')[0];
-        const ctx = canvas.getContext('2d');
-
-        this._canvas = canvas;
-        this._ctx = ctx;
-
         this.loadGif(this.props.file);
     }
 
@@ -100,6 +94,7 @@ export default class Viewer extends React.Component {
     }
 
     loadGif(file) {
+        this.setState({ loadingGif: true });
         loadGif(file)
             .then(data => {
                 if (file !== this.props.file)
@@ -107,6 +102,7 @@ export default class Viewer extends React.Component {
 
                 this.setState({
                     imageData: data,
+                    loadingGif: false,
                     error: null,
 
                     playbackSpeed: 1,
@@ -123,9 +119,13 @@ export default class Viewer extends React.Component {
                 });
             })
             .catch(e => {
+                if (file !== this.props.file)
+                    return;
+                
                 console.error(e);
                 this.setState({
                     imageData: [],
+                    loadingGif: false,
                     error: 'Could not load gif'
                 })
             });

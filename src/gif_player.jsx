@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import LabeledSlider from './labeled_slider';
+import LoadingSpinner from './loading_spinner';
 import GifRenderer from './gif_renderer';
 
 const playbackSpeeds = {
@@ -147,6 +148,9 @@ export default class GifPlayer extends React.Component {
                 <GifRenderer {...this.props} currentFrame={this.state.currentFrame} />
                 <div className="content-wrapper">
                     <GifProperties {...this.props} />
+                </div>
+                <div>
+                    <LoadingSpinner active={this.props.loadingGif} />
                 </div>
                 <div className="playback-controls content-wrapper">
                     <LabeledSlider className="playback-tracker"
