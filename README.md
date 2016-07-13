@@ -1,5 +1,3 @@
-WIP
-
 <div align="center">
     <div><img src="https://raw.githubusercontent.com/mattbierner/scanline-gif/gh-pages/documentation/images/cat.gif" /></div>
     <h1 align="center">scanline.gif</h1>
